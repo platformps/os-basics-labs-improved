@@ -1,0 +1,84 @@
+<h2>About this lab</h2>
+<p>Every person who uses a Windows computer should have their own account. In this lab you create a standard local account, see how Windows keeps each account's files private, look at the account in Local Users and Groups, make it an administrator and then take that away, and finally delete it.</p>
+<h3>Objectives</h3>
+<ul class="tri">
+<li>Part 1: Create a new local user account</li>
+<li>Part 2: Review user account properties</li>
+<li>Part 3: Modify local user accounts</li>
+</ul>
+<div class="note"><p>You start signed in as <strong>CyberOpsUser</strong>, an administrator. Its password is <code>Cisco123!</code>. You will need it when you sign back in.</p></div>
+
+<h2>Part 1: Create a new local user account</h2>
+<h3>Step 1: Open the User Accounts tool</h3>
+<ol class="steps">
+<li>Open <strong>Control Panel</strong> from Start. Set <strong>View by</strong> to <strong>Small icons</strong>, then choose <strong>User Accounts</strong>.</li>
+</ol>
+<h3>Step 2: Create a user account</h3>
+<ol class="steps">
+<li>In User Accounts, choose <strong>Manage another account</strong>, then <strong>Add a new user in PC settings</strong>. The Settings app opens on <strong>Accounts, Other users</strong>.</li>
+<li>Choose <strong>Add account</strong>. When Windows asks how this person will sign in, choose <strong>I don't have this person's sign-in information</strong>, then <strong>Add a user without a Microsoft account</strong>.</li>
+<li>Create the account with the user name <code>User1</code>. Give it a password you will remember, for example <code>Passw0rd!</code>, and answer the three security questions. Choose <strong>Next</strong>.</li>
+</ol>
+<div class="question" data-q="q1"><p class="qtext">What type of user account did you just create?</p>
+<div class="sample"><p>A local account (not linked to a Microsoft account) with standard user rights. A standard user cannot change system-wide settings or install software for everyone without an administrator's approval.</p></div></div>
+<ol class="steps" start="4">
+<li>Open Start and choose <strong>Sign out</strong>. On the sign-in screen, choose <strong>User1</strong>, type its password, and sign in. Windows creates the User1 profile folder the first time the account signs in.</li>
+<li>Open <strong>File Explorer</strong> and go to <code>C:\Users</code>. Select the <strong>User1</strong> folder, open its Actions, choose <strong>Properties</strong>, and look at the <strong>Security</strong> tab.</li>
+</ol>
+<div class="question" data-q="q2"><p class="qtext">Which groups or users have full control of the User1 folder?</p>
+<div class="sample"><p>SYSTEM, the Administrators group, and the user User1.</p></div></div>
+<ol class="steps" start="6">
+<li>Still signed in as User1, try to open the <strong>CyberOpsUser</strong> folder in <code>C:\Users</code>.</li>
+</ol>
+<div class="question" data-q="q3"><p class="qtext">Were you able to open the CyberOpsUser folder? Explain.</p>
+<div class="sample"><p>No. Windows said you do not have permission to access the folder. Only SYSTEM, Administrators, and CyberOpsUser have access to it, and User1 is a standard user, so it cannot give itself access.</p></div></div>
+<ol class="steps" start="7">
+<li>Sign out of User1 and sign back in as <strong>CyberOpsUser</strong> (password <code>Cisco123!</code>).</li>
+<li>In File Explorer, go to <code>C:\Users</code>, select the <strong>CyberOpsUser</strong> folder, and open the <strong>Security</strong> tab of its Properties.</li>
+</ol>
+<div class="question" data-q="q4"><p class="qtext">Which groups or users have full control of the CyberOpsUser folder?</p>
+<div class="sample"><p>SYSTEM, the Administrators group, and the user CyberOpsUser.</p></div></div>
+
+<h2>Part 2: Review user account properties</h2>
+<ol class="steps">
+<li>Open <strong>Computer Management</strong> (search for it in Start, or open Control Panel, then Windows Tools). Windows Tools was called Administrative Tools in Windows 10.</li>
+<li>In the console tree, expand <strong>System Tools</strong>, then <strong>Local Users and Groups</strong>, and select <strong>Users</strong>.</li>
+<li>Select <strong>User1</strong>, open its Actions, choose <strong>Properties</strong>, and go to the <strong>Member Of</strong> tab.</li>
+</ol>
+<div class="question" data-q="q5"><p class="qtext">Which group is User1 a member of?</p>
+<div class="sample"><p>Users</p></div></div>
+<ol class="steps" start="4"><li>Close the dialog. Open the Properties of <strong>CyberOpsUser</strong> and check its Member Of tab.</li></ol>
+<div class="question" data-q="q6"><p class="qtext">Which groups is CyberOpsUser a member of?</p>
+<div class="sample"><p>Administrators and Users. (On some Windows builds the first account lists only Administrators. Either way, membership in Administrators is what gives it administrator rights.)</p></div></div>
+
+<h2>Part 3: Modify local user accounts</h2>
+<h3>Step 1: Change the account type</h3>
+<ol class="steps">
+<li>In Control Panel, open <strong>User Accounts</strong>, choose <strong>Manage another account</strong>, and select <strong>User1</strong>.</li>
+<li>Choose <strong>Change the account type</strong>, select <strong>Administrator</strong>, and choose <strong>Change Account Type</strong>. User1 now has administrator rights.</li>
+<li>In Computer Management, open the Properties of <strong>User1</strong> again and check the <strong>Member Of</strong> tab. (If Computer Management was already open, select Users again to refresh the list.)</li>
+</ol>
+<div class="question" data-q="q7"><p class="qtext">Which groups does User1 belong to now?</p>
+<div class="sample"><p>Administrators and Users.</p></div></div>
+<ol class="steps" start="4"><li>On the Member Of tab, select <strong>Administrators</strong> and choose <strong>Remove</strong>, then <strong>OK</strong>. User1 is a standard user again.</li></ol>
+<h3>Step 2: Delete the account</h3>
+<ol class="steps">
+<li>In Computer Management, select <strong>User1</strong>, open its Actions, and choose <strong>Delete</strong>. Read the warning, then choose <strong>Yes</strong>.</li>
+</ol>
+<div class="question" data-q="q8"><p class="qtext">What is another way to delete a user account?</p>
+<div class="sample"><p>Control Panel, User Accounts, Manage another account, select the account, then Delete the account. In Windows 11 you can also use Settings, Accounts, Other users, select the account, then Remove.</p></div></div>
+<h3>Reflection</h3>
+<div class="question" data-q="q9"><p class="qtext">Why is it important to protect every account with a strong password?</p>
+<div class="sample"><p>An account with no password or a weak one lets almost anyone sign in and steal data, change settings, or use the computer for attacks. Any account is a way in, not only the administrator account.</p></div></div>
+<div class="question" data-q="q10"><p class="qtext">Why would you create a user with standard rights instead of administrator rights?</p>
+<div class="sample"><p>This follows the principle of least privilege. A standard user cannot change system-wide settings, install software for everyone, or read other users' files, so a mistake or a malware infection in that account does much less damage.</p></div></div>
+
+<!--CORRECTIONS-->
+<h2 id="corrections">Corrections from the original lab</h2>
+<ul class="corrections tri">
+<li>The original tells you to right-click the CyberOpsUser folder and open Properties, then asks whether you could access the folder. This version asks you to open the folder, which is what the question is about.</li>
+<li>The original says "Right-click the folder" without saying which folder. This version names the CyberOpsUser folder.</li>
+<li>In Windows 11, Administrative Tools is called Windows Tools. Both names are mentioned.</li>
+<li>The note about CyberOpsUser's groups is added because some Windows builds list only Administrators.</li>
+</ul>
+<!--/CORRECTIONS-->

@@ -1,0 +1,96 @@
+<h2>About this lab</h2>
+<p>A process is a program that is running. In this lab you use Process Explorer, a free Microsoft Sysinternals tool, to look at running processes, see which process started which, and look inside a process at its threads and handles. Then you use Registry Editor to change one setting and watch what it does.</p>
+<h3>Objectives</h3>
+<ul class="tri">
+<li>Part 1: Explore processes</li>
+<li>Part 2: Explore threads and handles</li>
+<li>Part 3: Explore the Windows Registry</li>
+</ul>
+<div class="note"><p><strong>What is different from the original lab:</strong> In the real Process Explorer you find a window's process by dragging a crosshair icon onto the window with a mouse. That drag has no keyboard equivalent, so this simulation gives you a <strong>Find Window's Process</strong> button that lists the open windows instead. Everything else follows the original steps.</p></div>
+
+<h2>Part 1: Explore processes</h2>
+<h3>Step 1: Download the Sysinternals Suite</h3>
+<ol class="steps">
+<li>Open <strong>Microsoft Edge</strong> from Start.</li>
+<li>In the address bar, type <code>learn.microsoft.com/sysinternals/downloads/sysinternals-suite</code> and press Enter. (The original lab gives an older technet address; it now sends you to this page.)</li>
+<li>Select <strong>Download Sysinternals Suite</strong>.</li>
+<li>Open <strong>File Explorer</strong> and go to <strong>Downloads</strong>. Select <strong>SysinternalsSuite.zip</strong>, open its Actions, and choose <strong>Extract All</strong>. Accept the suggested folder.</li>
+<li>Leave Microsoft Edge open. You need it in the next step.</li>
+</ol>
+<h3>Step 2: Explore an active process</h3>
+<ol class="steps">
+<li>In the extracted <strong>SysinternalsSuite</strong> folder, open <strong>procexp64.exe</strong>. When the Process Explorer License Agreement appears, choose <strong>Agree</strong>.</li>
+<li>Process Explorer lists every running process as a tree. A process that another process started is shown indented under it, and your screen reader hears "child of" followed by the parent's name.</li>
+<li>Choose <strong>Find Window's Process</strong> and pick the Microsoft Edge window. Process Explorer selects the Edge process, <code>msedge.exe</code>.</li>
+<li>With <code>msedge.exe</code> selected, open the Actions for the process and choose <strong>Kill Process</strong>. Confirm with <strong>OK</strong>.</li>
+</ol>
+<div class="question" data-q="q1"><p class="qtext">What happened to the web browser window when you killed its process?</p>
+<div class="sample"><p>The Microsoft Edge window closed right away. The window belongs to the process, so ending the process ends the window and its helper processes.</p></div></div>
+<h3>Step 3: Start another process</h3>
+<ol class="steps">
+<li>Open <strong>Command Prompt</strong> from Start.</li>
+<li>Switch back to Process Explorer, choose <strong>Find Window's Process</strong>, and pick the Command Prompt window. The process is <code>cmd.exe</code>. Its parent is <code>explorer.exe</code>, and it has a child process, <code>conhost.exe</code> (Console Window Host).</li>
+<li>Switch to Command Prompt and run <code>ping www.cisco.com</code>. While it runs, switch to Process Explorer and look under <code>cmd.exe</code>. Process Explorer announces new processes as they start.</li>
+</ol>
+<div class="question" data-q="q2"><p class="qtext">What happened under cmd.exe while the ping was running?</p>
+<div class="sample"><p>A new child process, <code>PING.EXE</code>, appeared under <code>cmd.exe</code> while the ping ran, and it disappeared when the ping finished. Each command you run from the prompt is its own process, started by <code>cmd.exe</code>.</p></div></div>
+<ol class="steps" start="4">
+<li>Suppose you suspect <code>conhost.exe</code> could be malware pretending to be a Windows file. Select <code>conhost.exe</code>, open its Actions, and choose <strong>Check VirusTotal</strong>. Agree to the VirusTotal terms when asked.</li>
+<li>A VirusTotal column appears. Select the result for <code>conhost.exe</code> to open the report in Microsoft Edge.</li>
+<li>In Process Explorer, select <code>cmd.exe</code> and choose <strong>Kill Process</strong>.</li>
+</ol>
+<div class="question" data-q="q3"><p class="qtext">What happened to the child process conhost.exe when you killed cmd.exe?</p>
+<div class="sample"><p><code>conhost.exe</code> ended too. Console Window Host only exists to draw the console window for <code>cmd.exe</code>, so when its parent ends it has nothing left to do and exits. (Not every child process ends with its parent, but this one does.)</p></div></div>
+
+<h2>Part 2: Explore threads and handles</h2>
+<p>A process has one or more threads; a thread is the part of a process that the processor actually runs. A handle is a reference a process holds to something the operating system manages, such as a file, a registry key, or another thread.</p>
+<h3>Step 1: Explore threads</h3>
+<ol class="steps">
+<li>Open a new <strong>Command Prompt</strong>. This starts a new <code>cmd.exe</code> and <code>conhost.exe</code>.</li>
+<li>In Process Explorer, select <code>conhost.exe</code>, open its Actions, and choose <strong>Properties</strong>. Go to the <strong>Threads</strong> tab.</li>
+</ol>
+<div class="question" data-q="q4"><p class="qtext">What information does the Threads tab show? What other kinds of information are on the other tabs of the Properties window?</p>
+<div class="sample"><p>The Threads tab lists each thread with its thread ID (TID), CPU use, cycles delta, and start address, plus the total thread count. The other tabs show the image path and command line, performance information, network connections, security information (user and groups), environment variables, and readable strings found in the file.</p></div></div>
+<h3>Step 2: Explore handles</h3>
+<ol class="steps">
+<li>Close the Properties window. With <code>conhost.exe</code> still selected, open the <strong>View</strong> menu, choose <strong>Lower Pane View</strong>, then <strong>Handles</strong>. A Handles table appears under the process list.</li>
+</ol>
+<div class="question" data-q="q5"><p class="qtext">Examine the handles. What are they pointing to?</p>
+<div class="sample"><p>The handles point to files and folders (such as <code>\Device\ConDrv</code> and <code>C:\Windows\System32</code>), registry keys, threads, events, ALPC ports, and the window station and desktop the console is drawn on.</p></div></div>
+<ol class="steps" start="2"><li>Close Process Explorer.</li></ol>
+
+<h2>Part 3: Explore the Windows Registry</h2>
+<p>The Windows Registry is a database of settings for Windows and for apps. Registry Editor shows five root keys at the top level:</p>
+<ul class="tri">
+<li><strong>HKEY_CLASSES_ROOT:</strong> file type associations and information about registered app components. It combines settings from HKEY_LOCAL_MACHINE\Software\Classes and HKEY_CURRENT_USER\Software\Classes.</li>
+<li><strong>HKEY_CURRENT_USER:</strong> settings for the user who is signed in right now.</li>
+<li><strong>HKEY_LOCAL_MACHINE:</strong> settings for the computer itself, shared by every user.</li>
+<li><strong>HKEY_USERS:</strong> settings for every user profile loaded on the computer. HKEY_CURRENT_USER is a shortcut to the current user's entry here.</li>
+<li><strong>HKEY_CURRENT_CONFIG:</strong> the hardware profile Windows is using right now.</li>
+</ul>
+<p>Keys work like folders. Inside a key are <strong>values</strong>, and each value has a name, a type, and data.</p>
+<ol class="steps">
+<li>Open <strong>Registry Editor</strong> from Start (search for <code>regedit</code>). Choose <strong>Yes</strong> when User Account Control asks.</li>
+<li>When you agreed to the Process Explorer license, it saved that choice in the registry. Go to <code>HKEY_CURRENT_USER\Software\Sysinternals\Process Explorer</code>. You can expand the tree, or type the path in the address box.</li>
+<li>In the values list, find <strong>EulaAccepted</strong>. Its data is <code>0x00000001 (1)</code>, which means the license was accepted.</li>
+<li>Open <strong>EulaAccepted</strong> to modify it, change the value data from 1 to 0, and choose <strong>OK</strong>. A value of 0 means the license has not been accepted.</li>
+</ol>
+<div class="question" data-q="q6"><p class="qtext">What does the Data column show for EulaAccepted now?</p>
+<div class="sample"><p><code>0x00000000 (0)</code></p></div></div>
+<ol class="steps" start="5">
+<li>Open Process Explorer again from the SysinternalsSuite folder in File Explorer.</li>
+</ol>
+<div class="question" data-q="q7"><p class="qtext">What happened when Process Explorer opened?</p>
+<div class="sample"><p>The Process Explorer License Agreement appeared again, because Process Explorer reads EulaAccepted when it starts and found 0. Many apps store settings in the registry this way, which is also why attackers and malware often change registry values.</p></div></div>
+
+<!--CORRECTIONS-->
+<h2 id="corrections">Corrections from the original lab</h2>
+<p>This version fixes these items from the Cisco lab, so answers here may differ slightly from the original answer key.</p>
+<ul class="corrections tri">
+<li>The original calls EulaAccepted a registry key. It is a registry <strong>value</strong> inside the Process Explorer key.</li>
+<li>The original says HKEY_CURRENT_USER holds settings for "the users who are currently logged in." It holds settings for the one user whose session is running.</li>
+<li>The original's sample answer for the threads question lists other tabs instead of thread details. The new sample answer covers both.</li>
+<li>The Sysinternals download address in the original is an old technet link; this version uses the current Microsoft Learn address.</li>
+<li>The crosshair drag in Process Explorer is replaced with a keyboard-friendly list of windows.</li>
+</ul>
+<!--/CORRECTIONS-->

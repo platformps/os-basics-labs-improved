@@ -1,0 +1,114 @@
+<h2>About this lab</h2>
+<p>Windows includes tools for watching and managing the computer's resources. In this lab you start and stop a Windows service and watch the effects in three places, find the matching entries in the System log, and set up Performance Monitor to record memory use to a file you can open.</p>
+<h3>Objectives</h3>
+<ul class="tri">
+<li>Part 1: Start and stop the Routing and Remote Access service</li>
+<li>Part 2: Work in the Computer Management utility</li>
+<li>Part 3: Configure administrative tools</li>
+</ul>
+<div class="note"><p><strong>Graphs as text:</strong> Performance Monitor's live graph is shown here as readings (latest, average, minimum, and maximum). The original question asks you to match graph colors; this version asks you to read the counter list instead, which works on a real PC with a screen reader too.</p></div>
+
+<h2>Part 1: Start and stop the Routing and Remote Access service</h2>
+<p>Routing and Remote Access lets a Windows computer act as a router or accept incoming remote connections. You will start it, watch what changes, and then stop and disable it.</p>
+<ol class="steps">
+<li>Open <strong>Control Panel</strong>, set <strong>View by</strong> to <strong>Small icons</strong>, and open <strong>Network and Sharing Center</strong>. Choose <strong>Change adapter settings</strong>. The <strong>Network Connections</strong> window opens. Leave it open.</li>
+<li>Open <strong>Windows Tools</strong> (Administrative Tools in Windows 10) from Control Panel, then open <strong>Performance Monitor</strong>.</li>
+<li>In the console tree, select <strong>Performance Monitor</strong> under Monitoring Tools. Choose <strong>Freeze Display</strong> to pause the recording, then open <strong>Graph actions</strong> and choose <strong>Clear</strong>. Leave the window open.</li>
+<li>From Windows Tools, open <strong>Services</strong>. Select <strong>Routing and Remote Access</strong> and open its <strong>Properties</strong>.</li>
+<li>Set <strong>Startup type</strong> to <strong>Manual</strong> and choose <strong>Apply</strong>. The Start button becomes available. Do not choose Start yet, and leave the dialog open. (In this simulation the dialog is modal, so first close it with OK, do the next step, then reopen the Properties to start the service.)</li>
+<li>Switch to Performance Monitor and choose <strong>Unfreeze Display</strong> so it records again.</li>
+<li>Switch to Services, open the Properties of Routing and Remote Access, and choose <strong>Start</strong>. A progress message appears while the service starts. Then choose OK.</li>
+<li>Switch to Network Connections and choose <strong>Refresh</strong> (F5 on a real PC).</li>
+</ol>
+<div class="question" data-q="q1"><p class="qtext">What changed in Network Connections after you started Routing and Remote Access?</p>
+<div class="sample"><p>A new item, Incoming Connections, appeared.</p></div></div>
+<ol class="steps" start="9">
+<li>In Services, open the Properties again and choose <strong>Stop</strong>. Then refresh Network Connections.</li>
+</ol>
+<div class="question" data-q="q2"><p class="qtext">What changed in Network Connections after you stopped the service?</p>
+<div class="sample"><p>Incoming Connections disappeared.</p></div></div>
+<ol class="steps" start="10">
+<li>Switch to Performance Monitor and choose <strong>Freeze Display</strong>. Read the counter list under the graph and the readings.</li>
+</ol>
+<div class="question" data-q="q3"><p class="qtext">Which counter is being recorded, and what happened to it when you started the service?</p>
+<div class="sample"><p>% Processor Time for the Processor Information object, instance _Total. It is the only counter Performance Monitor shows by default. Its maximum reading jumped while the service was starting, because starting a service uses the processor.</p></div></div>
+<ol class="steps" start="11">
+<li>Open <strong>Change graph type</strong> and choose <strong>Report</strong>.</li>
+</ol>
+<div class="question" data-q="q4"><p class="qtext">What value does the report show for the counter?</p>
+<div class="sample"><p>Answers vary. The report shows one number for % Processor Time, for example 2.804, which is the latest reading.</p></div></div>
+<ol class="steps" start="12">
+<li>In Services, open the Properties of Routing and Remote Access, set <strong>Startup type</strong> to <strong>Disabled</strong>, and choose <strong>OK</strong>.</li>
+</ol>
+<div class="question" data-q="q5"><p class="qtext">What are the Status and Startup Type of Routing and Remote Access now?</p>
+<div class="sample"><p>Status is blank (the service is not running) and Startup Type is Disabled.</p></div></div>
+<ol class="steps" start="13"><li>In Performance Monitor, choose <strong>Unfreeze Display</strong>. Close the windows you opened in Part 1.</li></ol>
+
+<h2>Part 2: Work in the Computer Management utility</h2>
+<p>Computer Management manages a local or remote computer. Its tools are grouped into System Tools, Storage, and Services and Applications.</p>
+<ol class="steps">
+<li>Open <strong>Computer Management</strong> from Windows Tools or Start.</li>
+<li>Expand <strong>System Tools</strong>, then <strong>Event Viewer</strong>, then <strong>Windows Logs</strong>, and select <strong>System</strong>.</li>
+<li>Select the newest event and choose <strong>Open event properties</strong>. Use <strong>Next</strong> and <strong>Previous</strong> (or the Down and Up Arrow keys) to move through the log. Find the four events from Service Control Manager about Routing and Remote Access.</li>
+</ol>
+<div class="question" data-q="q6"><p class="qtext">What are the descriptions of the four events, in the order they happened?</p>
+<div class="sample"><p>All four come from Service Control Manager. Oldest first:</p>
+<ol><li>Event 7040: The start type of the Routing and Remote Access service was changed from disabled to demand start. (Demand start is the same as Manual.)</li>
+<li>Event 7036: The Routing and Remote Access service entered the running state.</li>
+<li>Event 7036: The Routing and Remote Access service entered the stopped state.</li>
+<li>Event 7040: The start type of the Routing and Remote Access service was changed from demand start to disabled.</li></ol>
+<p>The log lists newest first, so you see them in the reverse order.</p></div></div>
+<ol class="steps" start="4"><li>Close Computer Management.</li></ol>
+
+<h2>Part 3: Configure administrative tools</h2>
+<p>Now you set up Performance Monitor to record available memory every few seconds into a file.</p>
+<h3>Step 1: Create a data collector set</h3>
+<ol class="steps">
+<li>Open <strong>Performance Monitor</strong>. In the console tree, expand <strong>Data Collector Sets</strong> and select <strong>User Defined</strong>. Open <strong>Actions for User Defined</strong> and choose <strong>New</strong>, then <strong>Data Collector Set</strong>.</li>
+<li>Name it <code>Memory Logs</code>, choose <strong>Create manually (Advanced)</strong>, and choose Next.</li>
+<li>Choose <strong>Create data logs</strong>, check <strong>Performance counter</strong>, and choose Next.</li>
+<li>Choose <strong>Add</strong>. In Add Counters, expand <strong>Memory</strong>, select <strong>Available MBytes</strong>, choose <strong>Add</strong>, then <strong>OK</strong>.</li>
+<li>Set <strong>Sample interval</strong> to <code>4</code> seconds and choose Next.</li>
+<li>For the root directory, choose <strong>Browse</strong>, select <strong>Local Disk (C:)</strong>, then <strong>PerfLogs</strong>, and choose OK. Choose Next.</li>
+<li>Leave <strong>Save and close</strong> selected and choose <strong>Finish</strong>.</li>
+</ol>
+<h3>Step 2: Change the log format</h3>
+<ol class="steps">
+<li>Under User Defined, select <strong>Memory Logs</strong>. Select <strong>DataCollector01</strong>, open its Actions, and choose <strong>Properties</strong>.</li>
+<li>On the Performance Counters tab, change <strong>Log format</strong> to <strong>Comma Separated</strong>. Then go to the <strong>File</strong> tab.</li>
+</ol>
+<div class="question" data-q="q7"><p class="qtext">What is the full path of the example file name?</p>
+<div class="sample"><p>It is C:\PerfLogs\ followed by a folder named with the computer name and a date and number, then DataCollector01.csv. In this simulation: C:\PerfLogs\DESKTOP-OSB01_ then today's date and -000001, then \DataCollector01.csv.</p></div></div>
+<ol class="steps" start="3"><li>Choose <strong>OK</strong>.</li></ol>
+<h3>Step 3: Collect data</h3>
+<ol class="steps">
+<li>With <strong>Memory Logs</strong> selected, choose <strong>Start the Data Collector Set</strong>. Its status changes to Running. (The real tool shows a green arrow on the icon.)</li>
+<li>To make the computer use some memory, open Microsoft Edge from Start and then close it.</li>
+<li>Switch to Performance Monitor and choose <strong>Stop the Data Collector Set</strong>.</li>
+</ol>
+<div class="question" data-q="q8"><p class="qtext">What changed for Memory Logs when you stopped it?</p>
+<div class="sample"><p>Its status changed from Running back to Stopped. In the real tool, the green arrow on the Memory Logs icon goes away.</p></div></div>
+<ol class="steps" start="4">
+<li>Open <strong>File Explorer</strong> and go to <code>C:\PerfLogs</code>. Open the folder that starts with the computer name, then open <strong>DataCollector01.csv</strong>. It opens in Notepad. Use the table view below the text to read it as a table.</li>
+</ol>
+<div class="question" data-q="q9"><p class="qtext">What does the column farthest to the right show?</p>
+<div class="sample"><p>Available memory in megabytes (the \Memory\Available MBytes counter), one reading every 4 seconds. The first column is the time of each reading.</p></div></div>
+<h3>Step 4: Clean up</h3>
+<ol class="steps">
+<li>Close Notepad and File Explorer.</li>
+<li>In Performance Monitor, select <strong>Memory Logs</strong> under User Defined, open its Actions, and choose <strong>Delete</strong>. Confirm with <strong>Yes</strong>.</li>
+<li>In File Explorer, go to <code>C:\PerfLogs</code>, select the folder that held the log, and choose <strong>Delete</strong> from its Actions. Confirm with <strong>Yes</strong>.</li>
+</ol>
+
+<!--CORRECTIONS-->
+<h2 id="corrections">Corrections from the original lab</h2>
+<ul class="corrections tri">
+<li>The original says the Event Properties window "opens for the first event" without a step that opens it. This version tells you to open it.</li>
+<li>The original's answer for the four events is only "Answers will vary." The four events are always the same, so this version gives them.</li>
+<li>The original asks which counter is recorded most by matching graph colors. This version reads the counter list, which does not depend on color.</li>
+<li>The original says to expand "the three categories" with one arrow. Each category has its own expand control.</li>
+<li>The original uses both "Data Collector01" and "DataCollector01." The name is DataCollector01.</li>
+<li>The original uses Start, Computer to open drive C:. Current Windows uses File Explorer, This PC.</li>
+<li>The original note about "Windows cannot open the file" is not needed here; the CSV file opens in Notepad.</li>
+</ul>
+<!--/CORRECTIONS-->

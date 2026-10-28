@@ -1,0 +1,80 @@
+<h2>About this lab</h2>
+<p>PowerShell is both a command console and a scripting language for automating Windows. In this lab you compare it with the older Command Prompt, find out how PowerShell commands (called cmdlets) are named, use netstat to look at network connections and the processes behind them, and empty the Recycle Bin with one command.</p>
+<h3>Objectives</h3>
+<ul class="tri">
+<li>Part 1: Access the PowerShell console</li>
+<li>Part 2: Explore Command Prompt and PowerShell commands</li>
+<li>Part 3: Explore cmdlets</li>
+<li>Part 4: Explore the netstat command using PowerShell</li>
+<li>Part 5: Empty the Recycle Bin using PowerShell</li>
+</ul>
+
+<h2>Part 1: Access the PowerShell console</h2>
+<ol class="steps">
+<li>Open Start, search for <code>powershell</code>, and open <strong>Windows PowerShell</strong>.</li>
+<li>Open Start again, search for <code>command prompt</code>, and open <strong>Command Prompt</strong>.</li>
+</ol>
+<p>Use the taskbar to switch between the two windows. Each command window's prompt tells you which one you are in: PowerShell prompts start with <code>PS</code>.</p>
+
+<h2>Part 2: Explore Command Prompt and PowerShell commands</h2>
+<ol class="steps">
+<li>Run <code>dir</code> in both windows.</li>
+</ol>
+<div class="question" data-q="q1"><p class="qtext">What does the dir command show in each window?</p>
+<div class="sample"><p>Both list the folders and files in the current folder with the date and time each was last changed and the size of each file. Command Prompt marks folders with &lt;DIR&gt; and adds totals at the end. PowerShell adds a Mode column that shows attributes, such as d for a directory and a for archive.</p></div></div>
+<ol class="steps" start="2">
+<li>Try other commands you know from Command Prompt in both windows, such as <code>ping www.cisco.com</code>, <code>cd Documents</code>, and <code>ipconfig</code>.</li>
+</ol>
+<div class="question" data-q="q2"><p class="qtext">What are the results?</p>
+<div class="sample"><p>The output is the same or very similar in both windows. PowerShell runs these familiar commands so people can move from Command Prompt easily, either by running the same program (ping, ipconfig) or through an alias (cd).</p></div></div>
+
+<h2>Part 3: Explore cmdlets</h2>
+<p>PowerShell commands, called cmdlets, are named as a verb and a noun joined by a hyphen, such as <code>Get-Process</code>. Many familiar command names are aliases for a cmdlet.</p>
+<ol class="steps">
+<li>In PowerShell, run <code>Get-Alias dir</code>.</li>
+</ol>
+<div class="question" data-q="q3"><p class="qtext">What is the PowerShell cmdlet for dir?</p>
+<div class="sample"><p><code>Get-ChildItem</code></p></div></div>
+<ol class="steps" start="2">
+<li>To learn more about cmdlets, you could search the web for Microsoft PowerShell cmdlets. (Web search is not part of this simulation.)</li>
+<li>Close the Command Prompt window.</li>
+</ol>
+
+<h2>Part 4: Explore the netstat command using PowerShell</h2>
+<ol class="steps">
+<li>In PowerShell, run <code>netstat /?</code> to see the options for netstat. (The original lab uses <code>netstat -h</code>. That also prints the help, but only because Windows does not recognize -h.)</li>
+<li>Run <code>netstat -r</code> to display the routing table.</li>
+</ol>
+<div class="question" data-q="q4"><p class="qtext">What is the IPv4 default gateway?</p>
+<div class="sample"><p>192.168.1.1. It is the Gateway for the 0.0.0.0 network destination, which is the default route. Your real computer's gateway will usually be different.</p></div></div>
+<ol class="steps" start="3">
+<li>Open a second PowerShell window as an administrator: open Start, search for <code>powershell</code>, and choose <strong>Run Windows PowerShell as administrator</strong>. Choose <strong>Yes</strong> in User Account Control.</li>
+<li>In the administrator window, run <code>netstat -abno</code>. It lists each connection with the process ID (PID) that owns it and the program name. (Try it in the regular window first if you want to see the error it gives without administrator rights.)</li>
+<li>Open <strong>Task Manager</strong> (search for it in Start, or use Taskbar options). On a real PC the shortcut is Ctrl+Shift+Esc. Go to the <strong>Details</strong> tab.</li>
+<li>Pick one PID from the netstat output, such as 756. Sort by the PID column or use <strong>Jump to PID</strong> to find it, then open the <strong>Properties</strong> for that process from its Actions.</li>
+</ol>
+<div class="question" data-q="q5"><p class="qtext">What information can you get from the Details tab and the Properties window for the PID you chose?</p>
+<div class="sample"><p>For PID 756: the process is svchost.exe (Host Process for Windows Services), it runs as the NETWORK SERVICE user, it is using about 4,132 K of memory, and its file is in C:\Windows\System32. netstat showed it is the RpcSs service listening on TCP port 135.</p></div></div>
+
+<h2>Part 5: Empty the Recycle Bin using PowerShell</h2>
+<p>One PowerShell command can replace several clicks, and the same command can run on many computers at once. That is why administrators use PowerShell to manage large networks.</p>
+<ol class="steps">
+<li>Open the <strong>Recycle Bin</strong> (search for it in Start) and check that it has items in it. In this simulation it already does.</li>
+<li>In a PowerShell window, run <code>Clear-RecycleBin</code>. When PowerShell asks you to confirm, type <code>Y</code> and press Enter.</li>
+<li>Switch back to the Recycle Bin window.</li>
+</ol>
+<div class="question" data-q="q6"><p class="qtext">What happened to the files in the Recycle Bin?</p>
+<div class="sample"><p>They were deleted permanently. The Recycle Bin is now empty.</p></div></div>
+<h3>Reflection</h3>
+<div class="question" data-q="q7"><p class="qtext">PowerShell was built for task automation and configuration management. Research commands that could simplify your work as a security analyst, and record what you find.</p>
+<div class="sample"><p>Answers vary. Examples: <code>Get-Process</code> and <code>Get-Service</code> to list what is running, <code>Get-NetTCPConnection</code> to see connections and owning processes, <code>Get-WinEvent</code> to search event logs, <code>Get-FileHash</code> to check whether a file matches a known hash, and <code>Get-LocalUser</code> to review accounts. You can try <code>Get-Process</code>, <code>Get-Service</code>, and <code>Get-Alias</code> in this simulation.</p></div></div>
+
+<!--CORRECTIONS-->
+<h2 id="corrections">Corrections from the original lab</h2>
+<ul class="corrections tri">
+<li>The original netstat -abno table labels three columns "Local Address." They are Local Address, Foreign Address, and State.</li>
+<li>A route in the original output reads "169.254.0." It should be 169.254.0.0. This simulation uses a simpler routing table.</li>
+<li>The original uses <code>netstat -h</code>. The documented help option is <code>netstat /?</code>.</li>
+<li>The Get-Alias output in the original has its columns run together. Here it is shown with spacing and as a table.</li>
+</ul>
+<!--/CORRECTIONS-->

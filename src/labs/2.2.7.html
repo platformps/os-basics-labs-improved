@@ -1,0 +1,123 @@
+<h2>About this lab</h2>
+<p>The shell is the Linux command interpreter. It is also called the terminal, the command line, or the command prompt. In this lab you use the shell to read built-in help, move around the file system, send command output to files, and copy, move, and delete files and folders.</p>
+<h3>Objectives</h3>
+<ul class="tri">
+<li>Part 1: Shell basics</li>
+<li>Part 2: Copying, deleting, and moving files</li>
+</ul>
+<div class="note"><p>This simulation stands in for the Security Workstation virtual machine. You are logged in as <strong>analyst</strong>; the password is <code>cyberops</code>. Open <strong>Terminal</strong> from the Applications button to begin.</p></div>
+
+<h2>Part 1: Shell basics</h2>
+<h3>Step 1: Access the command line</h3>
+<ol class="steps"><li>Choose <strong>Applications</strong> on the dock and open <strong>Terminal</strong>.</li></ol>
+<h3>Step 2: Display manual pages</h3>
+<p>The <code>man</code> command shows a command's manual page, which is the built-in documentation for that command and its options.</p>
+<ol class="steps"><li>Run <code>man man</code> to learn about manual pages.</li></ol>
+<div class="question" data-q="q1"><p class="qtext">Name a few sections that are included in a man page.</p>
+<div class="sample"><p>Name, Synopsis, Configuration, Description, Options, Exit status, Return value, Errors, Environment, Files, Versions, Conforming to, Notes, Bugs, Example, Authors, and See also.</p></div></div>
+<p>On a real system, a man page opens in a pager: press q to quit it. Here the page is printed in full.</p>
+<ol class="steps" start="2"><li>Run <code>man cp</code>.</li></ol>
+<div class="question" data-q="q2"><p class="qtext">What does the cp command do?</p>
+<div class="sample"><p>It copies files and directories from one location to another.</p></div></div>
+<div class="question" data-q="q3"><p class="qtext">What command would you use to learn more about the pwd command? What does pwd do?</p>
+<div class="sample"><p><code>man pwd</code>. pwd prints the name of the current working directory, the folder you are in.</p></div></div>
+<h3>Step 3: Create and change directories</h3>
+<p>Directory is another word for folder. You will use <code>cd</code> (change directory), <code>mkdir</code> (make directory), and <code>ls</code> (list).</p>
+<ol class="steps">
+<li>Run <code>pwd</code>.</li>
+</ol>
+<div class="question" data-q="q4"><p class="qtext">What is the current directory?</p>
+<div class="sample"><p>/home/analyst, the home directory of the analyst user.</p></div></div>
+<ol class="steps" start="2">
+<li>If you are not in /home/analyst, run <code>cd /home/analyst</code>.</li>
+<li>Run <code>ls -l</code>. The <code>-l</code> option shows details for each item: permissions, owner, size, the date it was last modified, and more.</li>
+<li>Create three folders: run <code>mkdir cyops_folder1</code>, then <code>mkdir cyops_folder2</code>, then <code>mkdir cyops_folder3</code>. Run <code>ls -l</code> to check.</li>
+<li>Run <code>cd /home/analyst/cyops_folder3</code>.</li>
+</ol>
+<div class="question" data-q="q5"><p class="qtext">Which folder are you in now?</p>
+<div class="sample"><p>/home/analyst/cyops_folder3. The prompt shows cyops_folder3 as the current folder.</p></div></div>
+<p>In the prompt <code>[analyst@secOps ~]$</code>, the tilde (~) stands for your home directory, /home/analyst. Changing folders changes where you are working, not where your home directory is. The dollar sign means a regular user; a number sign (#) means the root user. Prompts can be customized, so they look different on other systems.</p>
+<ol class="steps" start="6"><li>Challenge: run <code>cd ~</code>.</li></ol>
+<div class="question" data-q="q6"><p class="qtext">What happened, and why?</p>
+<div class="sample"><p>You returned to /home/analyst. The shell reads ~ as a shortcut for the current user's home directory.</p></div></div>
+<ol class="steps" start="7">
+<li>Run <code>mkdir /home/analyst/cyops_folder3/cyops_folder4</code>, then <code>ls -l /home/analyst/cyops_folder3</code> to check.</li>
+</ol>
+<p>So far you have used absolute paths, which start at the root directory (/). Relative paths start where you are and save typing. Every folder contains two special entries: <code>.</code> means this folder and <code>..</code> means the folder above it, the parent.</p>
+<ol class="steps" start="8">
+<li>Run <code>ls -la /home/analyst/cyops_folder3</code> to see the . and .. entries.</li>
+<li>Run <code>cd /home/analyst/cyops_folder3</code>, then <code>cd .</code></li>
+</ol>
+<div class="question" data-q="q7"><p class="qtext">What happens when you run cd . (dot)?</p>
+<div class="sample"><p>Nothing seems to happen: the shell changed to the current folder itself.</p></div></div>
+<ol class="steps" start="10"><li>Run <code>cd ..</code></li></ol>
+<div class="question" data-q="q8"><p class="qtext">What happens when you run cd .. (two dots)?</p>
+<div class="sample"><p>You move up one level, to /home/analyst, the parent of cyops_folder3.</p></div></div>
+<div class="question" data-q="q9"><p class="qtext">What would the current directory be after cd .. at each of these prompts: [analyst@secOps ~]$, then [analyst@secOps home]$, then [analyst@secOps /]$?</p>
+<div class="sample"><p>From ~ (/home/analyst) you go to /home. From /home you go to / (a forward slash), the root of the file system. From / you stay at /, because the root directory has no parent.</p></div></div>
+<h3>Step 4: Redirect output</h3>
+<p>The <code>&gt;</code> operator sends a command's output to a file instead of the screen.</p>
+<ol class="steps">
+<li>Run <code>cd /home/analyst</code>.</li>
+<li>Run <code>echo This is a message echoed to the terminal by echo.</code> The message appears on screen.</li>
+<li>Run <code>echo This is a message echoed to the terminal by echo. &gt; some_text_file.txt</code></li>
+</ol>
+<div class="question" data-q="q10"><p class="qtext">No output was shown. Is that expected? Explain.</p>
+<div class="sample"><p>Yes. The output went into the file some_text_file.txt instead of to the screen. The file did not exist before, so the shell created it.</p></div></div>
+<ol class="steps" start="4">
+<li>Run <code>ls -l some_text_file.txt</code>, then <code>cat some_text_file.txt</code>.</li>
+<li>Run <code>echo This is a DIFFERENT message, once again echoed to the terminal by echo. &gt; some_text_file.txt</code>, then <code>cat some_text_file.txt</code>.</li>
+</ol>
+<div class="question" data-q="q11"><p class="qtext">What happened to the text file? Explain.</p>
+<div class="sample"><p>The old text was replaced by the new message. The &gt; operator empties the file before it writes.</p></div></div>
+<h3>Step 5: Redirect and append</h3>
+<ol class="steps">
+<li>Run <code>echo This is another line of text. It will be APPENDED to the output file. &gt;&gt; some_text_file.txt</code>, then <code>cat some_text_file.txt</code>.</li>
+</ol>
+<div class="question" data-q="q12"><p class="qtext">What happened to the text file this time? Explain.</p>
+<div class="sample"><p>The new line was added to the end and the earlier text stayed. The &gt;&gt; operator appends instead of replacing.</p></div></div>
+<h3>Step 6: Hidden files</h3>
+<p>Files and folders whose names start with a dot are hidden from a normal listing. Do not confuse them with the single dot that means the current folder.</p>
+<ol class="steps"><li>Run <code>ls -l</code> in your home folder, then <code>ls -la</code>.</li></ol>
+<div class="question" data-q="q13"><p class="qtext">How many more items does ls -la show than ls -l? Why?</p>
+<div class="sample"><p>Many more. ls -la also shows the hidden items, plus the . and .. entries. The exact number depends on what you have done in the workstation.</p></div></div>
+<div class="question" data-q="q14"><p class="qtext">Can whole directories be hidden this way? Give three examples of hidden items from the ls -la output.</p>
+<div class="sample"><p>Yes, there are several hidden directories. Examples: .config, .cache, .bash_history, .bashrc, and .xinitrc.</p></div></div>
+<ol class="steps" start="2"><li>Run <code>man ls</code> and find the <code>-a</code> option.</li></ol>
+
+<h2>Part 2: Copying, deleting, and moving files</h2>
+<h3>Step 1: Copy files</h3>
+<p><code>cp</code> copies a file. The first parameter is the source and the second is the destination. The original stays where it was.</p>
+<ol class="steps"><li>Run <code>cp some_text_file.txt cyops_folder2/</code></li></ol>
+<div class="question" data-q="q15"><p class="qtext">What are the source and destination, written as full paths?</p>
+<div class="sample"><p>Source: /home/analyst/some_text_file.txt. Destination: /home/analyst/cyops_folder2/some_text_file.txt.</p></div></div>
+<ol class="steps" start="2"><li>Run <code>ls cyops_folder2/</code>, then <code>ls -l</code> to see that the file is in both places.</li></ol>
+<h3>Step 2: Delete files and directories</h3>
+<ol class="steps">
+<li>Run <code>rm some_text_file.txt</code>, then <code>ls -l</code>.</li>
+<li>Directories are a type of file too, but deleting one needs the <code>-r</code> (recursive) option, which also deletes everything inside it. Run <code>rm -r cyops_folder1</code>, then <code>ls -l</code>.</li>
+</ol>
+<h3>Step 3: Move files and directories</h3>
+<p><code>mv</code> works like cp, but it removes the file from its original place. The <code>.</code> destination means "the folder I am in."</p>
+<ol class="steps">
+<li>Run <code>mv cyops_folder2/some_text_file.txt .</code>, then <code>ls -l cyops_folder2/</code> and <code>ls -l /home/analyst/</code>.</li>
+<li>cyops_folder2 is now empty. Delete it and anything that might be inside it with one command.</li>
+</ol>
+<div class="question" data-q="q16"><p class="qtext">What command did you use to delete cyops_folder2?</p>
+<div class="sample"><p><code>rm -r cyops_folder2</code>. Because the folder is empty, <code>rmdir cyops_folder2</code> also works.</p></div></div>
+<h3>Reflection</h3>
+<div class="question" data-q="q17"><p class="qtext">What are the advantages of using the Linux command line?</p>
+<div class="sample"><p>Answers vary. The command line gives more options and control than graphical tools, commands can be combined into scripts to automate routine work, and it uses few resources, which matters when managing computers remotely.</p></div></div>
+
+<!--CORRECTIONS-->
+<h2 id="corrections">Corrections from the original lab</h2>
+<ul class="corrections tri">
+<li>The original prints ls -l, ls -la, and rm -r with a long dash instead of a hyphen in several places. Typed as shown, those commands fail. This version uses hyphens, and the simulation converts long dashes for you.</li>
+<li>The original says that after cd /home/analyst/cyops_folder3, "the current user's home directory is now /home/analyst/cyops_folder3." The current (working) directory changed; the home directory did not.</li>
+<li>The original describes / as a backslash. It is a forward slash.</li>
+<li>The original says ls -l shows the date of creation. It shows the date of last modification.</li>
+<li>The original asks "What command did you use to accomplish the task?" without giving a task. This version adds the missing step: delete cyops_folder2.</li>
+<li>The original's example hidden file .xinitrc did not appear in its own listing. The simulated workstation includes it.</li>
+<li>Two echo commands in the original are split across two lines, and several prompts are missing a bracket or show the wrong folder.</li>
+</ul>
+<!--/CORRECTIONS-->

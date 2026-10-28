@@ -1,0 +1,95 @@
+<h2>About this lab</h2>
+<p>Servers are programs that wait for requests and answer them. Clients, which are also programs, send those requests. In this lab you use the Linux command line to find out which servers are running on a computer, which network ports they are listening on, and what they really are.</p>
+<h3>Objectives</h3>
+<ul class="tri">
+<li>Part 1: Servers</li>
+<li>Part 2: Using Telnet to test TCP services</li>
+</ul>
+<div class="note"><p>This simulation stands in for the Security Workstation virtual machine. You are logged in as <strong>analyst</strong>; the sudo password is <code>cyberops</code>. The process IDs (PIDs) in this simulation match the ones in the original lab, but on a real computer they are different every time.</p></div>
+
+<h2>Part 1: Servers</h2>
+<h3>Step 1: Access the command line</h3>
+<ol class="steps"><li>Open <strong>Terminal</strong> from the Applications button on the dock.</li></ol>
+<h3>Step 2: Display the services that are running</h3>
+<p>Many programs run in the background, so users may not notice them. In Linux, running programs are called <strong>processes</strong>.</p>
+<ol class="steps">
+<li>Run <code>sudo ps -elf</code> to list every process. Enter the password <code>cyberops</code> when asked. The output is long; open its <strong>Table view</strong> to move through it by row and column.</li>
+</ol>
+<div class="question" data-q="q1"><p class="qtext">Why does the lab run ps as root (with sudo)?</p>
+<div class="sample"><p>Running as root guarantees you see every process and all of its details. On most Linux systems ps -elf lists all processes even for a regular user, but some systems are set up to hide other users' processes, and some tools (such as netstat -p, later in this lab) only show full details to root.</p></div></div>
+<p>Programs can start other programs. <code>ps</code> can show this as a tree.</p>
+<ol class="steps" start="2">
+<li>Start the nginx web server: run <code>sudo /usr/sbin/nginx</code>.</li>
+<li>Run <code>sudo ps -ejH</code> to show the process tree. In the Table view, each process shows its level in the tree; a process at level 2 was started by the level 1 process above it.</li>
+</ol>
+<div class="question" data-q="q2"><p class="qtext">How does ps show the process hierarchy?</p>
+<div class="sample"><p>With indentation: each child process is indented under the process that started it. In the simulation's table view, the level number gives the same information.</p></div></div>
+<p>The task a server performs is called a service; a web server provides web services. <code>netstat</code> shows network connections and the servers waiting for them.</p>
+<ol class="steps" start="4">
+<li>Run <code>netstat</code> with no options. It shows a lot of information.</li>
+<li>Run <code>man netstat</code> and read about the -t, -u, -n, -a, and -p options.</li>
+<li>Run <code>sudo netstat -tunap</code>. Options can be grouped after one hyphen.</li>
+</ol>
+<div class="question" data-q="q3"><p class="qtext">What do the -t, -u, -n, -a, and -p options of netstat mean?</p>
+<div class="sample"><p>-t shows TCP connections, -u shows UDP connections, -n shows numbers instead of names (no DNS, port, or user name lookups), -a shows both listening and non-listening sockets, and -p shows the PID and name of the program that owns each connection.</p></div></div>
+<div class="question" data-q="q4"><p class="qtext">Does the order of the options matter to netstat?</p>
+<div class="sample"><p>No. -tunap and -patun give the same result.</p></div></div>
+<p>Useful columns in the netstat -tunap output:</p>
+<ul class="tri">
+<li><strong>Proto</strong> (first column): the Layer 4 protocol, TCP or UDP.</li>
+<li><strong>Local Address</strong> (fourth column): the IP address and port where the server can be reached. 0.0.0.0 means the server listens on every IP address of the computer.</li>
+<li><strong>Foreign Address</strong> (fifth column): the address and port of the other end. 0.0.0.0:* means nothing is connected yet.</li>
+<li><strong>State</strong> (sixth column): the state of the connection, such as LISTEN.</li>
+<li><strong>PID/Program name</strong> (seventh column): the process ID and a short name of the program that owns the connection.</li>
+</ul>
+<div class="question" data-q="q5"><p class="qtext">In the netstat -tunap output, what are the Layer 4 protocol, the state, and the PID of the process on port 80?</p>
+<div class="sample"><p>TCP, LISTEN, and PID 395.</p></div></div>
+<div class="question" data-q="q6"><p class="qtext">Port numbers are only a convention, but what kind of service usually runs on TCP port 80?</p>
+<div class="sample"><p>A web server (HTTP).</p></div></div>
+<p>You can match netstat's output to ps. The process with PID 395 owns TCP port 80.</p>
+<ol class="steps" start="7">
+<li>Run <code>sudo ps -elf | grep 395</code>. The pipe (|) sends the output of ps into grep, which keeps only the lines that contain 395. If your nginx PID is different, use your number.</li>
+</ol>
+<div class="question" data-q="q7"><p class="qtext">The process with PID 395 is nginx. How can you tell from the output?</p>
+<div class="sample"><p>The last column (CMD) of its line shows the nginx command line: nginx: master process /usr/sbin/nginx.</p></div></div>
+<div class="question" data-q="q8"><p class="qtext">What is nginx, and what does it do?</p>
+<div class="sample"><p>nginx is a lightweight, high-performance web server, which can also work as a reverse proxy. Searching the web for an unknown process name is a quick way to learn what it is.</p></div></div>
+<div class="question" data-q="q9"><p class="qtext">The second line shows process 396, owned by the user http, with 395 as its parent. What does that mean, and is it normal?</p>
+<div class="sample"><p>Yes, it is normal. The nginx master process runs as root so it can open port 80 and read its configuration, then starts worker processes that run as the less privileged http user. The workers handle the client requests. nginx starts a fixed number of workers (here one); it does not start a new process for every client.</p></div></div>
+<div class="question" data-q="q10"><p class="qtext">Why does the last line show grep 395?</p>
+<div class="sample"><p>grep 395 was itself running while ps took its snapshot, and its own command line contains 395, so it matches.</p></div></div>
+
+<h2>Part 2: Using Telnet to test TCP services</h2>
+<p>Telnet is a simple remote shell. It sends everything, including passwords, as clear text, so it should not be used for remote management; use SSH instead. But it is handy for checking what a TCP service really is, because you can connect to any port and talk to the server directly.</p>
+<p>nginx is listening on port 80. What if an attacker named a malware program nginx to make it look like the web server? Connect to it and see how it answers.</p>
+<ol class="steps">
+<li>Run <code>telnet 127.0.0.1 80</code>.</li>
+<li>When it says Connected, type a few random letters and press Enter.</li>
+</ol>
+<div class="question" data-q="q11"><p class="qtext">Why did the server send its error back as a web page?</p>
+<div class="sample"><p>nginx is a web server, so it only speaks HTTP. It did not understand the random letters, so it sent an HTTP 400 Bad Request response in the format of a web page.</p></div></div>
+<p>From that one reply you learned that the process on port 80 really is a web server, that it is nginx version 1.16.1, and that the network stack works all the way up to the application layer.</p>
+<ol class="steps" start="3">
+<li>netstat also showed a process on port 22, the usual port for SSH. Run <code>telnet 127.0.0.1 22</code>. The server sends a greeting first. Type some random letters and press Enter.</li>
+<li>Run <code>telnet 127.0.0.1 68</code>.</li>
+</ol>
+<div class="question" data-q="q12"><p class="qtext">What happens when you connect to port 68? Explain.</p>
+<div class="sample"><p>The connection is refused. Port 68 is used by the DHCP client over UDP. Telnet only uses TCP, and nothing is listening on TCP port 68.</p></div></div>
+<h3>Reflection</h3>
+<div class="question" data-q="q13"><p class="qtext">What are the advantages of using netstat?</p>
+<div class="sample"><p>It shows every connection and listening port on a computer, with addresses, ports, and the processes behind them, which gives an analyst a quick overview of what is talking on the network.</p></div></div>
+<div class="question" data-q="q14"><p class="qtext">What are the advantages of using Telnet? Is it safe?</p>
+<div class="sample"><p>Telnet lets you connect to any TCP port and see how a service really answers, which helps identify unknown services. It is safe for quick tests like this, but not as a remote shell, because it sends everything, including passwords, unencrypted.</p></div></div>
+
+<!--CORRECTIONS-->
+<h2 id="corrections">Corrections from the original lab</h2>
+<ul class="corrections tri">
+<li>The original prints ps -elf, ps -ejH, -tunap, and several netstat options with a long dash instead of a hyphen. This version uses hyphens.</li>
+<li>The original's column guide calls Local Address the third column. With Recv-Q and Send-Q, it is the fourth; Foreign Address, State, and PID/Program name are the fifth, sixth, and seventh.</li>
+<li>The original says "Port 395 is used in this example." 395 is a process ID, not a port.</li>
+<li>The original says nginx "runs itself for every client that connects." nginx uses a fixed pool of worker processes.</li>
+<li>The original refers to "the netstat output shown in item (d)," which no longer exists.</li>
+<li>The original says sudo is needed because other users' processes may not be displayed. On most Linux systems ps shows every process to any user; the sample answer explains when sudo matters.</li>
+<li>The original's last reflection answer only covers safety; this version also gives the advantages.</li>
+</ul>
+<!--/CORRECTIONS-->

@@ -1,0 +1,102 @@
+<h2>About this lab</h2>
+<p>Log files record events: what happened, when, and often who or what caused it. Analysts read them to troubleshoot problems and to investigate security incidents. In this lab you read web server and operating system logs, track down the logs of a service on an unfamiliar system, and watch logs change in real time.</p>
+<h3>Objectives</h3>
+<ul class="tri">
+<li>Part 1: Log file overview</li>
+<li>Part 2: Locating log files in unknown systems</li>
+<li>Part 3: Monitoring log files in real time</li>
+</ul>
+<div class="note"><p>This simulation stands in for the Security Workstation virtual machine. You are logged in as <strong>analyst</strong>; the sudo password is <code>cyberops</code>. The nginx web server is already running, as it would be after the virtual machine starts.</p></div>
+
+<h2>Part 1: Log file overview</h2>
+<p>Any software can write log files: applications, background services, and the operating system itself. Where a log goes and what it contains is up to the developer, so the software's documentation should describe its logs.</p>
+<h3>Step 1: A web server log entry</h3>
+<p>Here is one log entry from the Apache web server:</p>
+<p><code>[Wed Mar 22 11:23:12.207022 2017] [core:error] [pid 3548:tid 4682351596] [client 209.165.200.230] File does not exist: /var/www/apache/htdocs/favicon.ico</code></p>
+<p>It has five main parts:</p>
+<ul class="tri">
+<li><strong>Timestamp:</strong> when the event happened. Server clocks must be accurate so events can be matched across systems.</li>
+<li><strong>Type:</strong> the kind of event, here an error.</li>
+<li><strong>PID:</strong> the process (and thread) ID that Apache was using.</li>
+<li><strong>Client:</strong> the IP address of the computer that made the request.</li>
+<li><strong>Description:</strong> what happened.</li>
+</ul>
+<div class="question" data-q="q1"><p class="qtext">Based on that log entry, describe what happened.</p>
+<div class="sample"><p>On Wednesday, March 22, 2017, at 11:23:12 AM, a client at 209.165.200.230 asked for a file named favicon.ico. The file should have been at /var/www/apache/htdocs/favicon.ico, but it did not exist, so Apache logged an error.</p></div></div>
+<ol class="steps">
+<li>Open <strong>Terminal</strong> from the Applications button. Run <code>cat /var/log/logstash-tutorial.log</code>.</li>
+</ol>
+<div class="question" data-q="q2"><p class="qtext">Are these entries still web transactions? Why is their format different from the single Apache entry above?</p>
+<div class="sample"><p>Yes. The GET requests, client IP addresses, HTTP/1.1, status codes, and browser names show they are web server events. The format differs because this server was configured to record different fields in a different order.</p></div></div>
+<h3>Step 2: An operating system log</h3>
+<p>Linux stores most log files in <code>/var/log</code>. The <code>messages</code> file records many system events, such as a USB drive being connected, a network card coming up, or repeated failed root logins.</p>
+<ol class="steps">
+<li>Run <code>sudo more /var/log/messages</code>. sudo is needed because the file belongs to root. On a real system, <code>more</code> shows one page at a time; here it shows the whole file.</li>
+</ol>
+<p>Logs are key to troubleshooting. A user reports that all network operations were slow around 4:20 AM on May 19.</p>
+<div class="question" data-q="q3"><p class="qtext">Can you find evidence of that in the log? If so, which lines? Explain.</p>
+<div class="sample"><p>Yes. From May 19 at 04:19:53 to 04:21:27, the kernel logged the network card enp0s3 going down and up again and again (flapping). That confirms the user's report.</p></div></div>
+
+<h2>Part 2: Locating log files in unknown systems</h2>
+<p>Analysts often work on computers they did not set up. This part shows a process for finding a service's logs, using nginx as the example.</p>
+<ol class="steps">
+<li>Start with the documentation. Run <code>man nginx</code> and read the DEBUGGING LOG and FILES sections. The page confirms nginx can write logs and has a configuration file, but the real locations are set when nginx is compiled.</li>
+<li>Check that nginx is running: run <code>ps ax | grep nginx</code>.</li>
+</ol>
+<div class="question" data-q="q4"><p class="qtext">What does the ps output tell you about how nginx was started?</p>
+<div class="sample"><p>nginx is running as a master process and a worker process. Its command line shows that its process ID is stored in /run/nginx.pid and that error messages go to stderr (standard error) instead of a file. On this system, the service manager captures stderr in the system journal.</p></div></div>
+<ol class="steps" start="3">
+<li>By convention, configuration files are in <code>/etc</code>. Run <code>ls /etc</code>, then <code>ls -l /etc/nginx/</code>.</li>
+<li>Run <code>cat /etc/nginx/nginx.conf</code>. Lines that start with # are comments that nginx ignores. The file does not set a log location, so nginx is probably using its defaults.</li>
+<li>By convention, logs are in <code>/var/log</code>. Run <code>ls -l /var/log/</code>. There is an nginx folder.</li>
+<li>The nginx log folder can be read only by the http user and the log group, so use sudo: run <code>sudo ls -l /var/log/nginx</code>.</li>
+</ol>
+<p>The files ending in .gz were made by log rotation. A rotation service compresses the current log, renames it (access.log.1.gz, access.log.2.gz, and so on), and starts an empty log, so no single file grows too large.</p>
+
+<h2>Part 3: Monitoring log files in real time</h2>
+<h3>Step 1: The tail command</h3>
+<p><code>tail</code> shows the end of a file, by default the last ten lines.</p>
+<ol class="steps">
+<li>Run <code>sudo tail /var/log/nginx/access.log</code>.</li>
+<li>Run <code>sudo tail -n 5 /var/log/nginx/access.log</code>. The <code>-n</code> option sets how many lines to show.</li>
+<li>Run <code>sudo tail -f /var/log/nginx/access.log</code>. The <code>-f</code> (follow) option keeps tail running and prints new lines as they are added. There must be a space between -f and the file name.</li>
+<li>With tail still running, open <strong>Firefox</strong> from Applications, go to <code>127.0.0.1</code>, and choose <strong>Reload page</strong> a few times. Each request adds a line to the log.</li>
+<li>Switch back to the terminal. The new entries are there, and the terminal output is read aloud as they arrive.</li>
+</ol>
+<div class="question" data-q="q5"><p class="qtext">What do the new entries tell you, and how do they prove which file nginx uses for its access log?</p>
+<div class="sample"><p>Each entry shows the client 127.0.0.1, the time, the request (GET / and GET /favicon.ico), the status (200 found, 404 not found), and the browser. They appeared the moment you loaded the page, so /var/log/nginx/access.log is the access log nginx is using.</p></div></div>
+<ol class="steps" start="6"><li>Press <strong>Stop command</strong> (Ctrl+C) to stop tail.</li></ol>
+<h3>Step 2: Bonus tool, journalctl</h3>
+<p>The Security Workstation is based on Arch Linux, which uses <strong>systemd</strong> as its init system. The init process is the first process the kernel starts, with process ID 1, and it is the parent of every other process. systemd's logging service, <strong>systemd-journald</strong>, keeps a journal in binary files. <code>journalctl</code> reads it. Other logging systems, such as rsyslog, can run alongside it.</p>
+<ol class="steps">
+<li>Run <code>journalctl</code> as analyst, with no sudo.</li>
+</ol>
+<div class="question" data-q="q6"><p class="qtext">The hint says you are not seeing all messages. How can you see every entry?</p>
+<div class="sample"><p>Run it as root: <code>sudo journalctl</code>. Adding the user to the adm, systemd-journal, or wheel group would also work. The -q option hides the hint.</p></div></div>
+<ol class="steps" start="2">
+<li>Run <code>sudo journalctl -b</code> to show entries from the current boot.</li>
+<li>Run <code>sudo journalctl -b -1</code> for the previous boot, and <code>sudo journalctl -b -2</code> for the boot before that.</li>
+<li>Run <code>sudo journalctl --list-boots</code>.</li>
+<li>Run <code>sudo journalctl --since "2 hours ago"</code>, then <code>sudo journalctl --since "1 day ago"</code>.</li>
+<li>Run <code>sudo journalctl -u nginx.service</code> to see only the entries for nginx. In systemd, services are called units.</li>
+<li>Run <code>sudo journalctl -u nginx.service -f</code> to follow nginx entries in real time. Then open Firefox, go to <code>127.0.0.1</code>, and reload. An error about the missing favicon.ico appears in the terminal. Press Stop command (Ctrl+C) to finish.</li>
+</ol>
+<h3>Reflection</h3>
+<ul class="tri">
+<li>Log files are extremely important for troubleshooting.</li>
+<li>Log locations follow conventions, but the developer decides. Check the documentation first, then combine web research and investigation of the system.</li>
+<li>Clocks must be synchronized. If they are not, it is very hard to trace events across systems.</li>
+</ul>
+
+<!--CORRECTIONS-->
+<h2 id="corrections">Corrections from the original lab</h2>
+<ul class="corrections tri">
+<li>In the original, the question asks about slow networking "around 4:20 am on May 19," and the answer cites May 19 entries, but the log it shows has no May entries (the flapping it shows is on March 20). This version's log includes the May 19 entries, so the question, the log, and the answer match.</li>
+<li>The original prints -n, -f, -q, -b, -u, and several journalctl commands with a long dash, and --list-boots and --since with a long dash plus a hyphen. Those commands fail as printed.</li>
+<li>The original says -b -1 shows "the last boot" and -b -2 "the two last boots." -b alone is the current boot, -b -1 the previous one, and -b -2 the one before that.</li>
+<li>The original says /var/log/nginx belongs to the http user while its own listing shows root. In this version the folder belongs to http and the log group, which is why sudo is needed.</li>
+<li>The original shows log entries with single quotes around the request; nginx writes double quotes.</li>
+<li>The original writes system-journald (it is systemd-journald), /var/log/acess.log (it is /var/log/nginx/access.log), and tail -f/var/log/... with no space.</li>
+<li>Three key names in the original are invisible to screen readers: the reload shortcut Ctrl+Shift+R, the Enter key, and the time range for --since. They are written out here.</li>
+</ul>
+<!--/CORRECTIONS-->

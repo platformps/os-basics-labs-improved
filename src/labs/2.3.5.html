@@ -1,0 +1,86 @@
+<h2>About this lab</h2>
+<p>Network Mapper, or Nmap, is a free, open-source tool for network discovery and security auditing. It finds which hosts are on a network, which services they run and what versions, which operating systems they use, and whether firewalls filter them. In this lab you use Nmap to find the open ports on your own virtual machine.</p>
+<div class="note"><p>This simulation stands in for the <strong>CSE-LABVM</strong> virtual machine. You are logged in as <strong>cisco</strong>, and the password for sudo is <code>password</code>.</p></div>
+<h3>TCP and UDP ports</h3>
+<p>Every IP host has two sets of ports, TCP and UDP, numbered 0 to 65,535. A service that waits for connections listens on a port, and the port number identifies the service. The Internet Assigned Numbers Authority (IANA) divides ports into three ranges:</p>
+<ul class="tri">
+<li>Well-known ports: 0 to 1023</li>
+<li>Registered ports: 1024 to 49,151</li>
+<li>Dynamic or private ports: 49,152 to 65,535</li>
+</ul>
+<div class="table-scroll"><table class="data">
+<caption>Common ports</caption>
+<thead><tr><th scope="col">Port</th><th scope="col">Service</th></tr></thead>
+<tbody>
+<tr><td>20 and 21</td><td>FTP data and FTP control</td></tr>
+<tr><td>22</td><td>SSH (Secure Shell)</td></tr>
+<tr><td>23</td><td>Telnet</td></tr>
+<tr><td>25</td><td>SMTP (email)</td></tr>
+<tr><td>53</td><td>DNS</td></tr>
+<tr><td>67 and 68</td><td>DHCPv4 server and client (UDP)</td></tr>
+<tr><td>69</td><td>TFTP</td></tr>
+<tr><td>80</td><td>HTTP</td></tr>
+<tr><td>110</td><td>POP3</td></tr>
+<tr><td>143</td><td>IMAP</td></tr>
+<tr><td>161</td><td>SNMP</td></tr>
+<tr><td>389</td><td>LDAP</td></tr>
+<tr><td>443</td><td>HTTPS (HTTP over TLS)</td></tr>
+</tbody></table></div>
+<p>Every open port is a possible way in, so attackers scan for open ports first. Some ports get far more attention than others because the services behind them are common and often poorly protected.</p>
+
+<h2>Step 1: Open a terminal</h2>
+<ol class="steps"><li>Open <strong>Terminal</strong> from the Applications button on the dock.</li></ol>
+
+<h2>Step 2: Run Nmap</h2>
+<ol class="steps"><li>Run <code>nmap localhost</code> to scan your own machine.</li></ol>
+<p>By default, Nmap scans the 1,000 most commonly used TCP ports.</p>
+<div class="question" data-q="q1"><p class="qtext">Which TCP ports are open?</p>
+<div class="sample"><p>Ports 22, 23, and 631.</p></div></div>
+<div class="question" data-q="q2"><p class="qtext">Describe the service that uses each open port.</p>
+<div class="sample"><p>Port 22, SSH: an encrypted protocol for logging in to and managing a computer remotely. Port 23, Telnet: remote command line access that sends everything, including passwords, as clear text. Port 631, IPP (Internet Printing Protocol): used by CUPS, the Common UNIX Printing System, so the computer can act as a print server.</p></div></div>
+<div class="question" data-q="q3"><p class="qtext">Research the vulnerabilities associated with each of these open ports.</p>
+<div class="sample"><p>Answers vary. SSH (22) is a constant target of password guessing with default or common logins. Telnet (23) exposes everything in clear text, so attackers on the network can read credentials and sessions, and it is often used for man-in-the-middle attacks. CUPS (631) has had flaws that let an attacker run commands with the print service's privileges or crash the service (denial of service).</p></div></div>
+
+<h2>Step 3: Use administrative privileges with Nmap</h2>
+<ol class="steps">
+<li>Scan the UDP ports: run <code>sudo nmap -sU localhost</code>. Enter the password <code>password</code>. (UDP scanning needs root; try it without sudo to see the message.) Linux commands are case sensitive: -sU is not the same as -su.</li>
+</ol>
+<div class="question" data-q="q4"><p class="qtext">Which UDP ports are open?</p>
+<div class="sample"><p>Ports 631 and 5353. Nmap reports them as open|filtered, which means it got no reply and cannot tell whether the port is open or a firewall dropped the probe. For UDP, that usually means open.</p></div></div>
+<div class="question" data-q="q5"><p class="qtext">What is the purpose of the UDP service on each port?</p>
+<div class="sample"><p>UDP 631 is IPP, used by CUPS to find and announce printers on the network. UDP 5353 is multicast DNS (mDNS), which lets computers find each other's names and services on a small network without a DNS server.</p></div></div>
+<div class="question" data-q="q6"><p class="qtext">Research the vulnerabilities associated with these UDP ports.</p>
+<div class="sample"><p>Answers vary. An exposed CUPS service has had flaws that allowed denial of service and running code remotely. If mDNS on 5353 is reachable from the internet, attackers can query it to learn about the computer, and can spoof requests to flood a target in a reflection (denial of service) attack.</p></div></div>
+<ol class="steps" start="2"><li>Run <code>nmap -sV localhost</code>. The <code>-sV</code> option detects the version of each service, which you can use to look up known vulnerabilities.</li></ol>
+
+<h2>Step 4: Read the SSH host keys</h2>
+<ol class="steps"><li>Run <code>nmap -A localhost</code>. The <code>-A</code> option turns on version detection and a set of scripts built into Nmap.</li></ol>
+<div class="question" data-q="q7"><p class="qtext">What are the SSH host key fingerprints?</p>
+<div class="sample"><p>The ssh-hostkey section lists three: a 3072-bit RSA key, a 256-bit ECDSA key, and a 256-bit ED25519 key, each with its fingerprint (for example 3072 56:68:77:00:41:7f:50:17:5b:73:82:36:47:c4:bc:2d for RSA).</p></div></div>
+<div class="question" data-q="q8"><p class="qtext">How could an attacker use this information?</p>
+<div class="sample"><p>Host keys are public, so knowing them does not let anyone log in. An attacker can use them to identify and fingerprint the server, to check whether it uses weak or outdated key types, and to recognize the same server across networks. The SSH version from the scan helps the attacker look for known vulnerabilities.</p></div></div>
+<div class="question" data-q="q9"><p class="qtext">How do users protect themselves from an attacker pretending to be this server?</p>
+<div class="sample"><p>Verify the server's host key fingerprint the first time you connect, by comparing it with a fingerprint you got from the administrator through a separate trusted channel (out of band). After that, SSH warns you if the key ever changes, which can be a sign of a man-in-the-middle attack.</p></div></div>
+<ol class="steps" start="2"><li>Run <code>man nmap</code> to read the manual page and find more options.</li></ol>
+
+<h2>Summary: commonly attacked ports</h2>
+<p>Many ports must be open for a computer to work, but the busiest ones should be watched closely.</p>
+<ul class="tri">
+<li><strong>TCP 21 (FTP):</strong> attackers try anonymous logins and use it to upload, download, change, or delete files and to move malicious code.</li>
+<li><strong>TCP 23 (Telnet):</strong> clear text means attackers can read credentials and data, plant backdoors, and carry out man-in-the-middle attacks.</li>
+<li><strong>53 (DNS):</strong> attackers can hide data inside DNS traffic (DNS tunneling) to sneak it out of a network, because DNS is allowed almost everywhere.</li>
+<li><strong>TCP 80 (HTTP):</strong> web servers are a frequent target for injected scripts such as cross-site scripting (XSS), malicious uploads, and denial of service.</li>
+</ul>
+
+<!--CORRECTIONS-->
+<h2 id="corrections">Corrections from the original lab</h2>
+<ul class="corrections tri">
+<li>The original prints -sV and -A with a long dash instead of a hyphen. This version uses hyphens, and the simulation converts long dashes for you.</li>
+<li>The original answer lists UDP ports 68, 631, and 5353 as open, but its own output shows only 631 and 5353, and the description that follows covers only DHCP. This version matches the output.</li>
+<li>The original says the default scan covers the first 1,024 TCP ports. Nmap scans the 1,000 most common ports.</li>
+<li>The original says to protect host keys by sending them by phone, text, or email. Host keys are public; what you exchange out of band is the fingerprint, to verify the server.</li>
+<li>The original's port table lists 50 and 51 as IPsec ports (they are IP protocol numbers for ESP and AH, not ports) and 443 as SSL (it is HTTPS over TLS).</li>
+<li>The original says these ports let attackers "gain authorized remote access"; it means unauthorized. It also places UDP 631 in the TCP answer and calls CUPS "UPS."</li>
+<li>The original claims that over 75 percent of attacks use a few ports, and that port 53 is "the most common exit route," without sources. Those claims are removed.</li>
+</ul>
+<!--/CORRECTIONS-->

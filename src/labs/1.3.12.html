@@ -1,0 +1,95 @@
+<h2>About this lab</h2>
+<p>Task Manager shows what is running on a Windows computer and how much of the computer's resources each item uses. You can also use it to end a program that has stopped responding. In this lab you work with the Processes, Services, and Performance pages.</p>
+<h3>Objectives</h3>
+<ul class="tri">
+<li>Part 1: Work in the Processes tab</li>
+<li>Part 2: Work in the Services tab</li>
+<li>Part 3: Work in the Performance tab</li>
+</ul>
+<div class="note"><p><strong>Graphs as text:</strong> The real Performance tab draws live graphs. This simulation gives you the same readings as text, which is also how a screen reader user reads them in real Task Manager.</p></div>
+
+<h2>Part 1: Work in the Processes tab</h2>
+<ol class="steps">
+<li>Open <strong>Command Prompt</strong> and <strong>Microsoft Edge</strong> from Start. Any web browser would work in real life; this lab uses Microsoft Edge. For extra practice, open Microsoft Edge twice.</li>
+<li>Open <strong>Task Manager</strong>: choose <strong>Taskbar options</strong> on the simulated taskbar, then <strong>Task Manager</strong>. On a real PC you can also press Ctrl+Shift+Esc, or press Ctrl+Alt+Delete and choose Task Manager.</li>
+<li>If Task Manager shows only a short list of apps, choose <strong>More details</strong>.</li>
+<li>The Processes tab has three tables: <strong>Apps</strong>, <strong>Background processes</strong>, and <strong>Windows processes</strong>. In the Apps table, expand <strong>Windows Command Processor</strong> with the Expand button before its name.</li>
+</ol>
+<div class="question" data-q="q1"><p class="qtext">What is listed under Windows Command Processor?</p>
+<div class="sample"><p>Command Prompt, which is the window that cmd.exe is running in.</p></div></div>
+<ul class="tri">
+<li><strong>Apps</strong> are programs you opened, such as Microsoft Edge, Task Manager, and Windows Command Processor.</li>
+<li><strong>Background processes</strong> run in the background, such as OneDrive or the antivirus engine. Some are started by apps you have open.</li>
+<li><strong>Windows processes</strong> are core parts of Windows, including the processes that host Windows services.</li>
+</ul>
+<ol class="steps" start="5">
+<li>Opening a command window also starts <strong>Console Window Host</strong>, which is listed in the Windows processes table. Select it, open its Actions, and choose <strong>Properties</strong>.</li>
+</ol>
+<div class="question" data-q="q2"><p class="qtext">What is the file name and location of the Console Window Host process?</p>
+<div class="sample"><p>The file is conhost.exe, and it is in the C:\Windows\System32 folder.</p></div></div>
+<ol class="steps" start="6">
+<li>Close the Command Prompt window, then switch back to Task Manager.</li>
+</ol>
+<div class="question" data-q="q3"><p class="qtext">What happened to Windows Command Processor and Console Window Host when you closed the Command Prompt window?</p>
+<div class="sample"><p>Both processes ended, so they are no longer listed in Task Manager.</p></div></div>
+<ol class="steps" start="7">
+<li>Choose the <strong>Memory</strong> column header to sort. Choose it a second time.</li>
+</ol>
+<div class="question" data-q="q4"><p class="qtext">What effect does sorting by Memory have on the tables?</p>
+<div class="sample"><p>Each table is sorted by how much memory each process uses. The first sort puts the largest first; choosing the header again reverses the order, smallest first.</p></div></div>
+<ol class="steps" start="8">
+<li>Move to the <strong>Memory</strong> column header and press Shift+F10 (or right-click it). Choose <strong>Resource values</strong>, then <strong>Memory</strong>, then <strong>Percents</strong>.</li>
+</ol>
+<div class="question" data-q="q5"><p class="qtext">What effect does this have on the Memory column?</p>
+<div class="sample"><p>The Memory column shows each process's memory use as a percentage of the computer's total memory instead of in megabytes.</p></div></div>
+<div class="question" data-q="q6"><p class="qtext">How could showing memory as percentages be useful?</p>
+<div class="sample"><p>It shows at a glance which processes use a large share of the available memory, which helps an administrator find the cause of memory problems or slowdowns.</p></div></div>
+<ol class="steps" start="9">
+<li>Select <strong>Microsoft Edge</strong> in the Apps table, open its Actions, and choose <strong>Switch to</strong>. (In the original lab you double-click it; in current Task Manager, double-clicking expands the group instead.)</li>
+</ol>
+<div class="question" data-q="q7"><p class="qtext">What happens when you choose Switch to?</p>
+<div class="sample"><p>The Microsoft Edge window becomes the active window.</p></div></div>
+<ol class="steps" start="10">
+<li>Return to Task Manager, select Microsoft Edge, and choose <strong>End task</strong>.</li>
+</ol>
+<div class="question" data-q="q8"><p class="qtext">What happens to the web browser windows?</p>
+<div class="sample"><p>All Microsoft Edge windows close, because End task on the group ends every Edge process.</p></div></div>
+
+<h2>Part 2: Work in the Services tab</h2>
+<ol class="steps"><li>In Task Manager, go to the <strong>Services</strong> tab and review the list.</li></ol>
+<div class="question" data-q="q9"><p class="qtext">Which statuses are listed?</p>
+<div class="sample"><p>Running and Stopped.</p></div></div>
+
+<h2>Part 3: Work in the Performance tab</h2>
+<ol class="steps"><li>Go to the <strong>Performance</strong> tab. The CPU page is shown first.</li></ol>
+<div class="question" data-q="q10"><p class="qtext">How many threads are running?</p>
+<div class="sample"><p>Answers vary on a real PC. This simulation shows 1,271.</p></div></div>
+<div class="question" data-q="q11"><p class="qtext">How many processes are running?</p>
+<div class="sample"><p>Answers vary, and the number changes as you open and close apps. In this simulation it is about 100.</p></div></div>
+<ol class="steps" start="2"><li>Choose <strong>Memory</strong> in the list of resources.</li></ol>
+<div class="question" data-q="q12"><p class="qtext">What is the total physical memory, in MB?</p>
+<div class="sample"><p>4.0 GB, which is 4,096 MB (1 GB is 1,024 MB). Answers vary on a real PC.</p></div></div>
+<div class="question" data-q="q13"><p class="qtext">What is the available physical memory, in MB?</p>
+<div class="sample"><p>2.5 GB, which is about 2,560 MB.</p></div></div>
+<div class="question" data-q="q14"><p class="qtext">How much physical memory is in use, in MB?</p>
+<div class="sample"><p>1.4 GB, which is about 1,434 MB.</p></div></div>
+<ol class="steps" start="3"><li>Choose <strong>Ethernet</strong> in the list of resources.</li></ol>
+<div class="question" data-q="q15"><p class="qtext">What is the link speed?</p>
+<div class="sample"><p>1.0 Gbps in this simulation. Answers vary on a real PC.</p></div></div>
+<div class="question" data-q="q16"><p class="qtext">What is the IPv4 address of the PC?</p>
+<div class="sample"><p>192.168.1.15 in this simulation.</p></div></div>
+<ol class="steps" start="4"><li>Choose <strong>Open Resource Monitor</strong> to open Resource Monitor from the Performance tab. Explore its tabs.</li></ol>
+<h3>Reflection</h3>
+<div class="question" data-q="q17"><p class="qtext">Why is it important for an administrator to know how to work in Task Manager?</p>
+<div class="sample"><p>Task Manager is a quick troubleshooting tool. It shows CPU, memory, disk, and network use, shows which processes and services are running, and lets you end a process that has stopped responding or that looks suspicious.</p></div></div>
+
+<!--CORRECTIONS-->
+<h2 id="corrections">Corrections from the original lab</h2>
+<ul class="corrections tri">
+<li>The original sample answer for link speed says "it is a Ethernet Connection." The link speed is a rate such as 1.0 Gbps.</li>
+<li>The original asks for memory in MB but gives answers in GB. Both units are given here.</li>
+<li>The original says Windows processes are Windows services. That group holds core Windows processes, including the processes that host services.</li>
+<li>Double-clicking an app in current Task Manager expands it instead of switching to it. This version uses Switch to.</li>
+<li>The original does not mention Ctrl+Shift+Esc, the quickest keyboard way to open Task Manager.</li>
+</ul>
+<!--/CORRECTIONS-->

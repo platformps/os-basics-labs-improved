@@ -1,0 +1,48 @@
+<h2>About this edition</h2>
+<p>This edition is for doing the lab on your own phone with <strong>TalkBack</strong> (Android) or <strong>VoiceOver</strong> (iPhone). Do the part that matches your phone.</p>
+<div class="note"><p><strong>Read this first. Your phone's lock protects everything on it.</strong></p>
+<ul class="tri">
+<li>If your phone <strong>already has</strong> a PIN or passcode, keep it. Do not change it to 123456, and skip the clean-up steps that turn the lock off. Use your own code wherever the lab says 123456.</li>
+<li>Before you enter wrong codes on purpose, check the erase setting: on iPhone, Settings, Face ID and Passcode, <strong>Erase Data</strong> must be off; on Samsung, Secure lock settings, <strong>Auto factory reset</strong> must be off. Stop after the first lockout message.</li>
+<li>Do this lab somewhere private, because a screen reader speaks what you type unless you turn that off. TalkBack does not speak password characters unless you allow it; VoiceOver says "dot" for each digit.</li>
+<li>If you are not comfortable, use the simulation edition instead. It covers the same steps.</li>
+</ul></div>
+
+<h2>Part A: Android with TalkBack</h2>
+<ol class="steps">
+<li>Open <strong>Settings</strong>. Find the lock settings: on Samsung, <strong>Lock screen and AOD</strong> (older: Lock screen, or Biometrics and security); on Pixel, <strong>Security and privacy</strong>, then <strong>Device unlock</strong>. Double-tap <strong>Screen lock</strong> or <strong>Screen lock type</strong>.</li>
+<li>Listen to the list of methods (Swipe, Pattern, PIN, Password, None) and choose <strong>PIN</strong>. Type the PIN on the number pad (with TalkBack, lift your finger on each digit or double-tap it), double-tap Continue (or Next), type it again, and confirm.</li>
+<li>Press the <strong>side (power) button</strong> to lock the phone, then press it again. TalkBack says the phone is locked. Swipe up with two fingers if needed to reach the PIN pad, type the PIN, and double-tap OK or Enter.</li>
+<li>Lock it again, wake it, and enter a wrong PIN. Listen. Repeat until TalkBack reads a message asking you to wait, then stop.</li>
+<li>After the wait, enter the right PIN.</li>
+<li>Biometrics (if your phone has them): in Security settings, find <strong>Fingerprints</strong> (or Pixel Imprint) and <strong>Face recognition</strong> (or Face Unlock). Enter your PIN, then follow the spoken instructions. Fingerprint setup asks you to touch and lift the sensor many times; TalkBack reads the progress. Face setup on many phones gives spoken hints, but alignment can be hard without sight. Ask someone to help, or skip it.</li>
+<li>Lock and unlock the phone with your fingerprint or face. Then restart the phone and notice that it asks for the PIN first.</li>
+<li><strong>Clean up</strong> (only if you had no lock before this lab): remove the fingerprints and face data, open Screen lock type, enter the PIN, and choose None or Swipe.</li>
+</ol>
+<div class="question" data-q="q1"><p class="qtext">What happened when you opened Screen lock type after setting a PIN? Why?</p>
+<div class="sample"><p>The phone asked for the PIN, so someone holding an unlocked phone cannot change or remove the lock.</p></div></div>
+<div class="question" data-q="q2"><p class="qtext">What happened after several wrong PINs?</p>
+<div class="sample"><p>The phone made you wait (often 30 seconds) before trying again, to slow down someone guessing.</p></div></div>
+
+<h2>Part B: iPhone with VoiceOver</h2>
+<ol class="steps">
+<li>Open Settings, <strong>Face ID and Passcode</strong> (or Touch ID and Passcode). Double-tap <strong>Turn Passcode On</strong>. Enter a 6-digit code twice. VoiceOver says each digit as you touch it; double-tap or lift to type it.</li>
+<li>Press the side button to lock, press it again, swipe up (on Face ID phones slide one finger up from the bottom edge), and enter the passcode. It unlocks after the last digit; there is no OK key.</li>
+<li>Lock, wake, and enter a wrong passcode. VoiceOver says it is wrong. Repeat until "iPhone Unavailable, try again in 1 minute" is read (after 6 tries), then stop.</li>
+<li>After a minute, enter the right passcode.</li>
+<li><strong>Face ID:</strong> choose <strong>Set Up Face ID</strong>. VoiceOver gives spoken guidance about where to move. Choose <strong>Accessibility Options</strong>, then <strong>Use Partial Circle</strong>, if a full head circle is hard. <strong>Touch ID:</strong> choose Add a Fingerprint and follow the spoken prompts.</li>
+<li>Find <strong>Require Attention for Face ID</strong>. iOS turns it off when VoiceOver is set up, because you may not be looking at the screen.</li>
+<li>Lock and unlock with Face ID or Touch ID.</li>
+<li><strong>Clean up</strong> (only if you had no passcode before): Reset Face ID or delete the fingerprint, then <strong>Turn Passcode Off</strong>.</li>
+</ol>
+<div class="question" data-q="q3"><p class="qtext">What does Require Attention for Face ID do, and is it on for you?</p>
+<div class="sample"><p>It makes Face ID check that your eyes are open and looking at the screen. With VoiceOver it is usually off by default, which is a little less secure.</p></div></div>
+
+<!--CORRECTIONS-->
+<h2 id="corrections">Corrections from the original lab</h2>
+<ul class="corrections tri">
+<li>"Slide to unlock" was removed in iOS 10, and "iPhone is Disabled" is now "iPhone Unavailable."</li>
+<li>A 6-digit iPhone passcode has no OK key.</li>
+<li>This edition adds safety checks the original does not have: keep an existing passcode, and turn off erase-after-failed-attempts before failing on purpose.</li>
+</ul>
+<!--/CORRECTIONS-->

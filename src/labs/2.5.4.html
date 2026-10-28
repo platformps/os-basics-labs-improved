@@ -1,0 +1,136 @@
+<h2>About this lab</h2>
+<p>In this lab you look at how Linux organizes drives and filesystems, connect a second drive to the folder tree, control who can read and change files, and compare the two kinds of links Linux supports.</p>
+<h3>Objectives</h3>
+<ul class="tri">
+<li>Part 1: Exploring filesystems in Linux</li>
+<li>Part 2: File permissions</li>
+<li>Part 3: Symbolic links and other special file types</li>
+</ul>
+<div class="note"><p>This simulation stands in for the Security Workstation virtual machine. You are logged in as <strong>analyst</strong>; the sudo password is <code>cyberops</code>. Open <strong>Terminal</strong> from the Applications button to begin.</p></div>
+
+<h2>Part 1: Exploring filesystems in Linux</h2>
+<p>Linux supports many filesystem types. This lab focuses on the <strong>ext</strong> family, one of the most common on Linux.</p>
+<h3>Step 1: Access the command line</h3>
+<ol class="steps"><li>Open <strong>Terminal</strong> from the Applications button.</li></ol>
+<h3>Step 2: Display the filesystems currently mounted</h3>
+<p>A filesystem must be <strong>mounted</strong> before you can use it. Mounting links a partition on a drive to a folder, called the <strong>mount point</strong>. Everything on that partition then appears inside that folder.</p>
+<ol class="steps"><li>Run <code>lsblk</code> to list all block devices (drives and partitions). The Table view lists each device on its own row.</li></ol>
+<p>The workstation has three block devices: sda, sdb, and sr0 (a CD or DVD drive). Linux names hard drives /dev/sda, /dev/sdb, and so on, and adds a number for each partition, so sda1 is the first partition on sda. sda is a 10 GB disk and sdb is a 1 GB disk, each with one partition. USB flash drives often show up as /dev/sdX too.</p>
+<ol class="steps" start="2">
+<li>Run <code>mount</code> with no options to see detailed information about every mounted filesystem. Most of them are special system filesystems you can ignore for now.</li>
+<li>Focus on the root filesystem, stored on /dev/sda1. Send the output of mount to grep so only that line shows: run <code>mount | grep sda1</code>.</li>
+</ol>
+<div class="question" data-q="q1"><p class="qtext">Which folder is /dev/sda1 mounted on, and what type of filesystem is it?</p>
+<div class="sample"><p>It is mounted on / (the root directory) and it is an ext4 filesystem.</p></div></div>
+<ol class="steps" start="4"><li>Run <code>cd /</code> and then <code>ls -l</code>.</li></ol>
+<div class="question" data-q="q2"><p class="qtext">What does this listing show? Where are the listed files physically stored?</p>
+<div class="sample"><p>It shows the contents of the root directory, the top of the whole folder tree. Because /dev/sda1 is mounted on /, these files are physically stored on the /dev/sda1 partition.</p></div></div>
+<div class="question" data-q="q3"><p class="qtext">Why does /dev/sdb1 not appear in the mount | grep sda1 output, or in the mount output at all?</p>
+<div class="sample"><p>/dev/sdb1 is not mounted yet. (It would not match "sda1" either, but it is missing from the full mount list because it is not mounted.)</p></div></div>
+<h3>Step 3: Mount and unmount a filesystem manually</h3>
+<ol class="steps">
+<li>Run <code>cd ~</code> and <code>ls -l</code>. Check that the folder <code>second_drive</code> exists. (If it does not, create it with <code>mkdir second_drive</code>.)</li>
+<li>Run <code>ls -l second_drive/</code>. The folder is empty.</li>
+<li>Mount the second drive on it. The syntax is <code>mount [options] device mount_point</code>. Run <code>sudo mount /dev/sdb1 ~/second_drive/</code>. No output means it worked.</li>
+<li>Run <code>ls -l second_drive/</code> again.</li>
+</ol>
+<div class="question" data-q="q4"><p class="qtext">Why is the folder no longer empty? Where are the listed files physically stored?</p>
+<div class="sample"><p>After mounting, /home/analyst/second_drive is the entry point to the filesystem on /dev/sdb1. The files are stored on the second drive, not on sda1.</p></div></div>
+<ol class="steps" start="5">
+<li>Run <code>mount | grep /dev/sd</code> to see both drives.</li>
+<li>Unmount the drive. Make sure no terminal is inside the mount point, then run <code>sudo umount /dev/sdb1</code>. Run <code>ls -l second_drive/</code> again; it is empty.</li>
+</ol>
+
+<h2>Part 2: File permissions</h2>
+<p>Every file and folder has an owner, a group, and three sets of permissions: for the owner (user), for members of the group, and for everyone else (others). Each set can allow read (r), write (w), and execute (x).</p>
+<h3>Step 1: View and change file permissions</h3>
+<ol class="steps">
+<li>Run <code>cd lab.support.files/scripts/</code> and then <code>ls -l</code>.</li>
+</ol>
+<div class="question" data-q="q5"><p class="qtext">Who owns the file cyops.mn, and which group does it belong to?</p>
+<div class="sample"><p>The owner is analyst and the group is analyst.</p></div></div>
+<div class="question" data-q="q6"><p class="qtext">The permissions of cyops.mn are -rw-r--r--. What does that mean?</p>
+<div class="sample"><p>The first character, -, means a regular file. The owner (analyst) can read and write it (rw-). Members of the analyst group can only read it (r--). Everyone else can also only read it (r--). Nobody can execute it.</p></div></div>
+<ol class="steps" start="2">
+<li>Run <code>touch /mnt/myNewFile.txt</code>. touch creates an empty file.</li>
+<li>Run <code>ls -ld /mnt</code>. The <code>-d</code> option shows the folder itself instead of its contents.</li>
+</ol>
+<div class="question" data-q="q7"><p class="qtext">Why was the file not created?</p>
+<div class="sample"><p>/mnt is owned by root with permissions drwxr-xr-x. Only the owner, root, can write in it; analyst falls under "others," which can only read and enter it.</p></div></div>
+<div class="question" data-q="q8"><p class="qtext">What could you do so the touch command works?</p>
+<div class="sample"><p>Run it as root with sudo, or change the permissions (or owner) of /mnt so analyst can write there.</p></div></div>
+<ol class="steps" start="4">
+<li>Mount the second drive again: <code>sudo mount /dev/sdb1 ~/second_drive/</code>. Then run <code>cd ~/second_drive</code> and <code>ls -l</code>.</li>
+</ol>
+<div class="question" data-q="q9"><p class="qtext">What are the permissions of myFile.txt?</p>
+<div class="sample"><p>-rw-r--r--</p></div></div>
+<p><code>chmod</code> changes permissions. One common way is three octal digits, one each for owner, group, and others. Each digit adds read (4), write (2), and execute (1). So 6 is read and write (110 in binary, rw-), 5 is read and execute (101, r-x), and 7 is all three (111, rwx).</p>
+<ol class="steps" start="5"><li>Run <code>sudo chmod 665 myFile.txt</code>, then <code>ls -l</code>.</li></ol>
+<div class="question" data-q="q10"><p class="qtext">Did the permissions change? What are they now?</p>
+<div class="sample"><p>Yes: -rw-rw-r-x. The owner and group can read and write, and others can read and execute.</p></div></div>
+<div class="question" data-q="q11"><p class="qtext">What command would give every user full access to myFile.txt (rwxrwxrwx)?</p>
+<div class="sample"><p><code>sudo chmod 777 myFile.txt</code></p></div></div>
+<p><code>chown</code> changes the owner. myFile.txt belongs to root, so analyst cannot change it yet.</p>
+<ol class="steps" start="6">
+<li>Make analyst the owner: run <code>sudo chown analyst myFile.txt</code>, then <code>ls -l</code>. (To change the owner and group together, use <code>sudo chown analyst:analyst myFile.txt</code>.)</li>
+<li>Now that analyst owns it, append a word without sudo: run <code>echo test &gt;&gt; myFile.txt</code>, then <code>cat myFile.txt</code>.</li>
+</ol>
+<div class="question" data-q="q12"><p class="qtext">Did that work? Explain.</p>
+<div class="sample"><p>Yes. analyst now owns the file, and the owner's permissions (rw-) allow writing. The group (root) can also write, because the permissions are still 665.</p></div></div>
+<h3>Step 2: Directories and permissions</h3>
+<p>Folders have the same nine permission bits. There are also three special bits (setuid, setgid, and sticky), which are beyond this lab.</p>
+<ol class="steps"><li>Run <code>cd ~/lab.support.files/</code> and <code>ls -l</code>.</li></ol>
+<div class="question" data-q="q13"><p class="qtext">Compare the lines for the malware folder and the mininet_services file. What is different at the start of each line?</p>
+<div class="sample"><p>The malware line starts with d, which marks a directory; mininet_services starts with -, a regular file.</p></div></div>
+<p>The execute bit means something different for a folder. On a file, x lets the system run it as a program. On a folder, x lets a user enter the folder and reach the files inside it. <code>chmod</code> and <code>chown</code> work on folders the same way they work on files.</p>
+
+<h2>Part 3: Symbolic links and other special file types</h2>
+<p>The first character of each <code>ls -l</code> line shows the file type:</p>
+<ul class="tri">
+<li><strong>-</strong> regular file: text files, programs, images, compressed files</li>
+<li><strong>d</strong> directory (folder)</li>
+<li><strong>b</strong> block device: hardware that stores data in blocks, such as a drive</li>
+<li><strong>c</strong> character device: hardware that sends and receives a stream of characters, such as a terminal</li>
+<li><strong>p</strong> pipe (FIFO): passes data in first in, first out order</li>
+<li><strong>l</strong> symbolic link: points to another file or folder by its name</li>
+<li><strong>s</strong> socket: lets programs on the same computer communicate</li>
+</ul>
+<h3>Step 1: Examine file types</h3>
+<ol class="steps">
+<li>Run <code>cd ~</code> and <code>ls -l</code>. Each line starts with - for a file or d for a folder.</li>
+<li>Run <code>ls -l /dev/</code>. Find the block devices (b), character devices (c), and symbolic links (l).</li>
+</ol>
+<h3>Step 2: Symbolic and hard links</h3>
+<p>A <strong>symbolic link</strong> is like a shortcut: it points to another file's name. A <strong>hard link</strong> is a second name for the same file data (the same inode on the disk).</p>
+<ol class="steps">
+<li>Create two files: run <code>echo "symbolic" &gt; file1.txt</code> and <code>echo "hard" &gt; file2.txt</code>.</li>
+<li>Run <code>ln -s file1.txt file1symbolic</code> to create a symbolic link, and <code>ln file2.txt file2hard</code> to create a hard link.</li>
+<li>Run <code>ls -l</code> and look at the four files.</li>
+</ol>
+<div class="question" data-q="q14"><p class="qtext">How can you tell the two kinds of links apart in the listing?</p>
+<div class="sample"><p>file1symbolic starts with l and shows -&gt; file1.txt. file2hard looks like an ordinary file, and both file2hard and file2.txt show 2 in the second column, the link count: two names point to the same data. For a folder, the link count is 2 plus the number of folders inside it.</p></div></div>
+<ol class="steps" start="4">
+<li>Rename the originals: run <code>mv file1.txt file1new.txt</code> and <code>mv file2.txt file2new.txt</code>.</li>
+<li>Run <code>cat file1symbolic</code> and <code>cat file2hard</code>.</li>
+</ol>
+<div class="question" data-q="q15"><p class="qtext">Why does one link still work and the other not?</p>
+<div class="sample"><p>file1symbolic points to the name file1.txt, which no longer exists, so it is a broken link. file2hard points to the file's data (its inode), not its name, so it still works after the rename.</p></div></div>
+<div class="question" data-q="q16"><p class="qtext">What would happen to file2hard if you changed the text in file2new.txt?</p>
+<div class="sample"><p>file2hard would show the same change, because both names point to the same data on the disk.</p></div></div>
+<h3>Reflection</h3>
+<p>File permissions and ownership are two of the most important parts of Linux, and a very common cause of problems: a program that cannot read or write a file it needs will fail with errors.</p>
+
+<!--CORRECTIONS-->
+<h2 id="corrections">Corrections from the original lab</h2>
+<ul class="corrections tri">
+<li>The original tells you to pipe mount into grep but shows the commands cd / and ls -l instead, then asks why /dev/sdb1 is not in "the output above." This version adds the missing mount | grep sda1 step.</li>
+<li>The original says "Issue the command below to make root the owner" before a command that makes analyst the owner.</li>
+<li>The original shows a sudo password prompt after echo test &gt;&gt; myFile.txt, which does not use sudo.</li>
+<li>The original runs echo"hard" with no space, which bash treats as an unknown command.</li>
+<li>The original says the link count is in the fifth column. It is the second column.</li>
+<li>The original lists hard links as a kind of symbolic link file (l). Hard links are ordinary entries with no special type letter.</li>
+<li>The original says socket files are for communicating over a network. These are local sockets for programs on the same computer.</li>
+<li>The original's paragraph about the execute bit on folders is cut off mid-sentence, and the mount syntax leaves out the device and mount point.</li>
+<li>The original prints ls -l, ln -s, and -rw-r--r-- with a long dash instead of a hyphen.</li>
+</ul>
+<!--/CORRECTIONS-->

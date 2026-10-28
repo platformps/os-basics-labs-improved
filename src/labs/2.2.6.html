@@ -1,0 +1,120 @@
+<h2>About this lab</h2>
+<p>Linux keeps almost all of its settings in plain text files, so working with text editors is a core skill. In this lab you use a graphical editor (SciTE) and a command line editor (nano), find the hidden configuration files in your home folder, change how your shell prompt looks, and change a web server's settings.</p>
+<h3>Objectives</h3>
+<ul class="tri">
+<li>Part 1: Graphical text editors</li>
+<li>Part 2: Command line text editors</li>
+<li>Part 3: Working with configuration files</li>
+</ul>
+<div class="note"><p>This simulation stands in for the Security Workstation virtual machine. You are logged in as <strong>analyst</strong>; the password for sudo is <code>cyberops</code>. Cisco's errata reports that Part 3 of the original lab cannot be completed on the newer virtual machine. Everything in this version works.</p></div>
+
+<h2>Part 1: Graphical text editors</h2>
+<p>Text editors are among the oldest kinds of applications. Some have a graphical window, and some work only on the command line. The Security Workstation includes one graphical editor, SciTE. It is small and fast, and it is all you need for this course.</p>
+<h3>Step 1: Open SciTE from the Applications menu</h3>
+<ol class="steps">
+<li>Choose <strong>Applications</strong> on the dock, search for <code>SciTE</code>, and open <strong>SciTE text editor</strong>.</li>
+<li>In the editing area, type this sentence on one line, without pressing Enter: <code>Linux treats almost everything as a file, so a text editor is one of the most useful tools a security analyst can learn to use well.</code></li>
+<li>Open the <strong>File</strong> menu and choose <strong>Save</strong>. SciTE suggests your home folder, /home/analyst. Name the file <code>space.txt</code> and choose Save.</li>
+<li>Close SciTE, then open it again from Applications.</li>
+<li>Open the <strong>File</strong> menu and choose <strong>Open</strong>. Look for space.txt.</li>
+</ol>
+<div class="question" data-q="q1"><p class="qtext">Could you find space.txt right away?</p>
+<div class="sample"><p>No. SciTE is looking in the right folder, /home/analyst, but its Open dialog starts with the All Source filter, which shows only file types it knows, such as program code. .txt is not one of them.</p></div></div>
+<ol class="steps" start="6">
+<li>Change <strong>Files of type</strong> to <strong>All Files (*)</strong>. Select space.txt and open it. Linux does not need file extensions, but some applications, like SciTE, use them to decide what to show.</li>
+<li>Close SciTE.</li>
+</ol>
+<h3>Step 2: Open SciTE from the terminal</h3>
+<ol class="steps">
+<li>Open <strong>Terminal</strong> from Applications. Run <code>ls</code>. space.txt is in your current folder, so you can open it without a path.</li>
+<li>Run <code>scite space.txt</code>. SciTE opens with the file loaded.</li>
+<li>Switch back to the terminal window.</li>
+</ol>
+<div class="question" data-q="q2"><p class="qtext">Why does the terminal not show a prompt while SciTE is open?</p>
+<div class="sample"><p>The terminal is busy running SciTE, so it cannot take new commands until SciTE closes.</p></div></div>
+<ol class="steps" start="4">
+<li>Close this SciTE window, or press <strong>Stop command</strong> (Ctrl+C) in the terminal to end it. The prompt returns. Starting SciTE from a terminal is also how you run it as root: <code>sudo scite</code>.</li>
+</ol>
+
+<h2>Part 2: Command line text editors</h2>
+<p>Command line editors matter because you often manage a Linux server from a remote text-only session, such as SSH, where there is no graphical desktop. This course uses <strong>nano</strong>. Another very popular editor is <strong>vi</strong> (and its improved version, <strong>vim</strong>), which is powerful but harder to learn.</p>
+<p>nano is controlled with the keyboard. Its shortcut list appears at the bottom of the screen: the caret symbol (^) means Ctrl, and M- means the Meta key, which is usually Alt. In this simulation the same shortcuts are also buttons, and nano's function key alternatives work too: F1 Help, F2 Exit, F3 Write Out, and F6 Where Is.</p>
+<div class="note warn"><p>Do not press Ctrl+W in a web browser: it closes the browser tab. Use F6 or the Where Is button instead.</p></div>
+<ol class="steps">
+<li>In the terminal, run <code>nano space.txt</code>. nano opens with your sentence.</li>
+<li>Your sentence is one long line, longer than nano's 80 column screen. nano does not wrap it; it marks the edge of the screen instead. Choose <strong>Read this line as the 80 column screen shows it</strong> to hear what the screen row shows.</li>
+</ol>
+<div class="question" data-q="q3"><p class="qtext">What character does nano use to show that a line continues past the edge of the screen?</p>
+<div class="sample"><p>The greater than sign (&gt;). Older versions of nano use a dollar sign ($).</p></div></div>
+<ol class="steps" start="3">
+<li>Open nano's help with <strong>Ctrl+G</strong> (or F1). Leave the help with <strong>Ctrl+X</strong> (or F2).</li>
+<li>Press <strong>Ctrl+X</strong> to exit nano. If you changed anything, nano asks whether to save: press Y to save or N to discard, then Enter to keep the file name.</li>
+</ol>
+
+<h2>Part 3: Working with configuration files</h2>
+<p>In Linux, the system and its services are configured through files. Configuration files are usually text, and each application or service reads its own files when it starts.</p>
+<h3>Step 1: Locate configuration files</h3>
+<p>By convention, settings for your own applications live in hidden files in your home folder, and settings for system-wide services live in <code>/etc</code>.</p>
+<ol class="steps">
+<li>Run <code>ls -l</code>. None of the files look like configuration files.</li>
+<li>Run <code>ls -la</code>. The <code>-a</code> option also shows hidden files, whose names start with a dot.</li>
+<li>Run <code>cat .bashrc</code>. This file sets up your terminal. The <code>PS1</code> line defines the prompt: [user@host folder] then a dollar sign, in green (color code 32). The <code>alias</code> lines create shortcuts: when you type ls, the shell runs <code>ls --color</code>.</li>
+<li>Run <code>ls /etc</code>, then <code>cat /etc/bash.bashrc</code>. This file sets the default shell behavior for every user. Only root can change files in /etc.</li>
+</ol>
+<div class="question" data-q="q4"><p class="qtext">Why are your own application settings stored in your home folder instead of in /etc?</p>
+<div class="sample"><p>Regular users cannot write to /etc. Linux is a multi-user system, so keeping each user's settings in their own home folder lets every user customize their own applications without changing anything for anyone else.</p></div></div>
+<h3>Step 2: Edit and save configuration files</h3>
+<ol class="steps">
+<li>Open <strong>SciTE</strong> from Applications. Open the File menu, choose Open, set Files of type to <strong>All Files (*)</strong>, and open <code>.bashrc</code>.</li>
+<li>On the PS1 line, change <code>32</code> to <code>31</code>. 32 is the color code for green and 31 is red. Save with Ctrl+S and close SciTE.</li>
+<li>Open a new Terminal window from Applications. Each terminal window shows its prompt color in the line above the command area.</li>
+</ol>
+<div class="question" data-q="q5"><p class="qtext">Did the terminal window that was already open change to red too? Explain.</p>
+<div class="sample"><p>No. .bashrc is read when a terminal starts, so terminals that were already open keep their old settings. Only new terminals show the red prompt.</p></div></div>
+<ol class="steps" start="4">
+<li>Now make the same kind of change on the command line. In the new terminal, run <code>nano .bashrc</code>.</li>
+<li>Change <code>31</code> to <code>33</code> (yellow). Press Ctrl+X, then Y to save, then Enter to keep the name .bashrc.</li>
+<li>Run <code>bash</code> to start a new shell that reads .bashrc again. The prompt is now yellow.</li>
+</ol>
+<h3>Step 3: Edit configuration files for services</h3>
+<p>nginx is a lightweight web server installed on this workstation. Its configuration files are in /etc/nginx. You will change two settings in the file custom_server.conf: the port nginx listens on and the folder it serves web pages from.</p>
+<ol class="steps">
+<li>Run <code>sudo nano -l /etc/nginx/custom_server.conf</code>. The <code>-l</code> option turns on line numbers. Enter the password <code>cyberops</code> when asked.</li>
+<li>Go to line 39 with <strong>Alt+G</strong> (Go To Line) and change the port from <code>81</code> to <code>8080</code>.</li>
+<li>Go to line 47 and change the path <code>/usr/share/nginx/html</code> to <code>/usr/share/nginx/html/text_ed_lab</code>. Keep the semicolon at the end of the line, or nginx will report an error.</li>
+<li>Press Ctrl+X, then Y, then Enter to save with the same name.</li>
+<li>Run <code>sudo nginx -c custom_server.conf</code> to start nginx with this file.</li>
+<li>Open <strong>Firefox</strong> from Applications and go to <code>127.0.0.1:8080</code>. A page for this lab appears.</li>
+<li>Switch back to the terminal and read the message nginx printed there.</li>
+</ol>
+<div class="question" data-q="q6"><p class="qtext">What is the error message in the terminal about?</p>
+<div class="sample"><p>Firefox also asked for the site's icon, favicon.ico. That file does not exist in /usr/share/nginx/html/text_ed_lab, so nginx logged a "No such file or directory" error. The page itself loaded fine.</p></div></div>
+<ol class="steps" start="8">
+<li>Stop nginx with <code>sudo pkill nginx</code>.</li>
+<li>In Firefox, reload the page.</li>
+</ol>
+<div class="question" data-q="q7"><p class="qtext">Does the web page appear now?</p>
+<div class="sample"><p>No. Firefox cannot connect, because no web server is listening on port 8080 anymore.</p></div></div>
+<h3>Challenge</h3>
+<div class="question" data-q="q8"><p class="qtext">Can you edit /etc/nginx/custom_server.conf with SciTE? Describe how.</p>
+<div class="sample"><p>Yes, but SciTE must run as root because the file is in /etc. From a terminal, run <code>sudo scite /etc/nginx/custom_server.conf</code>. If you open it from the Applications menu instead, SciTE can open the file but cannot save it.</p></div></div>
+<h3>Reflection</h3>
+<ul class="tri">
+<li>Each service has its own configuration options, file locations, and syntax. Always check the documentation.</li>
+<li>Wrong permissions are a very common cause of problems. Make sure you have the right permissions before you edit configuration files.</li>
+<li>Most services must be restarted before a configuration change takes effect.</li>
+</ul>
+
+<!--CORRECTIONS-->
+<h2 id="corrections">Corrections from the original lab</h2>
+<ul class="corrections tri">
+<li>The original prints every backslash in the .bashrc and bash.bashrc listings as a forward slash, for example /[/e[1;32m/]. The real text uses backslashes: \[\e[1;32m\]. This version shows the correct text.</li>
+<li>The original prints ls -l, ls -la, and -a with a long dash instead of a hyphen, and says the alias runs "ls" with one long dash before "color." The correct command is <code>ls --color</code>, with two hyphens.</li>
+<li>The challenge question in the original names custom_configuration.conf. The file used in the lab is custom_server.conf.</li>
+<li>The original answer says favicon.ico is missing from lab.support.files. The lab had just changed the web folder to /usr/share/nginx/html/text_ed_lab, so that is where the file is missing.</li>
+<li>The original says the Meta key is the key with the Windows or Mac logo. In nano, Meta is usually Alt, or Esc followed by the key.</li>
+<li>The original says Ctrl+X saves. Ctrl+X exits and asks whether to save; Ctrl+O saves.</li>
+<li>The original says to press q to leave nano's help. You leave it with Ctrl+X.</li>
+<li>The sample sentence typed in Part 1 is replaced with an original sentence.</li>
+</ul>
+<!--/CORRECTIONS-->
