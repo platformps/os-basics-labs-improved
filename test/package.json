@@ -1,0 +1,9 @@
+{
+ "name": "accessible-labs-tests",
+ "private": true,
+ "description": "Automated walkthrough, accessibility, and screen reader checks for the accessible lab engine.",
+ "dependencies": {
+  "axe-core": "4.10.2",
+  "playwright": "1.47.2"
+ }
+}

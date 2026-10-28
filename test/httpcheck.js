@@ -1,0 +1,15 @@
+const { chromium } = (() => { try { return require('playwright'); } catch (e) { return require('/opt/npm-tools/node_modules/playwright'); } })();
+const fs = require('fs'); const AXE = fs.readFileSync(__dirname + '/node_modules/axe-core/axe.min.js', 'utf8');
+(async () => { const b = await chromium.launch(); const p = await b.newPage(); const errs = []; p.on('pageerror', e => errs.push(e.message));
+  const base = 'http://localhost:8765/os-basics-labs/';
+  await p.goto(base); await p.waitForTimeout(300);
+  console.log('hub:', await p.title(), '|', await p.locator('#overall-text').innerText());
+  await p.locator('#cta a').first().click(); await p.waitForLoadState(); await p.waitForTimeout(300);
+  console.log('lab:', await p.title());
+  await p.locator('#tasks input').first().check(); await p.waitForTimeout(200);
+  await p.getByRole('link', { name: 'All labs' }).click(); await p.waitForTimeout(400);
+  console.log('hub after:', await p.locator('#overall-text').innerText(), '|', (await p.locator('.status').first().innerText()), '|', await p.locator('#cta a').first().innerText());
+  const r = await p.goto(base + 'labs/nope.html'); console.log('missing page status', r.status());
+  const r2 = await p.goto('http://localhost:8765/os-basics-labs/404.html'); await p.addScriptTag({ content: AXE }); console.log('404 axe', (await p.evaluate(async () => (await axe.run()).violations.map(v => v.id))));
+  console.log('404 link', await p.locator('a.btn').getAttribute('href'));
+  console.log('errors', errs); await b.close(); })();

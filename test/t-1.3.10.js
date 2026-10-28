@@ -1,0 +1,73 @@
+const { open } = require('./helpers');
+(async () => {
+  const H = await open('Lab_1.3.10_Create_User_Accounts_Simulation.html');
+  const { page } = H;
+  const signOutIn = async (user, pw) => {
+    await H.sim.getByRole('button', { name: 'Start', exact: true }).click();
+    await H.sim.getByRole('button', { name: 'Sign out' }).click();
+    await page.locator('.signin label', { hasText: new RegExp('^' + user + '$') }).click();
+    await page.locator('.signin input[type=password]').fill(pw);
+    await page.locator('.signin').getByRole('button', { name: 'Sign in' }).click();
+    await page.waitForTimeout(100);
+  };
+  try {
+    await H.start('control panel');
+    await H.win().getByLabel('View by').selectOption('small');
+    await H.win().getByRole('button', { name: /^User Accounts/ }).click(); await page.waitForTimeout(100);
+    await H.win().getByRole('button', { name: 'Manage another account' }).click();
+    await H.win().getByRole('button', { name: 'Add a new user in PC settings' }).click(); await page.waitForTimeout(100);
+    await H.win().getByRole('button', { name: 'Add account' }).click();
+    await H.dlg().getByRole('button', { name: /sign-in information/ }).click(); await page.waitForTimeout(100);
+    await H.dlg().getByRole('button', { name: /without a Microsoft account/ }).click(); await page.waitForTimeout(100);
+    const d = H.dlg();
+    await d.getByLabel('User name', { exact: true }).fill('User1');
+    await d.getByLabel('Enter password', { exact: true }).fill('Passw0rd!'); await d.getByLabel('Re-enter password').fill('Passw0rd!');
+    await H.dlgBtn('Next');
+    console.log('err:', await d.locator('.dlg-error').textContent());
+    for (let i = 1; i <= 3; i++) { await d.getByLabel('Security question ' + i).selectOption({ index: i }); await d.getByLabel('Your answer ' + i).fill('x' + i); }
+    await H.dlgBtn('Next');
+    console.log('status:', await H.status());
+    await H.axe('settings');
+    await signOutIn('User1', 'Passw0rd!');
+    await H.start('file explorer');
+    const go = async p => { const i = H.win().getByLabel('Go to a folder path'); await i.fill(p); await i.press('Enter'); await page.waitForTimeout(100); };
+    await go('C:\\Users');
+    await H.rowExact('User1'); await H.actions(); await H.menuItem('Properties');
+    console.log('sec rows:', await H.dlg().locator('.rowbtn').allTextContents());
+    await H.dlgBtn('OK');
+    await H.rowExact('CyberOpsUser'); await H.actions(); await H.menuItem('Open');
+    await H.dlgBtn('Continue'); await H.dlgBtn('OK');
+    await signOutIn('CyberOpsUser', 'Cisco123!');
+    await H.start('file explorer');
+    await go('C:\\Users');
+    await H.rowExact('CyberOpsUser'); await H.actions(); await H.menuItem('Properties'); await H.dlgBtn('OK');
+    await H.start('computer management');
+    const tree = H.win().locator('.tree');
+    for (const n of ['System Tools', 'Local Users and Groups', 'Users']) { await tree.getByRole('button', { name: new RegExp('^\\s*' + n) }).first().click(); await page.waitForTimeout(80); }
+    await H.rowExact('User1'); await H.actions(); await H.menuItem('Properties');
+    await H.dlg().getByRole('tab', { name: 'Member Of' }).click(); await page.waitForTimeout(80);
+    console.log('User1 groups:', await H.dlg().locator('.rowbtn').allTextContents());
+    await H.dlgBtn('OK');
+    await H.rowExact('CyberOpsUser'); await H.actions(); await H.menuItem('Properties');
+    await H.dlg().getByRole('tab', { name: 'Member Of' }).click(); await H.dlgBtn('OK');
+    await H.axe('compmgmt');
+    await H.start('control panel');
+    await H.win().getByLabel('View by').selectOption('small');
+    await H.win().getByRole('button', { name: /^User Accounts/ }).click(); await page.waitForTimeout(100);
+    await H.win().getByRole('button', { name: 'Manage another account' }).click();
+    await H.win().getByRole('button', { name: /^User1:/ }).click();
+    await H.win().getByRole('button', { name: 'Change the account type' }).click();
+    await H.win().locator('label', { hasText: /^Administrator:/ }).click();
+    await H.win().getByRole('button', { name: 'Change Account Type' }).click();
+    await H.taskbar('Computer Management');
+    await H.rowExact('User1'); await H.actions(); await H.menuItem('Properties');
+    await H.dlg().getByRole('tab', { name: 'Member Of' }).click(); await page.waitForTimeout(80);
+    console.log('User1 groups now:', await H.dlg().locator('.rowbtn').allTextContents());
+    await H.dlg().locator('.rowbtn', { hasText: 'Administrators' }).click();
+    await H.dlgBtn('Remove'); await H.dlgBtn('OK');
+    await H.rowExact('User1'); await H.actions(); await H.menuItem('Delete'); await H.dlgBtn('Yes');
+    console.log('status:', await H.status());
+    await H.report('1.3.10');
+  } catch (e) { console.log('FAIL', e.message.split('\n')[0]); await H.report('1.3.10'); await page.screenshot({ path: 'fail.png' }); }
+  await H.browser.close();
+})();

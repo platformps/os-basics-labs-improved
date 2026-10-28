@@ -1,0 +1,41 @@
+const { open } = require('./helpers');
+(async () => {
+  const H = await open('Lab_1.3.12_Windows_Task_Manager_Simulation.html');
+  const { page } = H;
+  try {
+    await H.start('command prompt', 'Command Prompt');
+    await H.start('edge'); await H.start('edge');
+    await H.sim.getByRole('button', { name: 'Taskbar options' }).click(); await H.menuItem('Task Manager');
+    await H.win().getByRole('button', { name: 'More details' }).click(); await page.waitForTimeout(100);
+    await H.win().getByRole('button', { name: 'Expand Windows Command Processor' }).click(); await page.waitForTimeout(80);
+    console.log('status:', await H.status());
+    await H.rowExact('Console Window Host'); await H.actions(); await H.menuItem('Properties');
+    console.log((await H.dlg().innerText()).replace(/\n/g, ' | ').slice(0, 160)); await H.dlgBtn('OK');
+    await H.taskbar('Command Prompt'); await H.win().getByRole('button', { name: 'Close Command Prompt' }).click(); await page.waitForTimeout(100);
+    await H.taskbar('Task Manager');
+    console.log('apps:', await H.win().locator('table').first().locator('.rowbtn').allTextContents());
+    const mem = H.win().locator('table').first().getByRole('button', { name: 'Memory', exact: true });
+    await mem.click(); await page.waitForTimeout(80); await H.win().locator('table').first().getByRole('button', { name: 'Memory', exact: true }).click();
+    console.log('sorted'); await H.win().locator('table').first().getByRole('button', { name: 'Memory', exact: true }).press('Shift+F10'); console.log('menu', await page.locator('.popmenu').count());
+    await page.locator('.popmenu').getByRole('button', { name: 'Resource values' }).click();
+    await page.locator('.popmenu .submenu').getByRole('button', { name: 'Memory' }).click();
+    await H.menuItem('Percents');
+    console.log('mem cell:', await H.win().locator('table').first().locator('tbody tr').first().locator('td').nth(3).textContent());
+    await H.rowExact('Microsoft Edge \\(\\d+\\)'.replace(/\\\\/g,'\\')).catch(async()=>{ await H.row('Microsoft Edge'); });
+    await H.actions(); await H.menuItem('Switch to');
+    console.log('active:', await H.win().locator('h3').textContent());
+    await H.taskbar('Task Manager');
+    await H.row('Microsoft Edge'); await H.win().getByRole('button', { name: 'End task' }).click(); await page.waitForTimeout(100);
+    console.log('windows:', await H.sim.locator('.tasklist button').allTextContents());
+    await H.axe('tm processes');
+    await H.win().getByRole('tab', { name: 'Services' }).click();
+    await H.win().getByRole('tab', { name: 'Performance' }).click();
+    await H.win().getByRole('button', { name: 'Memory' }).click();
+    console.log((await H.win().locator('.perf-detail').innerText()).replace(/\n/g, ' | '));
+    await H.win().getByRole('button', { name: 'Ethernet' }).click();
+    await H.win().getByRole('button', { name: 'Open Resource Monitor' }).click();
+    await H.axe('resmon');
+    await H.report('1.3.12');
+  } catch (e) { console.log('FAIL', e.message.slice(0,1200)); await H.report('1.3.12'); await page.screenshot({ path: 'test/fail.png' }); }
+  await H.browser.close();
+})();

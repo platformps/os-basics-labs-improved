@@ -1,0 +1,43 @@
+const { open } = require('./helpers');
+(async () => {
+  const H = await open('Lab_4.4.2_Passcode_Locks_Simulation.html');
+  const { page, sim } = H;
+  const ph = () => sim.locator('section.phone:visible');
+  const b = async (name, w = 150) => { await ph().getByRole('button', { name, exact: true }).first().click(); await page.waitForTimeout(w); };
+  const bx = async (re, w = 150) => { await ph().getByRole('button', { name: re }).first().click(); await page.waitForTimeout(w); };
+  const sec = async v => { await H.dlg().locator('input[type=password]').fill(v); await H.dlgBtn('Continue'); };
+  const pin = async v => { const i = ph().locator('[data-k="pin"]'); await i.fill(v); await i.press('Enter'); await page.waitForTimeout(150); };
+  const ipin = async v => { await ph().locator('[data-k="pin"]').fill(v); await page.waitForTimeout(150); };
+  const toast = async () => console.log('  toast:', await ph().locator('.m-toast').innerText(), '|', await ph().locator('.phone-status').innerText());
+  const side = async () => { await bx(/^Press the side/); };
+  try {
+    await bx(/^Settings/); await bx(/^Lock screen and AOD/); await bx(/^Screen lock type/); await bx(/^PIN/);
+    await sec('12'); console.log('err:', await H.dlg().locator('.dlg-error').innerText()); await sec('123456'); await sec('123456'); await toast();
+    await H.axe('android lockset');
+    await side(); await toast(); await side(); await H.axe('android lock'); await pin('123456'); await toast();
+    await side(); await side(); for (let i = 0; i < 5; i++) await pin('654321'); await toast();
+    console.log('lock:', await ph().locator('.scr-body').innerText());
+    await bx(/^Let 30 seconds/); await pin('123456'); await toast();
+    await b('Home'); await bx(/^Settings/); await bx(/^Security and privacy/); await bx(/^Fingerprints/); await sec('123456'); await b('Register fingerprint');
+    for (let i = 0; i < 4; i++) await bx(/^Touch the fingerprint/); await toast();
+    await side(); await side(); await bx(/^Touch the fingerprint/); await toast();
+    await bx(/^Restart the phone/); await bx(/^Touch the fingerprint/); await toast(); await pin('123456');
+    await b('Home'); await bx(/^Settings/); await bx(/^Security and privacy/); await bx(/^Face recognition/); await sec('123456'); await b('Register face'); await bx(/^Hold the phone/); await toast(); await b('Back');
+    await bx(/^Fingerprints/); await sec('123456'); await b('Remove'); await b('Back'); await bx(/^Face recognition/); await sec('123456'); await b('Remove face data');
+    await b('Home'); await bx(/^Settings/); await bx(/^Lock screen and AOD/); await bx(/^Screen lock type/); await sec('123456'); await bx(/^None/); await toast();
+    await side(); await side(); await toast();
+    await sim.getByRole('radio', { name: 'iPhone' }).check();
+    await b('Settings'); await bx(/^Face ID and Passcode/); await b('Turn Passcode On'); await sec('123456'); await sec('123456'); await toast();
+    await H.axe('ios fid');
+    await side(); await side(); await b('Swipe up to unlock'); await ipin('123456'); await toast();
+    await side(); await side(); await b('Swipe up to unlock'); for (let i = 0; i < 6; i++) await ipin('654321'); await toast();
+    await bx(/^Let 1 minute/); await ipin('123456'); await toast();
+    await b('Home (swipe up)'); await b('Settings'); await bx(/^Face ID and Passcode/); await sec('123456'); await b('Set Up Face ID'); await b('Get Started'); await bx(/^Move your head/); await b('Continue'); await bx(/^Move your head/); await b('Done'); await toast();
+    await side(); await side(); await bx(/^Look at the iPhone/); await b('Swipe up to open'); await toast();
+    await b('Home (swipe up)'); await b('Settings'); await bx(/^Face ID and Passcode/); await sec('123456'); await b('Reset Face ID'); await b('Turn Passcode Off'); await H.dlgBtn('Turn Off');
+    await side(); await side(); await b('Swipe up to open'); await toast();
+    await H.axe('end');
+    await H.report('4.4.2');
+  } catch (e) { console.log('FAIL', e.message.slice(0, 600)); await H.report('4.4.2'); }
+  await H.browser.close();
+})();
