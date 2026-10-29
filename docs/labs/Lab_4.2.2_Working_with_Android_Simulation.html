@@ -1385,7 +1385,7 @@ const Mobile = (() => {
     const hasQ = block.some(x => x.matches('.question') || x.querySelector('.question'));
     const isStep = /^step\s*\d/i.test(hd.textContent.trim());
     if (!lists.length && !hasQ && !isStep) return;
-    units.push({ head: hd, part: hd.tagName === 'H3' ? part : '', title: hd.textContent.trim(), block, lists, questionsOnly: !lists.length });
+    units.push({ head: hd, part: hd.tagName === 'H3' ? part : '', title: hd.textContent.trim(), block, lists, questionsOnly: !lists.length, hasQ });
   });
   if (!units.length) return;
   units.forEach((u, i) => { u.index = i; u.lists.forEach(l => { l._unit = i; }); });
@@ -1485,9 +1485,9 @@ const Mobile = (() => {
     const tasks = (Lab.config && Lab.config.tasks) || [];
     if (allDoneSaid || !tasks.length || !tasks.every(t => Lab.isDone(t.id))) return;
     allDoneSaid = true;
-    const rest = units.slice(cur + 1).filter(u => u.questionsOnly);
+    const rest = units.slice(cur + 1).filter(u => u.questionsOnly && u.hasQ);
     const unanswered = [...labCol.querySelectorAll('.question textarea')].filter(t => !t.value.trim()).length;
-    if (rest.length) Lab.announce(`${rest.map(u => u.title).join(' and ')} is still to do: use the Next button in the Current step panel.`);
+    if (rest.length) Lab.announce(`${rest.map(u => u.title).join(' and ')} ${rest.length === 1 ? 'is' : 'are'} still to do: use the Next button in the Current step panel.`);
     else if (unanswered) Lab.announce(`${unanswered} question${unanswered === 1 ? '' : 's'} in the lab text still ${unanswered === 1 ? 'needs' : 'need'} an answer.`);
     else Lab.announce('Every question has an answer. You can download your answers from the Your progress section.');
   }
