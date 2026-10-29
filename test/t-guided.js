@@ -2,9 +2,9 @@ const { chromium } = require('playwright'); const fs = require('fs'); const path
 const AXE = fs.readFileSync(path.join(__dirname, 'node_modules/axe-core/axe.min.js'), 'utf8');
 (async () => {
   const b = await chromium.launch(); let bad = 0;
-  const files = fs.readdirSync('../dist-guided/labs').filter(f => f.includes('Simulation'));
+  const files = fs.readdirSync('../' + (process.env.DIST || 'dist-guided') + '/labs').filter(f => f.includes('Simulation'));
   for (const f of files) {
-    const p = await b.newPage(); await p.goto('file://' + path.resolve('../dist-guided/labs', f)); await p.waitForTimeout(300);
+    const p = await b.newPage(); await p.goto('file://' + path.resolve('../' + (process.env.DIST || 'dist-guided') + '/labs', f)); await p.waitForTimeout(300);
     const r = await p.evaluate(() => {
       const G = window.Guided; if (!G) return { err: 'no Guided' };
       const t = document.getElementById('guide-h');
