@@ -15,12 +15,12 @@ const AXE = fs.readFileSync(path.join(__dirname, 'node_modules/axe-core/axe.min.
       // Next through all steps
       const titles = []; for (let i = 0; i < G.units.length; i++) { G.show(i, false); titles.push(t.textContent); }
       const guideHasInputs = document.querySelectorAll('.guide textarea, .guide input').length;
-      const lastDisabled = document.querySelector('.guide-tools button:nth-child(2)').disabled;
+      const lastDisabled = document.querySelector('.guide-tools button:nth-child(4)').disabled;
       return { units: G.units.length, lists, links: links.length, badLinks: links.filter(x => !x.startsWith('Do this step')).length, dupIds, focusAtLoad, guideHasInputs, lastDisabled, first: titles[0], last: titles[titles.length - 1] };
     });
     // focus moves to panel title on Next
     await p.evaluate(() => window.Guided.show(0, false));
-    await p.click('.guide-tools button:nth-child(2)');
+    await p.click('.guide-tools button:nth-child(4)');
     const fx = await p.evaluate(() => [document.activeElement.id, document.getElementById('sr-polite').textContent]);
     await p.waitForTimeout(250);
     const ann = await p.evaluate(() => document.getElementById('sr-polite').textContent);
