@@ -15,3 +15,6 @@
 .layout.split .lab-col{order:1}
 .guide-cur{background:var(--surface-2);outline:2px solid var(--sky);outline-offset:2px}
 .guide-keys{margin:8px 0 0;font-size:.92rem;color:var(--muted)}
+.guide-done{margin:10px 0 2px;display:flex;align-items:center;gap:8px;font-weight:600}
+.guide-done input{width:20px;height:20px}
+.guide-progress{margin:0 0 6px;color:var(--muted);font-size:.95rem}

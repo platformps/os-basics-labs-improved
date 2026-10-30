@@ -38,8 +38,23 @@
   const readFull = h('a', { href: '#', class: 'guide-read', onclick: (e) => { e.preventDefault(); const t = units[cur].head; t.scrollIntoView({ block: 'start' }); focusOnce(t); } }, 'Read this step in the full lab text');
   const nextItem = h('button', { type: 'button', class: 'secondary', onclick: () => stepItem(1, true) }, 'Next instruction');
   const repeatItem = h('button', { type: 'button', class: 'secondary', onclick: () => sayItem(true) }, 'Repeat instruction');
+  const progLine = h('p', { class: 'guide-progress' });
+  const stepsKey = () => key() + 's';
+  const stepsDone = () => { const v = Lab.store.get(stepsKey()); return Array.isArray(v) ? v : []; };
+  const doneBox = h('input', { type: 'checkbox', id: 'guide-done' });
+  const doneLbl = h('label', { for: 'guide-done' }, 'I finished this step');
+  const doneWrap = h('div', { class: 'guide-done' }, doneBox, doneLbl);
+  doneBox.addEventListener('change', () => {
+    const d = stepsDone(); const i = cur;
+    if (doneBox.checked) { if (!d.includes(i)) d.push(i); } else { const k = d.indexOf(i); if (k >= 0) d.splice(k, 1); }
+    Lab.store.set(stepsKey(), d);
+    const n = units.filter((u, k) => d.includes(k)).length;
+    Lab.announce(`${units[i].title} marked ${doneBox.checked ? 'done' : 'not done'}. ${n} of ${units.length} steps done. ${progressText()}`);
+  });
+  function progressText() { const pt = document.getElementById('progress-text'); return pt ? pt.textContent.trim() + '.' : ''; }
+  function refreshProgress() { const d = stepsDone(); progLine.textContent = `${progressText()} ${d.length} of ${units.length} steps marked done.`; }
   const keysHint = h('p', { class: 'guide-keys' }, h('strong', null, 'Shortcuts, from anywhere in the simulation: '), 'Alt+N reads the next instruction, Alt+P the previous one, Alt+R repeats the current one. Focus stays where you are.');
-  const panel = h('section', { class: 'guide', 'aria-labelledby': 'guide-h' }, title, pos, body, h('div', { class: 'toolbar guide-tools' }, nextItem, repeatItem, prev, next, readFull), keysHint);
+  const panel = h('section', { class: 'guide', 'aria-labelledby': 'guide-h' }, title, pos, body, doneWrap, progLine, h('div', { class: 'toolbar guide-tools' }, nextItem, repeatItem, prev, next, readFull), keysHint);
   sim.before(panel);
   const back = document.getElementById('back-to-steps');
   if (back) back.parentElement.remove();
@@ -111,6 +126,9 @@
     next.textContent = nx ? (nx.questionsOnly ? `Next: ${nx.title}` : 'Next step') : 'Next step (this is the last step)';
     next.disabled = !nx;
     Lab.store.set(key(), i);
+    doneBox.checked = stepsDone().includes(i);
+    doneLbl.textContent = `I finished this step (${u.title})`;
+    refreshProgress();
     setItem(0);
     if (announce) { focusOnce(title); Lab.announce(`${u.part ? u.part + ', ' : ''}${u.title}. Step ${i + 1} of ${units.length}.`); }
   }
@@ -189,7 +207,7 @@
   if (progress) {
     const tasks = (Lab.config && Lab.config.tasks) || [];
     allDoneSaid = tasks.length > 0 && tasks.every(t => Lab.isDone(t.id));
-    new MutationObserver(checkAllDone).observe(progress, { childList: true, characterData: true, subtree: true });
+    new MutationObserver(() => { refreshProgress(); checkAllDone(); }).observe(progress, { childList: true, characterData: true, subtree: true });
   }
 
   const saved = Lab.store.get(key());
