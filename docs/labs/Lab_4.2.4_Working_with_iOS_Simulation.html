@@ -1407,7 +1407,7 @@ const Mobile = (() => {
   });
   function progressText() { const pt = document.getElementById('progress-text'); return pt ? pt.textContent.trim() + '.' : ''; }
   function refreshProgress() { const d = stepsDone(); const n = units.filter((u, k) => d.includes(k) && u.isStep).length; progLine.textContent = `${progressText()} ${n} of ${stepCount} steps marked done.`; }
-  const keysHint = h('p', { class: 'guide-keys' }, h('strong', null, 'Shortcuts, from anywhere in the simulation: '), 'Alt+N reads the next instruction, Alt+P the previous one, Alt+R repeats the current one. Focus stays where you are.');
+  const keysHint = h('p', { class: 'guide-keys' }, h('strong', null, 'Shortcuts, from anywhere in the simulation: '), 'Alt+N reads the next instruction, Alt+P the previous one, Alt+R repeats it. Alt+A jumps to the answer box for a question, Alt+B takes you back to where you were in the simulation.');
   const panel = h('section', { class: 'guide', 'aria-labelledby': 'guide-h' }, title, pos, body, doneWrap, progLine, h('div', { class: 'toolbar guide-tools' }, nextItem, repeatItem, prev, next, readFull), keysHint);
   sim.before(panel);
   const back = document.getElementById('back-to-steps');
@@ -1502,10 +1502,29 @@ const Mobile = (() => {
     nextItem.disabled = !items.length;
     repeatItem.disabled = !items.length;
   }
+  let returnTo = null;
   function sayItem(announce) {
     const it = items[curItem]; if (!it) { Lab.announce(`${units[cur].title}. No numbered instructions in this step.`); return; }
     const u = units[cur];
-    Lab.announce(`${u.title}, instruction ${curItem + 1} of ${items.length}: ${itemText(it)}`);
+    const isQ = it.classList.contains('guide-question');
+    Lab.announce(`${u.title}, instruction ${curItem + 1} of ${items.length}: ${itemText(it)}` + (isQ ? ' Press Alt+A to answer.' : ''));
+  }
+  // Alt+A: jump to the answer box of the current (or nearest) question; Alt+B: go back to where you were.
+  function answerCurrent() {
+    let k = curItem; while (k < items.length && !items[k].classList.contains('guide-question')) k++;
+    if (k >= items.length) { k = curItem; while (k >= 0 && !items[k].classList.contains('guide-question')) k--; }
+    if (k < 0) { Lab.announce('This step has no question to answer.'); return; }
+    const ta = items[k].querySelector('textarea'); if (!ta) return;
+    const a = document.activeElement;
+    returnTo = (a && a !== document.body && !panel.contains(a)) ? a : returnTo;
+    setItem(k);
+    ta.focus();
+    Lab.announce('Answer box. Type your answer, then press Alt+B to go back to where you were, or Alt+N for the next instruction.');
+  }
+  function goBack() {
+    if (returnTo && returnTo.isConnected && returnTo.offsetParent !== null) { const t = returnTo; returnTo = null; t.focus(); Lab.announce('Back in the simulation.'); return; }
+    const first = sim.querySelector('.term-input, .start-btn, button, input, [tabindex="0"]');
+    if (first) { first.focus(); Lab.announce('Back in the simulation.'); } else Lab.announce('Nothing to go back to.');
   }
   function stepItem(dir, announce) {
     if (!items.length || curItem + dir >= items.length) {
@@ -1525,6 +1544,8 @@ const Mobile = (() => {
     if (k === 'KeyN') { e.preventDefault(); stepItem(1, true); }
     else if (k === 'KeyP') { e.preventDefault(); stepItem(-1, true); }
     else if (k === 'KeyR') { e.preventDefault(); sayItem(true); }
+    else if (k === 'KeyA') { e.preventDefault(); answerCurrent(); }
+    else if (k === 'KeyB') { e.preventDefault(); goBack(); }
   });
 
   // Lab text: each list's jump link opens that step in the panel.
@@ -1540,7 +1561,7 @@ const Mobile = (() => {
     });
   });
 
-  const note = h('div', { class: 'note guide-note' }, h('p', null, h('strong', null, 'Guided version: '), 'the simulation starts with a "Current step" panel that shows the step you are on, with Previous step and Next step buttons and the answer boxes for that step, so you can stay in the simulation from the first step to the last. While you work in the simulated computer, press Alt+N to hear the next instruction, Alt+P for the previous one, and Alt+R to repeat it; focus stays where you are. Use the "Skip to the simulation" link at the top of the page to get there. The full lab text below is the same as always; each steps list also has a link that opens that step in the simulation.'));
+  const note = h('div', { class: 'note guide-note' }, h('p', null, h('strong', null, 'Guided version: '), 'the simulation starts with a "Current step" panel that shows the step you are on, with Previous step and Next step buttons and the answer boxes for that step, so you can stay in the simulation from the first step to the last. While you work in the simulated computer, press Alt+N to hear the next instruction, Alt+P for the previous one, and Alt+R to repeat it; focus stays where you are. When an instruction is a question, Alt+A moves you to its answer box and Alt+B brings you back. Use the "Skip to the simulation" link at the top of the page to get there. The full lab text below is the same as always; each steps list also has a link that opens that step in the simulation.'));
   const start = document.getElementById('lab-start');
   if (start) start.after(note);
 
