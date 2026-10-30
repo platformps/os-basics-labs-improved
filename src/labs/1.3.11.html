@@ -10,6 +10,7 @@
 </ul>
 
 <h2>Part 1: Access the PowerShell console</h2>
+<h3>Step 1.1: Access the PowerShell console</h3>
 <ol class="steps">
 <li>Open Start, search for <code>powershell</code>, and open <strong>Windows PowerShell</strong>.</li>
 <li>Open Start again, search for <code>command prompt</code>, and open <strong>Command Prompt</strong>.</li>
@@ -17,6 +18,7 @@
 <p>Use the taskbar to switch between the two windows. Each command window's prompt tells you which one you are in: PowerShell prompts start with <code>PS</code>.</p>
 
 <h2>Part 2: Explore Command Prompt and PowerShell commands</h2>
+<h3>Step 2.1: Explore Command Prompt and PowerShell commands</h3>
 <ol class="steps">
 <li>Run <code>dir</code> in both windows.</li>
 </ol>
@@ -29,6 +31,7 @@
 <div class="sample"><p>The output is the same or very similar in both windows. PowerShell runs these familiar commands so people can move from Command Prompt easily, either by running the same program (ping, ipconfig) or through an alias (cd).</p></div></div>
 
 <h2>Part 3: Explore cmdlets</h2>
+<h3>Step 3.1: Explore cmdlets</h3>
 <p>PowerShell commands, called cmdlets, are named as a verb and a noun joined by a hyphen, such as <code>Get-Process</code>. Many familiar command names are aliases for a cmdlet.</p>
 <ol class="steps">
 <li>In PowerShell, run <code>Get-Alias dir</code>.</li>
@@ -41,6 +44,7 @@
 </ol>
 
 <h2>Part 4: Explore the netstat command using PowerShell</h2>
+<h3>Step 4.1: Explore the netstat command using PowerShell</h3>
 <ol class="steps">
 <li>In PowerShell, run <code>netstat /?</code> to see the options for netstat. (The original lab uses <code>netstat -h</code>. That also prints the help, but only because Windows does not recognize -h.)</li>
 <li>Run <code>netstat -r</code> to display the routing table.</li>
@@ -57,6 +61,7 @@
 <div class="sample"><p>For PID 756: the process is svchost.exe (Host Process for Windows Services), it runs as the NETWORK SERVICE user, it is using about 4,132 K of memory, and its file is in C:\Windows\System32. netstat showed it is the RpcSs service listening on TCP port 135.</p></div></div>
 
 <h2>Part 5: Empty the Recycle Bin using PowerShell</h2>
+<h3>Step 5.1: Empty the Recycle Bin using PowerShell</h3>
 <p>One PowerShell command can replace several clicks, and the same command can run on many computers at once. That is why administrators use PowerShell to manage large networks.</p>
 <ol class="steps">
 <li>Open the <strong>Recycle Bin</strong> (search for it in Start) and check that it has items in it. In this simulation it already does.</li>
@@ -65,7 +70,7 @@
 </ol>
 <div class="question" data-q="q6"><p class="qtext">What happened to the files in the Recycle Bin?</p>
 <div class="sample"><p>They were deleted permanently. The Recycle Bin is now empty.</p></div></div>
-<h3>Reflection</h3>
+<h2>Reflection</h2>
 <div class="question" data-q="q7"><p class="qtext">PowerShell was built for task automation and configuration management. Research commands that could simplify your work as a security analyst, and record what you find.</p>
 <div class="sample"><p>Answers vary. Examples: <code>Get-Process</code> and <code>Get-Service</code> to list what is running, <code>Get-NetTCPConnection</code> to see connections and owning processes, <code>Get-WinEvent</code> to search event logs, <code>Get-FileHash</code> to check whether a file matches a known hash, and <code>Get-LocalUser</code> to review accounts. You can try <code>Get-Process</code>, <code>Get-Service</code>, and <code>Get-Alias</code> in this simulation.</p></div></div>
 

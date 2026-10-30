@@ -10,7 +10,7 @@
 
 <h2>Part 1: Graphical text editors</h2>
 <p>Text editors are among the oldest kinds of applications. Some have a graphical window, and some work only on the command line. The Security Workstation includes one graphical editor, SciTE. It is small and fast, and it is all you need for this course.</p>
-<h3>Step 1: Open SciTE from the Applications menu</h3>
+<h3>Step 1.1: Open SciTE from the Applications menu</h3>
 <ol class="steps">
 <li>Choose <strong>Applications</strong> on the dock, search for <code>SciTE</code>, and open <strong>SciTE text editor</strong>.</li>
 <li>In the editing area, type this sentence on one line, without pressing Enter: <code>Linux treats almost everything as a file, so a text editor is one of the most useful tools a security analyst can learn to use well.</code></li>
@@ -24,7 +24,7 @@
 <li>Change <strong>Files of type</strong> to <strong>All Files (*)</strong>. Select space.txt and open it. Linux does not need file extensions, but some applications, like SciTE, use them to decide what to show.</li>
 <li>Close SciTE.</li>
 </ol>
-<h3>Step 2: Open SciTE from the terminal</h3>
+<h3>Step 1.2: Open SciTE from the terminal</h3>
 <ol class="steps">
 <li>Open <strong>Terminal</strong> from Applications. Run <code>ls</code>. space.txt is in your current folder, so you can open it without a path.</li>
 <li>Run <code>scite space.txt</code>. SciTE opens with the file loaded.</li>
@@ -37,6 +37,7 @@
 </ol>
 
 <h2>Part 2: Command line text editors</h2>
+<h3>Step 2.1: Command line text editors</h3>
 <p>Command line editors matter because you often manage a Linux server from a remote text-only session, such as SSH, where there is no graphical desktop. This course uses <strong>nano</strong>. Another very popular editor is <strong>vi</strong> (and its improved version, <strong>vim</strong>), which is powerful but harder to learn.</p>
 <p>nano is controlled with the keyboard. Its shortcut list appears at the bottom of the screen: the caret symbol (^) means Ctrl, and M- means the Meta key, which is usually Alt. In this simulation the same shortcuts are also buttons, and nano's function key alternatives work too: F1 Help, F2 Exit, F3 Write Out, and F6 Where Is.</p>
 <div class="note warn"><p>Do not press Ctrl+W in a web browser: it closes the browser tab. Use F6 or the Where Is button instead.</p></div>
@@ -53,7 +54,7 @@
 
 <h2>Part 3: Working with configuration files</h2>
 <p>In Linux, the system and its services are configured through files. Configuration files are usually text, and each application or service reads its own files when it starts.</p>
-<h3>Step 1: Locate configuration files</h3>
+<h3>Step 3.1: Locate configuration files</h3>
 <p>By convention, settings for your own applications live in hidden files in your home folder, and settings for system-wide services live in <code>/etc</code>.</p>
 <ol class="steps">
 <li>Run <code>ls -l</code>. None of the files look like configuration files.</li>
@@ -63,7 +64,7 @@
 </ol>
 <div class="question" data-q="q4"><p class="qtext">Why are your own application settings stored in your home folder instead of in /etc?</p>
 <div class="sample"><p>Regular users cannot write to /etc. Linux is a multi-user system, so keeping each user's settings in their own home folder lets every user customize their own applications without changing anything for anyone else.</p></div></div>
-<h3>Step 2: Edit and save configuration files</h3>
+<h3>Step 3.2: Edit and save configuration files</h3>
 <ol class="steps">
 <li>Open <strong>SciTE</strong> from Applications. Open the File menu, choose Open, set Files of type to <strong>All Files (*)</strong>, and open <code>.bashrc</code>.</li>
 <li>On the PS1 line, change <code>32</code> to <code>31</code>. 32 is the color code for green and 31 is red. Save with Ctrl+S and close SciTE.</li>
@@ -76,7 +77,7 @@
 <li>Change <code>31</code> to <code>33</code> (yellow). Press Ctrl+X, then Y to save, then Enter to keep the name .bashrc.</li>
 <li>Run <code>bash</code> to start a new shell that reads .bashrc again. The prompt is now yellow.</li>
 </ol>
-<h3>Step 3: Edit configuration files for services</h3>
+<h3>Step 3.3: Edit configuration files for services</h3>
 <p>nginx is a lightweight web server installed on this workstation. Its configuration files are in /etc/nginx. You will change two settings in the file custom_server.conf: the port nginx listens on and the folder it serves web pages from.</p>
 <ol class="steps">
 <li>Run <code>sudo nano -l /etc/nginx/custom_server.conf</code>. The <code>-l</code> option turns on line numbers. Enter the password <code>cyberops</code> when asked.</li>
@@ -95,10 +96,10 @@
 </ol>
 <div class="question" data-q="q7"><p class="qtext">Does the web page appear now?</p>
 <div class="sample"><p>No. Firefox cannot connect, because no web server is listening on port 8080 anymore.</p></div></div>
-<h3>Challenge</h3>
+<h2>Challenge</h2>
 <div class="question" data-q="q8"><p class="qtext">Can you edit /etc/nginx/custom_server.conf with SciTE? Describe how.</p>
 <div class="sample"><p>Yes, but SciTE must run as root because the file is in /etc. From a terminal, run <code>sudo scite /etc/nginx/custom_server.conf</code>. If you open it from the Applications menu instead, SciTE can open the file but cannot save it.</p></div></div>
-<h3>Reflection</h3>
+<h2>Reflection</h2>
 <ul class="tri">
 <li>Each service has its own configuration options, file locations, and syntax. Always check the documentation.</li>
 <li>Wrong permissions are a very common cause of problems. Make sure you have the right permissions before you edit configuration files.</li>

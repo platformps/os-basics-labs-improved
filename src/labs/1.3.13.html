@@ -9,6 +9,7 @@
 <div class="note"><p><strong>Graphs as text:</strong> Performance Monitor's live graph is shown here as readings (latest, average, minimum, and maximum). The original question asks you to match graph colors; this version asks you to read the counter list instead, which works on a real PC with a screen reader too.</p></div>
 
 <h2>Part 1: Start and stop the Routing and Remote Access service</h2>
+<h3>Step 1.1: Start and stop the Routing and Remote Access service</h3>
 <p>Routing and Remote Access lets a Windows computer act as a router or accept incoming remote connections. You will start it, watch what changes, and then stop and disable it.</p>
 <ol class="steps">
 <li>Open <strong>Control Panel</strong>, set <strong>View by</strong> to <strong>Small icons</strong>, and open <strong>Network and Sharing Center</strong>. Choose <strong>Change adapter settings</strong>. The <strong>Network Connections</strong> window opens. Leave it open.</li>
@@ -45,6 +46,7 @@
 <ol class="steps" start="13"><li>In Performance Monitor, choose <strong>Unfreeze Display</strong>. Close the windows you opened in Part 1.</li></ol>
 
 <h2>Part 2: Work in the Computer Management utility</h2>
+<h3>Step 2.1: Work in the Computer Management utility</h3>
 <p>Computer Management manages a local or remote computer. Its tools are grouped into System Tools, Storage, and Services and Applications.</p>
 <ol class="steps">
 <li>Open <strong>Computer Management</strong> from Windows Tools or Start.</li>
@@ -62,7 +64,7 @@
 
 <h2>Part 3: Configure administrative tools</h2>
 <p>Now you set up Performance Monitor to record available memory every few seconds into a file.</p>
-<h3>Step 1: Create a data collector set</h3>
+<h3>Step 3.1: Create a data collector set</h3>
 <ol class="steps">
 <li>Open <strong>Performance Monitor</strong>. In the console tree, expand <strong>Data Collector Sets</strong> and select <strong>User Defined</strong>. Open <strong>Actions for User Defined</strong> and choose <strong>New</strong>, then <strong>Data Collector Set</strong>.</li>
 <li>Name it <code>Memory Logs</code>, choose <strong>Create manually (Advanced)</strong>, and choose Next.</li>
@@ -72,7 +74,7 @@
 <li>For the root directory, choose <strong>Browse</strong>, select <strong>Local Disk (C:)</strong>, then <strong>PerfLogs</strong>, and choose OK. Choose Next.</li>
 <li>Leave <strong>Save and close</strong> selected and choose <strong>Finish</strong>.</li>
 </ol>
-<h3>Step 2: Change the log format</h3>
+<h3>Step 3.2: Change the log format</h3>
 <ol class="steps">
 <li>Under User Defined, select <strong>Memory Logs</strong>. Select <strong>DataCollector01</strong>, open its Actions, and choose <strong>Properties</strong>.</li>
 <li>On the Performance Counters tab, change <strong>Log format</strong> to <strong>Comma Separated</strong>. Then go to the <strong>File</strong> tab.</li>
@@ -80,7 +82,7 @@
 <div class="question" data-q="q7"><p class="qtext">What is the full path of the example file name?</p>
 <div class="sample"><p>It is C:\PerfLogs\ followed by a folder named with the computer name and a date and number, then DataCollector01.csv. In this simulation: C:\PerfLogs\DESKTOP-OSB01_ then today's date and -000001, then \DataCollector01.csv.</p></div></div>
 <ol class="steps" start="3"><li>Choose <strong>OK</strong>.</li></ol>
-<h3>Step 3: Collect data</h3>
+<h3>Step 3.3: Collect data</h3>
 <ol class="steps">
 <li>With <strong>Memory Logs</strong> selected, choose <strong>Start the Data Collector Set</strong>. Its status changes to Running. (The real tool shows a green arrow on the icon.)</li>
 <li>To make the computer use some memory, open Microsoft Edge from Start and then close it.</li>
@@ -93,7 +95,7 @@
 </ol>
 <div class="question" data-q="q9"><p class="qtext">What does the column farthest to the right show?</p>
 <div class="sample"><p>Available memory in megabytes (the \Memory\Available MBytes counter), one reading every 4 seconds. The first column is the time of each reading.</p></div></div>
-<h3>Step 4: Clean up</h3>
+<h3>Step 3.4: Clean up</h3>
 <ol class="steps">
 <li>Close Notepad and File Explorer.</li>
 <li>In Performance Monitor, select <strong>Memory Logs</strong> under User Defined, open its Actions, and choose <strong>Delete</strong>. Confirm with <strong>Yes</strong>.</li>

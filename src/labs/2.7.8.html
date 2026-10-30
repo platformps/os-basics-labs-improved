@@ -11,7 +11,7 @@
 
 <h2>Part 1: Update Windows and Linux</h2>
 <p>New flaws are found all the time. Keeping systems up to date closes known holes before attackers can use them.</p>
-<h3>Step 1: Verify connectivity between the CSE-LABVM and Windows</h3>
+<h3>Step 1.1: Verify connectivity between the CSE-LABVM and Windows</h3>
 <p>You need internet access to download updates, and the two computers must reach each other for Part 3.</p>
 <ol class="steps">
 <li>Open <strong>Oracle VirtualBox</strong> from Start. Before starting the CSE-LABVM, select it and choose <strong>Settings</strong>. In the Network section, set Adapter 1 <strong>Attached to</strong> to <strong>Bridged Adapter</strong>, then choose the host adapter that connects Windows to the network. Many computers have two: one wireless and one wired. (Tip: <code>ipconfig /all</code> in a Windows Command Prompt shows which adapter has an address.)</li>
@@ -26,7 +26,7 @@
 <li>From Windows, ping the CSE-LABVM's address.</li>
 <li>From the CSE-LABVM, ping the Windows address. This usually fails because the Windows firewall blocks incoming ping by default. You will add a rule for it in Part 3. Stop the ping with Ctrl+C.</li>
 </ol>
-<h3>Step 2: Check for Windows updates</h3>
+<h3>Step 1.2: Check for Windows updates</h3>
 <ol class="steps">
 <li>From Start, search for <strong>check for updates</strong> and open Windows Update.</li>
 <li>Choose <strong>Check for updates</strong>, then explore the other options: pause updates, update history, and advanced options.</li>
@@ -35,7 +35,7 @@
 <div class="sample"><p>Answers vary. On a real PC it is usually within the last few days; in the simulation it is the time shown under "Last checked."</p></div></div>
 <div class="question" data-q="q3"><p class="qtext">What are the current active hours? What will Windows do outside them?</p>
 <div class="sample"><p>Answers vary; in the simulation they are 8:00 AM to 5:00 PM. Windows will not restart the device to finish updates during active hours. Outside active hours it can restart automatically.</p></div></div>
-<h3>Step 3: Update and upgrade Linux</h3>
+<h3>Step 1.3: Update and upgrade Linux</h3>
 <ol class="steps">
 <li>In the CSE-LABVM terminal, run <code>apt-get</code> by itself to see its commands. Always run update before upgrade.</li>
 <li>Run <code>sudo apt-get update</code> to refresh the list of available packages. Enter <code>password</code> when asked.</li>
@@ -45,7 +45,7 @@
 <h2>Part 2: Windows Local Security Policy</h2>
 <p>Local Security Policy holds the security rules for one computer. You will set the password policy, the account lockout policy, and look at the audit policy.</p>
 <div class="note"><p>On a real PC, Local Security Policy comes only with Windows Pro, Enterprise, and Education. On Windows Home, or on a PC you are not allowed to change, read this part and move on to Part 3. The simulation includes it so every learner can practice.</p></div>
-<h3>Step 1: Configure the password policy</h3>
+<h3>Step 2.1: Configure the password policy</h3>
 <p>Your organization's password rules are:</p>
 <ul class="tri">
 <li>A user must use at least 2 different passwords before reusing an old one.</li>
@@ -67,7 +67,7 @@
 <div class="question" data-q="q5"><p class="qtext">What values did you set for Enforce password history, Maximum password age, Minimum password age, Minimum password length, Password must meet complexity requirements, and Store passwords using reversible encryption?</p>
 <div class="sample"><p>Enforce password history: 2 passwords remembered. Maximum password age: 90 days. Minimum password age: 1 day. Minimum password length: 8 characters. Password must meet complexity requirements: Enabled. Store passwords using reversible encryption: Disabled.</p></div></div>
 <p>Keep <strong>Store passwords using reversible encryption</strong> disabled. Reversible encryption is close to storing passwords in plain text, so turn it on only when an application truly requires it.</p>
-<h3>Step 2: Test the password policy</h3>
+<h3>Step 2.2: Test the password policy</h3>
 <ol class="steps">
 <li>From Start, search for <strong>change your password</strong>.</li>
 <li>Under Password, choose <strong>Change</strong>, enter the current password, and choose Next.</li>
@@ -75,7 +75,7 @@
 </ol>
 <div class="question" data-q="q6"><p class="qtext">What does Windows say when the new password breaks the policy?</p>
 <div class="sample"><p>The password you entered doesn't meet the password policy requirements. Try one that's longer or more complex.</p></div></div>
-<h3>Step 3: Configure the account lockout policy</h3>
+<h3>Step 2.3: Configure the account lockout policy</h3>
 <ol class="steps">
 <li>Back in Local Security Policy, choose <strong>Account Lockout Policy</strong> under Account Policies.</li>
 <li>Set <strong>Account lockout threshold</strong> to 5 invalid sign-in attempts.</li>
@@ -85,7 +85,7 @@
 <div class="sample"><p>10 minutes, the account lockout duration.</p></div></div>
 <div class="question" data-q="q8"><p class="qtext">How many attempts does a user get before the account is locked?</p>
 <div class="sample"><p>5 attempts.</p></div></div>
-<h3>Step 4: Review the audit policy</h3>
+<h3>Step 2.4: Review the audit policy</h3>
 <ol class="steps">
 <li>Expand <strong>Local Policies</strong> and choose <strong>Audit Policy</strong>.</li>
 <li>Open <strong>Audit account logon events</strong>. On the Local Security Setting tab, notice the Success and Failure check boxes.</li>
@@ -95,7 +95,7 @@
 
 <h2>Part 3: Configure firewall rules</h2>
 <p>Traffic enters and leaves a computer through ports. A firewall works like a security guard that checks traffic against its rules.</p>
-<h3>Step 1: Investigate Windows Defender Firewall</h3>
+<h3>Step 3.1: Investigate Windows Defender Firewall</h3>
 <ol class="steps"><li>From Start, search for and open <strong>Windows Defender Firewall</strong>. It is on by default.</li></ol>
 <p>On a PC managed by an organization, you may see "For your security, some settings are managed by your system administrator."</p>
 <div class="question" data-q="q9"><p class="qtext">What are the benefits of Windows Defender Firewall?</p>
@@ -103,7 +103,7 @@
 <ol class="steps" start="2"><li>Choose <strong>Allow an app or feature through Windows Defender Firewall</strong>. Apps and features with Yes for a network type are allowed through. Choose Cancel when done.</li></ol>
 <div class="question" data-q="q10"><p class="qtext">Describe a negative consequence of having too many exceptions.</p>
 <div class="sample"><p>Each exception is a hole in the firewall. Attackers scan for computers with many open ports and allowed programs, and every extra exception gives them another way in.</p></div></div>
-<h3>Step 2: Allow echo requests with an inbound rule</h3>
+<h3>Step 3.2: Allow echo requests with an inbound rule</h3>
 <p>On a work computer, your organization may not allow this step. In the simulation it is safe.</p>
 <ol class="steps">
 <li>In Windows Defender Firewall, choose <strong>Advanced settings</strong> and choose Yes in User Account Control.</li>
@@ -117,7 +117,7 @@
 
 <h2>Part 4: Install and run applications</h2>
 <p>You will install two tools on the CSE-LABVM: chkrootkit, from Ubuntu's own software repository, and Lynis, from a repository run by its maker, CISOfy.</p>
-<h3>Step 1: Install and run chkrootkit</h3>
+<h3>Step 4.1: Install and run chkrootkit</h3>
 <p>chkrootkit looks for signs of a rootkit: malware that hides itself on a system while giving an attacker control.</p>
 <ol class="steps">
 <li>Run <code>sudo apt install chkrootkit</code>.</li>
@@ -126,7 +126,7 @@
 </ol>
 <div class="question" data-q="q11"><p class="qtext">Did chkrootkit find any worms? What is the last line that starts with an exclamation point?</p>
 <div class="sample"><p>No; every worm check says "nothing found." The last line lists the grep command itself. chkrootkit's chkutmp check reports processes that have a terminal but no sign-in record, and grep, running in a pipe, is one of them. It is not a sign of infection.</p></div></div>
-<h3>Step 2: Install Lynis</h3>
+<h3>Step 4.2: Install Lynis</h3>
 <p>Lynis is a security auditing tool for Linux and macOS, made by CISOfy. You will use it to harden a system in a later activity. To get the newest version, add CISOfy's repository, and its signing key so apt can verify downloads.</p>
 <ol class="steps">
 <li>Import CISOfy's signing key. Type it as one line:

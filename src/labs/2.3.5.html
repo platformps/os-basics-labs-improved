@@ -28,10 +28,11 @@
 </tbody></table></div>
 <p>Every open port is a possible way in, so attackers scan for open ports first. Some ports get far more attention than others because the services behind them are common and often poorly protected.</p>
 
-<h2>Step 1: Open a terminal</h2>
+<h2>Part 1: Scan with Nmap</h2>
+<h3>Step 1.1: Open a terminal</h3>
 <ol class="steps"><li>Open <strong>Terminal</strong> from the Applications button on the dock.</li></ol>
 
-<h2>Step 2: Run Nmap</h2>
+<h3>Step 1.2: Run Nmap</h3>
 <ol class="steps"><li>Run <code>nmap localhost</code> to scan your own machine.</li></ol>
 <p>By default, Nmap scans the 1,000 most commonly used TCP ports.</p>
 <div class="question" data-q="q1"><p class="qtext">Which TCP ports are open?</p>
@@ -41,7 +42,7 @@
 <div class="question" data-q="q3"><p class="qtext">Research the vulnerabilities associated with each of these open ports.</p>
 <div class="sample"><p>Answers vary. SSH (22) is a constant target of password guessing with default or common logins. Telnet (23) exposes everything in clear text, so attackers on the network can read credentials and sessions, and it is often used for man-in-the-middle attacks. CUPS (631) has had flaws that let an attacker run commands with the print service's privileges or crash the service (denial of service).</p></div></div>
 
-<h2>Step 3: Use administrative privileges with Nmap</h2>
+<h3>Step 1.3: Use administrative privileges with Nmap</h3>
 <ol class="steps">
 <li>Scan the UDP ports: run <code>sudo nmap -sU localhost</code>. Enter the password <code>password</code>. (UDP scanning needs root; try it without sudo to see the message.) Linux commands are case sensitive: -sU is not the same as -su.</li>
 </ol>
@@ -53,7 +54,7 @@
 <div class="sample"><p>Answers vary. An exposed CUPS service has had flaws that allowed denial of service and running code remotely. If mDNS on 5353 is reachable from the internet, attackers can query it to learn about the computer, and can spoof requests to flood a target in a reflection (denial of service) attack.</p></div></div>
 <ol class="steps" start="2"><li>Run <code>nmap -sV localhost</code>. The <code>-sV</code> option detects the version of each service, which you can use to look up known vulnerabilities.</li></ol>
 
-<h2>Step 4: Read the SSH host keys</h2>
+<h3>Step 1.4: Read the SSH host keys</h3>
 <ol class="steps"><li>Run <code>nmap -A localhost</code>. The <code>-A</code> option turns on version detection and a set of scripts built into Nmap.</li></ol>
 <div class="question" data-q="q7"><p class="qtext">What are the SSH host key fingerprints?</p>
 <div class="sample"><p>The ssh-hostkey section lists three: a 3072-bit RSA key, a 256-bit ECDSA key, and a 256-bit ED25519 key, each with its fingerprint (for example 3072 56:68:77:00:41:7f:50:17:5b:73:82:36:47:c4:bc:2d for RSA).</p></div></div>

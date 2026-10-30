@@ -14,14 +14,14 @@
 </ul>
 
 <h2>Part 1: Prepare a host computer for virtualization</h2>
-<h3>Step 1: Download and install VirtualBox</h3>
+<h3>Step 1.1: Download and install VirtualBox</h3>
 <p>VMware Workstation Player and Oracle VirtualBox are two free virtualization programs. This course uses VirtualBox.</p>
 <ol class="steps">
 <li>Open <strong>Microsoft Edge</strong> from Start and go to <code>www.virtualbox.org</code>.</li>
 <li>Choose <strong>Download VirtualBox</strong>, then <strong>Windows hosts</strong>, because the host computer runs Windows.</li>
 <li>Open <strong>File Explorer</strong>, go to <strong>Downloads</strong>, and open the VirtualBox installer. Accept the default settings on each page and choose <strong>Yes</strong> when User Account Control asks. Leave <strong>Start Oracle VirtualBox after installation</strong> checked and choose <strong>Finish</strong>.</li>
 </ol>
-<h3>Step 2: Download the virtual machine image files</h3>
+<h3>Step 1.2: Download the virtual machine image files</h3>
 <p>Each virtual machine comes as an <strong>OVA</strong> file. OVA is a single-file package in the Open Virtualization Format (OVF), an open standard for sharing virtual machines. It holds everything needed to recreate the machine.</p>
 <ol class="steps">
 <li>In Microsoft Edge, go to <code>labvms.example/osb</code>, the simulated course download page. (In the real course, use the link on the lab page.)</li>
@@ -29,19 +29,19 @@
 </ol>
 
 <h2>Part 2: Import the virtual machines into the VirtualBox inventory</h2>
-<h3>Step 1: Import the CSE-LABVM</h3>
+<h3>Step 2.1: Import the CSE-LABVM</h3>
 <ol class="steps">
 <li>In VirtualBox (open it from Start if it is not open), open the <strong>File</strong> menu and choose <strong>Import Appliance</strong>.</li>
 <li>For the file, choose <strong>Browse</strong>, pick <strong>CSE-LABVM.ova</strong>, and choose Next.</li>
 <li>On the Appliance settings page, keep the default machine base folder (it is in your user folder) and set <strong>MAC Address Policy</strong> to <strong>Generate new MAC addresses for all network adapters</strong>. Leave everything else as it is and choose <strong>Import</strong>.</li>
 <li>When the import finishes, the CSE-LABVM appears in the VirtualBox inventory, the list of virtual machines.</li>
 </ol>
-<h3>Step 2: Start the CSE-LABVM</h3>
+<h3>Step 2.2: Start the CSE-LABVM</h3>
 <ol class="steps">
 <li>Select <strong>CSE-LABVM</strong> in the inventory and choose <strong>Start</strong>. A new window opens and the machine boots, then logs in automatically as <strong>cisco</strong>. If you ever need administrator (sudo) rights in this machine, the user name is <code>cisco</code> and the password is <code>password</code>.</li>
 </ol>
 <div class="note"><p><strong>Keyboard focus on a real PC:</strong> when you click inside a real virtual machine window, the guest takes over your keyboard and mouse, and your host computer stops seeing your keystrokes. Press the <strong>host key</strong> to give them back: the right Ctrl key on Windows and Linux, or the left Command key on a Mac. Copy and paste between host and guest also does not work until you turn it on in VirtualBox. If a real virtual machine will not start, try turning off the USB controller in its settings, or install the VirtualBox Extension Pack.</p></div>
-<h3>Step 3: Get to know the CSE-LABVM</h3>
+<h3>Step 2.3: Get to know the CSE-LABVM</h3>
 <p>The CSE-LABVM desktop has a launcher with these items: cisco's Home (the cisco user's home folder), DPI Scaling (makes the screen easier to read), Firefox Web Browser, jcryptool (a cryptography tool), Keyboard (keyboard layout), Terminal (the command line), and Wireshark (a packet analyzer).</p>
 <ol class="steps">
 <li>In the CSE-LABVM window, open <strong>Terminal</strong> from the launcher and run <code>ip address</code>.</li>
@@ -51,23 +51,23 @@
 <ol class="steps" start="2"><li>Open <strong>Firefox Web Browser</strong> from the launcher.</li></ol>
 <div class="question" data-q="q2"><p class="qtext">Can the virtual machine reach your favorite search engine?</p>
 <div class="sample"><p>Yes. The guest reaches the internet through the host's connection.</p></div></div>
-<h3>Step 4: Close the CSE-LABVM</h3>
+<h3>Step 2.4: Close the CSE-LABVM</h3>
 <ol class="steps"><li>In the virtual machine window, open the <strong>File</strong> menu and choose <strong>Close</strong>.</li></ol>
 <div class="question" data-q="q3"><p class="qtext">What options are available?</p>
 <div class="sample"><p>Save the machine state, Send the shutdown signal, and Power off the machine.</p></div></div>
 <ol class="steps" start="2"><li>Choose <strong>Save the machine state</strong> and then OK. Next time, the machine resumes exactly where you left it.</li></ol>
-<h3>Step 5: Import and start the Security Workstation</h3>
+<h3>Step 2.5: Import and start the Security Workstation</h3>
 <ol class="steps">
 <li>Import <strong>Security_Workstation.ova</strong> the same way you imported the CSE-LABVM.</li>
 <li>Select <strong>Security Workstation</strong> and choose <strong>Start</strong>.</li>
 <li>If VirtualBox reports that a network interface was not found, choose <strong>Change Network Settings</strong>. In the <strong>Name</strong> list, choose the network adapter your computer uses to reach the internet, then choose OK.</li>
 <li>At the login screen, sign in as <code>analyst</code> with the password <code>cyberops</code>.</li>
 </ol>
-<h3>Step 6: Get to know the Security Workstation</h3>
+<h3>Step 2.6: Get to know the Security Workstation</h3>
 <p>The Security Workstation is based on Arch Linux, a lightweight Linux distribution, so it can run many services without slowing down your computer. You will use it in many later labs.</p>
-<h3>Step 7: Close the Security Workstation</h3>
+<h3>Step 2.7: Close the Security Workstation</h3>
 <ol class="steps"><li>Open the <strong>File</strong> menu in its window, choose <strong>Close</strong>, choose <strong>Save the machine state</strong>, and then OK.</li></ol>
-<h3>Reflection</h3>
+<h2>Reflection</h2>
 <div class="question" data-q="q4"><p class="qtext">What are the advantages and disadvantages of using a virtual machine?</p>
 <div class="sample"><p>Advantages: you can try new applications or operating systems without affecting the host, save the machine's state and pick up later, and go back to an earlier state if something breaks. Disadvantages: a virtual machine uses the host's resources, such as disk space, memory, and processing power, so the host needs enough of each.</p></div></div>
 

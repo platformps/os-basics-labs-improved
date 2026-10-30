@@ -9,11 +9,11 @@
 <div class="note"><p>You start signed in as <strong>CyberOpsUser</strong>, an administrator. Its password is <code>Cisco123!</code>. You will need it when you sign back in.</p></div>
 
 <h2>Part 1: Create a new local user account</h2>
-<h3>Step 1: Open the User Accounts tool</h3>
+<h3>Step 1.1: Open the User Accounts tool</h3>
 <ol class="steps">
 <li>Open <strong>Control Panel</strong> from Start. Set <strong>View by</strong> to <strong>Small icons</strong>, then choose <strong>User Accounts</strong>.</li>
 </ol>
-<h3>Step 2: Create a user account</h3>
+<h3>Step 1.2: Create a user account</h3>
 <ol class="steps">
 <li>In User Accounts, choose <strong>Manage another account</strong>, then <strong>Add a new user in PC settings</strong>. The Settings app opens on <strong>Accounts, Other users</strong>.</li>
 <li>Choose <strong>Add account</strong>. When Windows asks how this person will sign in, choose <strong>I don't have this person's sign-in information</strong>, then <strong>Add a user without a Microsoft account</strong>.</li>
@@ -40,6 +40,7 @@
 <div class="sample"><p>SYSTEM, the Administrators group, and the user CyberOpsUser.</p></div></div>
 
 <h2>Part 2: Review user account properties</h2>
+<h3>Step 2.1: Review user account properties</h3>
 <ol class="steps">
 <li>Open <strong>Computer Management</strong> (search for it in Start, or open Control Panel, then Windows Tools). Windows Tools was called Administrative Tools in Windows 10.</li>
 <li>In the console tree, expand <strong>System Tools</strong>, then <strong>Local Users and Groups</strong>, and select <strong>Users</strong>.</li>
@@ -52,7 +53,7 @@
 <div class="sample"><p>Administrators and Users. (On some Windows builds the first account lists only Administrators. Either way, membership in Administrators is what gives it administrator rights.)</p></div></div>
 
 <h2>Part 3: Modify local user accounts</h2>
-<h3>Step 1: Change the account type</h3>
+<h3>Step 3.1: Change the account type</h3>
 <ol class="steps">
 <li>In Control Panel, open <strong>User Accounts</strong>, choose <strong>Manage another account</strong>, and select <strong>User1</strong>.</li>
 <li>Choose <strong>Change the account type</strong>, select <strong>Administrator</strong>, and choose <strong>Change Account Type</strong>. User1 now has administrator rights.</li>
@@ -61,13 +62,13 @@
 <div class="question" data-q="q7"><p class="qtext">Which groups does User1 belong to now?</p>
 <div class="sample"><p>Administrators and Users.</p></div></div>
 <ol class="steps" start="4"><li>On the Member Of tab, select <strong>Administrators</strong> and choose <strong>Remove</strong>, then <strong>OK</strong>. User1 is a standard user again.</li></ol>
-<h3>Step 2: Delete the account</h3>
+<h3>Step 3.2: Delete the account</h3>
 <ol class="steps">
 <li>In Computer Management, select <strong>User1</strong>, open its Actions, and choose <strong>Delete</strong>. Read the warning, then choose <strong>Yes</strong>.</li>
 </ol>
 <div class="question" data-q="q8"><p class="qtext">What is another way to delete a user account?</p>
 <div class="sample"><p>Control Panel, User Accounts, Manage another account, select the account, then Delete the account. In Windows 11 you can also use Settings, Accounts, Other users, select the account, then Remove.</p></div></div>
-<h3>Reflection</h3>
+<h2>Reflection</h2>
 <div class="question" data-q="q9"><p class="qtext">Why is it important to protect every account with a strong password?</p>
 <div class="sample"><p>An account with no password or a weak one lets almost anyone sign in and steal data, change settings, or use the computer for attacks. Any account is a way in, not only the administrator account.</p></div></div>
 <div class="question" data-q="q10"><p class="qtext">Why would you create a user with standard rights instead of administrator rights?</p>

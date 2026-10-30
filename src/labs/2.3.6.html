@@ -8,9 +8,9 @@
 <div class="note"><p>This simulation stands in for the Security Workstation virtual machine. You are logged in as <strong>analyst</strong>; the sudo password is <code>cyberops</code>. The process IDs (PIDs) in this simulation match the ones in the original lab, but on a real computer they are different every time.</p></div>
 
 <h2>Part 1: Servers</h2>
-<h3>Step 1: Access the command line</h3>
+<h3>Step 1.1: Access the command line</h3>
 <ol class="steps"><li>Open <strong>Terminal</strong> from the Applications button on the dock.</li></ol>
-<h3>Step 2: Display the services that are running</h3>
+<h3>Step 1.2: Display the services that are running</h3>
 <p>Many programs run in the background, so users may not notice them. In Linux, running programs are called <strong>processes</strong>.</p>
 <ol class="steps">
 <li>Run <code>sudo ps -elf</code> to list every process. Enter the password <code>cyberops</code> when asked. The output is long; open its <strong>Table view</strong> to move through it by row and column.</li>
@@ -60,6 +60,7 @@
 <div class="sample"><p>grep 395 was itself running while ps took its snapshot, and its own command line contains 395, so it matches.</p></div></div>
 
 <h2>Part 2: Using Telnet to test TCP services</h2>
+<h3>Step 2.1: Using Telnet to test TCP services</h3>
 <p>Telnet is a simple remote shell. It sends everything, including passwords, as clear text, so it should not be used for remote management; use SSH instead. But it is handy for checking what a TCP service really is, because you can connect to any port and talk to the server directly.</p>
 <p>nginx is listening on port 80. What if an attacker named a malware program nginx to make it look like the web server? Connect to it and see how it answers.</p>
 <ol class="steps">
@@ -75,7 +76,7 @@
 </ol>
 <div class="question" data-q="q12"><p class="qtext">What happens when you connect to port 68? Explain.</p>
 <div class="sample"><p>The connection is refused. Port 68 is used by the DHCP client over UDP. Telnet only uses TCP, and nothing is listening on TCP port 68.</p></div></div>
-<h3>Reflection</h3>
+<h2>Reflection</h2>
 <div class="question" data-q="q13"><p class="qtext">What are the advantages of using netstat?</p>
 <div class="sample"><p>It shows every connection and listening port on a computer, with addresses, ports, and the processes behind them, which gives an analyst a quick overview of what is talking on the network.</p></div></div>
 <div class="question" data-q="q14"><p class="qtext">What are the advantages of using Telnet? Is it safe?</p>

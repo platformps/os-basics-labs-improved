@@ -10,7 +10,7 @@
 
 <h2>Part 1: Log file overview</h2>
 <p>Any software can write log files: applications, background services, and the operating system itself. Where a log goes and what it contains is up to the developer, so the software's documentation should describe its logs.</p>
-<h3>Step 1: A web server log entry</h3>
+<h3>Step 1.1: A web server log entry</h3>
 <p>Here is one log entry from the Apache web server:</p>
 <p><code>[Wed Mar 22 11:23:12.207022 2017] [core:error] [pid 3548:tid 4682351596] [client 209.165.200.230] File does not exist: /var/www/apache/htdocs/favicon.ico</code></p>
 <p>It has five main parts:</p>
@@ -28,7 +28,7 @@
 </ol>
 <div class="question" data-q="q2"><p class="qtext">Are these entries still web transactions? Why is their format different from the single Apache entry above?</p>
 <div class="sample"><p>Yes. The GET requests, client IP addresses, HTTP/1.1, status codes, and browser names show they are web server events. The format differs because this server was configured to record different fields in a different order.</p></div></div>
-<h3>Step 2: An operating system log</h3>
+<h3>Step 1.2: An operating system log</h3>
 <p>Linux stores most log files in <code>/var/log</code>. The <code>messages</code> file records many system events, such as a USB drive being connected, a network card coming up, or repeated failed root logins.</p>
 <ol class="steps">
 <li>Run <code>sudo more /var/log/messages</code>. sudo is needed because the file belongs to root. On a real system, <code>more</code> shows one page at a time; here it shows the whole file.</li>
@@ -38,6 +38,7 @@
 <div class="sample"><p>Yes. From May 19 at 04:19:53 to 04:21:27, the kernel logged the network card enp0s3 going down and up again and again (flapping). That confirms the user's report.</p></div></div>
 
 <h2>Part 2: Locating log files in unknown systems</h2>
+<h3>Step 2.1: Locating log files in unknown systems</h3>
 <p>Analysts often work on computers they did not set up. This part shows a process for finding a service's logs, using nginx as the example.</p>
 <ol class="steps">
 <li>Start with the documentation. Run <code>man nginx</code> and read the DEBUGGING LOG and FILES sections. The page confirms nginx can write logs and has a configuration file, but the real locations are set when nginx is compiled.</li>
@@ -54,7 +55,7 @@
 <p>The files ending in .gz were made by log rotation. A rotation service compresses the current log, renames it (access.log.1.gz, access.log.2.gz, and so on), and starts an empty log, so no single file grows too large.</p>
 
 <h2>Part 3: Monitoring log files in real time</h2>
-<h3>Step 1: The tail command</h3>
+<h3>Step 3.1: The tail command</h3>
 <p><code>tail</code> shows the end of a file, by default the last ten lines.</p>
 <ol class="steps">
 <li>Run <code>sudo tail /var/log/nginx/access.log</code>.</li>
@@ -66,7 +67,7 @@
 <div class="question" data-q="q5"><p class="qtext">What do the new entries tell you, and how do they prove which file nginx uses for its access log?</p>
 <div class="sample"><p>Each entry shows the client 127.0.0.1, the time, the request (GET / and GET /favicon.ico), the status (200 found, 404 not found), and the browser. They appeared the moment you loaded the page, so /var/log/nginx/access.log is the access log nginx is using.</p></div></div>
 <ol class="steps" start="6"><li>Press <strong>Stop command</strong> (Ctrl+C) to stop tail.</li></ol>
-<h3>Step 2: Bonus tool, journalctl</h3>
+<h3>Step 3.2: Bonus tool, journalctl</h3>
 <p>The Security Workstation is based on Arch Linux, which uses <strong>systemd</strong> as its init system. The init process is the first process the kernel starts, with process ID 1, and it is the parent of every other process. systemd's logging service, <strong>systemd-journald</strong>, keeps a journal in binary files. <code>journalctl</code> reads it. Other logging systems, such as rsyslog, can run alongside it.</p>
 <ol class="steps">
 <li>Run <code>journalctl</code> as analyst, with no sudo.</li>
@@ -81,7 +82,7 @@
 <li>Run <code>sudo journalctl -u nginx.service</code> to see only the entries for nginx. In systemd, services are called units.</li>
 <li>Run <code>sudo journalctl -u nginx.service -f</code> to follow nginx entries in real time. Then open Firefox, go to <code>127.0.0.1</code>, and reload. An error about the missing favicon.ico appears in the terminal. Press Stop command (Ctrl+C) to finish.</li>
 </ol>
-<h3>Reflection</h3>
+<h2>Reflection</h2>
 <ul class="tri">
 <li>Log files are extremely important for troubleshooting.</li>
 <li>Log locations follow conventions, but the developer decides. Check the documentation first, then combine web research and investigation of the system.</li>

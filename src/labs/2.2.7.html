@@ -8,9 +8,9 @@
 <div class="note"><p>This simulation stands in for the Security Workstation virtual machine. You are logged in as <strong>analyst</strong>; the password is <code>cyberops</code>. Open <strong>Terminal</strong> from the Applications button to begin.</p></div>
 
 <h2>Part 1: Shell basics</h2>
-<h3>Step 1: Access the command line</h3>
+<h3>Step 1.1: Access the command line</h3>
 <ol class="steps"><li>Choose <strong>Applications</strong> on the dock and open <strong>Terminal</strong>.</li></ol>
-<h3>Step 2: Display manual pages</h3>
+<h3>Step 1.2: Display manual pages</h3>
 <p>The <code>man</code> command shows a command's manual page, which is the built-in documentation for that command and its options.</p>
 <ol class="steps"><li>Run <code>man man</code> to learn about manual pages.</li></ol>
 <div class="question" data-q="q1"><p class="qtext">Name a few sections that are included in a man page.</p>
@@ -21,7 +21,7 @@
 <div class="sample"><p>It copies files and directories from one location to another.</p></div></div>
 <div class="question" data-q="q3"><p class="qtext">What command would you use to learn more about the pwd command? What does pwd do?</p>
 <div class="sample"><p><code>man pwd</code>. pwd prints the name of the current working directory, the folder you are in.</p></div></div>
-<h3>Step 3: Create and change directories</h3>
+<h3>Step 1.3: Create and change directories</h3>
 <p>Directory is another word for folder. You will use <code>cd</code> (change directory), <code>mkdir</code> (make directory), and <code>ls</code> (list).</p>
 <ol class="steps">
 <li>Run <code>pwd</code>.</li>
@@ -55,7 +55,7 @@
 <div class="sample"><p>You move up one level, to /home/analyst, the parent of cyops_folder3.</p></div></div>
 <div class="question" data-q="q9"><p class="qtext">What would the current directory be after cd .. at each of these prompts: [analyst@secOps ~]$, then [analyst@secOps home]$, then [analyst@secOps /]$?</p>
 <div class="sample"><p>From ~ (/home/analyst) you go to /home. From /home you go to / (a forward slash), the root of the file system. From / you stay at /, because the root directory has no parent.</p></div></div>
-<h3>Step 4: Redirect output</h3>
+<h3>Step 1.4: Redirect output</h3>
 <p>The <code>&gt;</code> operator sends a command's output to a file instead of the screen.</p>
 <ol class="steps">
 <li>Run <code>cd /home/analyst</code>.</li>
@@ -70,13 +70,13 @@
 </ol>
 <div class="question" data-q="q11"><p class="qtext">What happened to the text file? Explain.</p>
 <div class="sample"><p>The old text was replaced by the new message. The &gt; operator empties the file before it writes.</p></div></div>
-<h3>Step 5: Redirect and append</h3>
+<h3>Step 1.5: Redirect and append</h3>
 <ol class="steps">
 <li>Run <code>echo This is another line of text. It will be APPENDED to the output file. &gt;&gt; some_text_file.txt</code>, then <code>cat some_text_file.txt</code>.</li>
 </ol>
 <div class="question" data-q="q12"><p class="qtext">What happened to the text file this time? Explain.</p>
 <div class="sample"><p>The new line was added to the end and the earlier text stayed. The &gt;&gt; operator appends instead of replacing.</p></div></div>
-<h3>Step 6: Hidden files</h3>
+<h3>Step 1.6: Hidden files</h3>
 <p>Files and folders whose names start with a dot are hidden from a normal listing. Do not confuse them with the single dot that means the current folder.</p>
 <ol class="steps"><li>Run <code>ls -l</code> in your home folder, then <code>ls -la</code>.</li></ol>
 <div class="question" data-q="q13"><p class="qtext">How many more items does ls -la show than ls -l? Why?</p>
@@ -86,18 +86,18 @@
 <ol class="steps" start="2"><li>Run <code>man ls</code> and find the <code>-a</code> option.</li></ol>
 
 <h2>Part 2: Copying, deleting, and moving files</h2>
-<h3>Step 1: Copy files</h3>
+<h3>Step 2.1: Copy files</h3>
 <p><code>cp</code> copies a file. The first parameter is the source and the second is the destination. The original stays where it was.</p>
 <ol class="steps"><li>Run <code>cp some_text_file.txt cyops_folder2/</code></li></ol>
 <div class="question" data-q="q15"><p class="qtext">What are the source and destination, written as full paths?</p>
 <div class="sample"><p>Source: /home/analyst/some_text_file.txt. Destination: /home/analyst/cyops_folder2/some_text_file.txt.</p></div></div>
 <ol class="steps" start="2"><li>Run <code>ls cyops_folder2/</code>, then <code>ls -l</code> to see that the file is in both places.</li></ol>
-<h3>Step 2: Delete files and directories</h3>
+<h3>Step 2.2: Delete files and directories</h3>
 <ol class="steps">
 <li>Run <code>rm some_text_file.txt</code>, then <code>ls -l</code>.</li>
 <li>Directories are a type of file too, but deleting one needs the <code>-r</code> (recursive) option, which also deletes everything inside it. Run <code>rm -r cyops_folder1</code>, then <code>ls -l</code>.</li>
 </ol>
-<h3>Step 3: Move files and directories</h3>
+<h3>Step 2.3: Move files and directories</h3>
 <p><code>mv</code> works like cp, but it removes the file from its original place. The <code>.</code> destination means "the folder I am in."</p>
 <ol class="steps">
 <li>Run <code>mv cyops_folder2/some_text_file.txt .</code>, then <code>ls -l cyops_folder2/</code> and <code>ls -l /home/analyst/</code>.</li>
@@ -105,7 +105,7 @@
 </ol>
 <div class="question" data-q="q16"><p class="qtext">What command did you use to delete cyops_folder2?</p>
 <div class="sample"><p><code>rm -r cyops_folder2</code>. Because the folder is empty, <code>rmdir cyops_folder2</code> also works.</p></div></div>
-<h3>Reflection</h3>
+<h2>Reflection</h2>
 <div class="question" data-q="q17"><p class="qtext">What are the advantages of using the Linux command line?</p>
 <div class="sample"><p>Answers vary. The command line gives more options and control than graphical tools, commands can be combined into scripts to automate routine work, and it uses few resources, which matters when managing computers remotely.</p></div></div>
 

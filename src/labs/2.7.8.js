@@ -269,7 +269,7 @@
       if (r.present && r.signed) pk.lynisIdx = true;
       T('aptupd');
       L.emit('apt:update', {});
-      return { code: fail ? 100 : 0, notes: fail ? ['apt refused the Lynis repository because it cannot check its signature. Import the CISOfy key first (Part 4, Step 2), then run sudo apt-get update again.'] : [] };
+      return { code: fail ? 100 : 0, notes: fail ? ['apt refused the Lynis repository because it cannot check its signature. Import the CISOfy key first (Step 4.2), then run sudo apt-get update again.'] : [] };
     });
   }
   function aptUpgrade(ctx, io, yes) {

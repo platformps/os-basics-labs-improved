@@ -9,7 +9,7 @@
 <div class="note"><p><strong>What is different from the original lab:</strong> In the real Process Explorer you find a window's process by dragging a crosshair icon onto the window with a mouse. That drag has no keyboard equivalent, so this simulation gives you a <strong>Find Window's Process</strong> button that lists the open windows instead. Everything else follows the original steps.</p></div>
 
 <h2>Part 1: Explore processes</h2>
-<h3>Step 1: Download the Sysinternals Suite</h3>
+<h3>Step 1.1: Download the Sysinternals Suite</h3>
 <ol class="steps">
 <li>Open <strong>Microsoft Edge</strong> from Start.</li>
 <li>In the address bar, type <code>learn.microsoft.com/sysinternals/downloads/sysinternals-suite</code> and press Enter. (The original lab gives an older technet address; it now sends you to this page.)</li>
@@ -17,7 +17,7 @@
 <li>Open <strong>File Explorer</strong> and go to <strong>Downloads</strong>. Select <strong>SysinternalsSuite.zip</strong>, open its Actions, and choose <strong>Extract All</strong>. Accept the suggested folder.</li>
 <li>Leave Microsoft Edge open. You need it in the next step.</li>
 </ol>
-<h3>Step 2: Explore an active process</h3>
+<h3>Step 1.2: Explore an active process</h3>
 <ol class="steps">
 <li>In the extracted <strong>SysinternalsSuite</strong> folder, open <strong>procexp64.exe</strong>. When the Process Explorer License Agreement appears, choose <strong>Agree</strong>.</li>
 <li>Process Explorer lists every running process as a tree. A process that another process started is shown indented under it, and your screen reader hears "child of" followed by the parent's name.</li>
@@ -26,7 +26,7 @@
 </ol>
 <div class="question" data-q="q1"><p class="qtext">What happened to the web browser window when you killed its process?</p>
 <div class="sample"><p>The Microsoft Edge window closed right away. The window belongs to the process, so ending the process ends the window and its helper processes.</p></div></div>
-<h3>Step 3: Start another process</h3>
+<h3>Step 1.3: Start another process</h3>
 <ol class="steps">
 <li>Open <strong>Command Prompt</strong> from Start.</li>
 <li>Switch back to Process Explorer, choose <strong>Find Window's Process</strong>, and pick the Command Prompt window. The process is <code>cmd.exe</code>. Its parent is <code>explorer.exe</code>, and it has a child process, <code>conhost.exe</code> (Console Window Host).</li>
@@ -44,14 +44,14 @@
 
 <h2>Part 2: Explore threads and handles</h2>
 <p>A process has one or more threads; a thread is the part of a process that the processor actually runs. A handle is a reference a process holds to something the operating system manages, such as a file, a registry key, or another thread.</p>
-<h3>Step 1: Explore threads</h3>
+<h3>Step 2.1: Explore threads</h3>
 <ol class="steps">
 <li>Open a new <strong>Command Prompt</strong>. This starts a new <code>cmd.exe</code> and <code>conhost.exe</code>.</li>
 <li>In Process Explorer, select <code>conhost.exe</code>, open its Actions, and choose <strong>Properties</strong>. Go to the <strong>Threads</strong> tab.</li>
 </ol>
 <div class="question" data-q="q4"><p class="qtext">What information does the Threads tab show? What other kinds of information are on the other tabs of the Properties window?</p>
 <div class="sample"><p>The Threads tab lists each thread with its thread ID (TID), CPU use, cycles delta, and start address, plus the total thread count. The other tabs show the image path and command line, performance information, network connections, security information (user and groups), environment variables, and readable strings found in the file.</p></div></div>
-<h3>Step 2: Explore handles</h3>
+<h3>Step 2.2: Explore handles</h3>
 <ol class="steps">
 <li>Close the Properties window. With <code>conhost.exe</code> still selected, open the <strong>View</strong> menu, choose <strong>Lower Pane View</strong>, then <strong>Handles</strong>. A Handles table appears under the process list.</li>
 </ol>
@@ -60,6 +60,7 @@
 <ol class="steps" start="2"><li>Close Process Explorer.</li></ol>
 
 <h2>Part 3: Explore the Windows Registry</h2>
+<h3>Step 3.1: Explore the Windows Registry</h3>
 <p>The Windows Registry is a database of settings for Windows and for apps. Registry Editor shows five root keys at the top level:</p>
 <ul class="tri">
 <li><strong>HKEY_CLASSES_ROOT:</strong> file type associations and information about registered app components. It combines settings from HKEY_LOCAL_MACHINE\Software\Classes and HKEY_CURRENT_USER\Software\Classes.</li>
