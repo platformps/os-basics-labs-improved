@@ -186,6 +186,10 @@ def build_lab(meta, all_labs):
         settings=SETTINGS_TERM if meta.get('terminal') else '', prevnext=' '.join(pn), logo=data_uri('brand/wordmark-white.png'), robots=ROBOTS, org=E(COURSE['org']), tagline=E(COURSE['tagline']), course_title=E(COURSE['title']), provider=E(COURSE['provider']))
     if GUIDED:
         out = out.replace('<li class="badge sim">Accessible simulation</li>', '<li class="badge sim">Accessible simulation, ' + GUIDED_LABEL + '</li>', 1)
+        # Simulation first in reading and tab order; CSS keeps it on the right visually.
+        m = re.search(r'(\s*<div class="lab-col">.*?</div>\n)(\s*<div class="sim-col">.*?</section>\s*</div>\n)', out, re.S)
+        if m:
+            out = out[:m.start()] + m.group(2) + m.group(1) + out[m.end():]
     bad = DASHES.findall(out)
     if bad:
         for m in DASHES.finditer(out):
