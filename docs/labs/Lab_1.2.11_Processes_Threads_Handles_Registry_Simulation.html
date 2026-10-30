@@ -336,7 +336,7 @@ textarea.notepad{font-family:Consolas,"Courier New",monospace;min-height:12em}
 <div class="note"><p><strong>What is different from the original lab:</strong> In the real Process Explorer you find a window's process by dragging a crosshair icon onto the window with a mouse. That drag has no keyboard equivalent, so this simulation gives you a <strong>Find Window's Process</strong> button that lists the open windows instead. Everything else follows the original steps.</p></div>
 
 <h2>Part 1: Explore processes</h2>
-<h3>Step 1: Download the Sysinternals Suite</h3>
+<h3>Step 1.1: Download the Sysinternals Suite</h3>
 <ol class="steps">
 <li>Open <strong>Microsoft Edge</strong> from Start.</li>
 <li>In the address bar, type <code>learn.microsoft.com/sysinternals/downloads/sysinternals-suite</code> and press Enter. (The original lab gives an older technet address; it now sends you to this page.)</li>
@@ -344,7 +344,7 @@ textarea.notepad{font-family:Consolas,"Courier New",monospace;min-height:12em}
 <li>Open <strong>File Explorer</strong> and go to <strong>Downloads</strong>. Select <strong>SysinternalsSuite.zip</strong>, open its Actions, and choose <strong>Extract All</strong>. Accept the suggested folder.</li>
 <li>Leave Microsoft Edge open. You need it in the next step.</li>
 </ol>
-<h3>Step 2: Explore an active process</h3>
+<h3>Step 1.2: Explore an active process</h3>
 <ol class="steps">
 <li>In the extracted <strong>SysinternalsSuite</strong> folder, open <strong>procexp64.exe</strong>. When the Process Explorer License Agreement appears, choose <strong>Agree</strong>.</li>
 <li>Process Explorer lists every running process as a tree. A process that another process started is shown indented under it, and your screen reader hears "child of" followed by the parent's name.</li>
@@ -353,7 +353,7 @@ textarea.notepad{font-family:Consolas,"Courier New",monospace;min-height:12em}
 </ol>
 <div class="question" data-q="q1"><p class="qtext">What happened to the web browser window when you killed its process?</p>
 <div class="sample"><p>The Microsoft Edge window closed right away. The window belongs to the process, so ending the process ends the window and its helper processes.</p></div></div>
-<h3>Step 3: Start another process</h3>
+<h3>Step 1.3: Start another process</h3>
 <ol class="steps">
 <li>Open <strong>Command Prompt</strong> from Start.</li>
 <li>Switch back to Process Explorer, choose <strong>Find Window's Process</strong>, and pick the Command Prompt window. The process is <code>cmd.exe</code>. Its parent is <code>explorer.exe</code>, and it has a child process, <code>conhost.exe</code> (Console Window Host).</li>
@@ -371,14 +371,14 @@ textarea.notepad{font-family:Consolas,"Courier New",monospace;min-height:12em}
 
 <h2>Part 2: Explore threads and handles</h2>
 <p>A process has one or more threads; a thread is the part of a process that the processor actually runs. A handle is a reference a process holds to something the operating system manages, such as a file, a registry key, or another thread.</p>
-<h3>Step 1: Explore threads</h3>
+<h3>Step 2.1: Explore threads</h3>
 <ol class="steps">
 <li>Open a new <strong>Command Prompt</strong>. This starts a new <code>cmd.exe</code> and <code>conhost.exe</code>.</li>
 <li>In Process Explorer, select <code>conhost.exe</code>, open its Actions, and choose <strong>Properties</strong>. Go to the <strong>Threads</strong> tab.</li>
 </ol>
 <div class="question" data-q="q4"><p class="qtext">What information does the Threads tab show? What other kinds of information are on the other tabs of the Properties window?</p>
 <div class="sample"><p>The Threads tab lists each thread with its thread ID (TID), CPU use, cycles delta, and start address, plus the total thread count. The other tabs show the image path and command line, performance information, network connections, security information (user and groups), environment variables, and readable strings found in the file.</p></div></div>
-<h3>Step 2: Explore handles</h3>
+<h3>Step 2.2: Explore handles</h3>
 <ol class="steps">
 <li>Close the Properties window. With <code>conhost.exe</code> still selected, open the <strong>View</strong> menu, choose <strong>Lower Pane View</strong>, then <strong>Handles</strong>. A Handles table appears under the process list.</li>
 </ol>
@@ -387,6 +387,7 @@ textarea.notepad{font-family:Consolas,"Courier New",monospace;min-height:12em}
 <ol class="steps" start="2"><li>Close Process Explorer.</li></ol>
 
 <h2>Part 3: Explore the Windows Registry</h2>
+<h3>Step 3.1: Explore the Windows Registry</h3>
 <p>The Windows Registry is a database of settings for Windows and for apps. Registry Editor shows five root keys at the top level:</p>
 <ul class="tri">
 <li><strong>HKEY_CLASSES_ROOT:</strong> file type associations and information about registered app components. It combines settings from HKEY_LOCAL_MACHINE\Software\Classes and HKEY_CURRENT_USER\Software\Classes.</li>
@@ -2744,11 +2745,15 @@ Win.registerApp('powershell', WinApps.makeShell('ps'));
     const lists = block.filter(x => x.matches('ol.steps'));
     const hasQ = block.some(x => x.matches('.question') || x.querySelector('.question'));
     const isStep = /^step\s*\d/i.test(hd.textContent.trim());
-    if (!lists.length && !hasQ && !isStep) return;
+    const isWrap = /^(Reflection|Challenge|Summary)/i.test(hd.textContent.trim());
+    if (!lists.length && !hasQ && !isStep && !isWrap) return;
     units.push({ head: hd, part: hd.tagName === 'H3' ? part : '', title: hd.textContent.trim(), block, lists, questionsOnly: !lists.length, hasQ });
   });
   if (!units.length) return;
-  units.forEach((u, i) => { u.index = i; u.lists.forEach(l => { l._unit = i; }); });
+  units.forEach(u => { u.isStep = /^Step\s*\d/i.test(u.title); u.wrap = !u.isStep && /^(Reflection|Challenge|Summary)/i.test(u.title); });
+  const stepCount = units.filter(u => u.isStep).length;
+  units.forEach((u, i) => { u.index = i; u.stepNo = u.isStep ? units.slice(0, i + 1).filter(x => x.isStep).length : 0; u.lists.forEach(l => { l._unit = i; }); });
+  const where = u => u.isStep ? `${u.part ? u.part + '. ' : ''}${u.title.match(/^Step\s*[\d.]+/i)[0]}. ${u.stepNo} of ${stepCount} steps in this lab.` : (u.wrap ? `${u.title}. Wrap-up, after the last step.` : (u.part ? u.part + '. ' : ''));
 
   // Panel inside the simulation frame.
   const title = h('h3', { id: 'guide-h', class: 'guide-title' });
@@ -2769,11 +2774,11 @@ Win.registerApp('powershell', WinApps.makeShell('ps'));
     const d = stepsDone(); const i = cur;
     if (doneBox.checked) { if (!d.includes(i)) d.push(i); } else { const k = d.indexOf(i); if (k >= 0) d.splice(k, 1); }
     Lab.store.set(stepsKey(), d);
-    const n = units.filter((u, k) => d.includes(k)).length;
-    Lab.announce(`${units[i].title} marked ${doneBox.checked ? 'done' : 'not done'}. ${n} of ${units.length} steps done. ${progressText()}`);
+    const n = units.filter((u, k) => d.includes(k) && u.isStep).length;
+    Lab.announce(`${units[i].title} marked ${doneBox.checked ? 'done' : 'not done'}. ${n} of ${stepCount} steps done. ${progressText()}`);
   });
   function progressText() { const pt = document.getElementById('progress-text'); return pt ? pt.textContent.trim() + '.' : ''; }
-  function refreshProgress() { const d = stepsDone(); progLine.textContent = `${progressText()} ${d.length} of ${units.length} steps marked done.`; }
+  function refreshProgress() { const d = stepsDone(); const n = units.filter((u, k) => d.includes(k) && u.isStep).length; progLine.textContent = `${progressText()} ${n} of ${stepCount} steps marked done.`; }
   const keysHint = h('p', { class: 'guide-keys' }, h('strong', null, 'Shortcuts, from anywhere in the simulation: '), 'Alt+N reads the next instruction, Alt+P the previous one, Alt+R repeats the current one. Focus stays where you are.');
   const panel = h('section', { class: 'guide', 'aria-labelledby': 'guide-h' }, title, pos, body, doneWrap, progLine, h('div', { class: 'toolbar guide-tools' }, nextItem, repeatItem, prev, next, readFull), keysHint);
   sim.before(panel);
@@ -2833,7 +2838,7 @@ Win.registerApp('powershell', WinApps.makeShell('ps'));
     cur = i;
     const u = units[i];
     title.textContent = u.title;
-    pos.textContent = (u.part ? u.part + '. ' : '') + `Step ${i + 1} of ${units.length}.` + (u.questionsOnly && u.hasQ ? ' Type your answer in the box below.' : '') + (i === units.length - 1 ? ' This is the last step of the lab.' : '');
+    pos.textContent = where(u) + (u.questionsOnly && u.hasQ ? ' Type your answer in the box below.' : '') + (i === units.length - 1 ? ' This is the end of the lab.' : '');
     body.textContent = '';
     body.append(cloneBlock(u));
     if (i === units.length - 1) {
@@ -2844,14 +2849,14 @@ Win.registerApp('powershell', WinApps.makeShell('ps'));
     }
     prev.disabled = i === 0;
     const nx = units[i + 1];
-    next.textContent = nx ? (nx.questionsOnly ? `Next: ${nx.title}` : 'Next step') : 'Next step (this is the last step)';
+    next.textContent = nx ? (nx.isStep ? 'Next step' : `Next: ${nx.title}`) : 'Next step (this is the end of the lab)';
     next.disabled = !nx;
     Lab.store.set(key(), i);
     doneBox.checked = stepsDone().includes(i);
-    doneLbl.textContent = `I finished this step (${u.title})`;
+    doneLbl.textContent = u.isStep ? `I finished this step (${u.title})` : `I finished this section (${u.title})`;
     refreshProgress();
     setItem(0);
-    if (announce) { focusOnce(title); Lab.announce(`${u.part ? u.part + ', ' : ''}${u.title}. Step ${i + 1} of ${units.length}.`); }
+    if (announce) { focusOnce(title); Lab.announce(u.isStep ? `${u.title}. ${u.stepNo} of ${stepCount} steps in this lab.` : where(u)); }
   }
 
   // Instructions inside the current step: numbered items, notes, and questions. The learner
@@ -2877,7 +2882,7 @@ Win.registerApp('powershell', WinApps.makeShell('ps'));
   function stepItem(dir, announce) {
     if (!items.length || curItem + dir >= items.length) {
       if (dir > 0 && cur < units.length - 1) { show(cur + 1, false); Lab.announce(`Moving on. `); sayItem(true); }
-      else if (dir > 0) Lab.announce('That was the last instruction of the last step.');
+      else if (dir > 0) Lab.announce('That was the last instruction of the lab.');
       return;
     }
     if (curItem + dir < 0) {
@@ -2902,7 +2907,7 @@ Win.registerApp('powershell', WinApps.makeShell('ps'));
       if (!a) return;
       const fresh = a.cloneNode(true);
       fresh.textContent = `Do this step in the simulation (${u.title})`;
-      fresh.addEventListener('click', (e) => { e.preventDefault(); show(i, false); simH.scrollIntoView({ block: 'start' }); focusOnce(title); Lab.announce(`${u.title}, shown in the simulation. Step ${i + 1} of ${units.length}.`); });
+      fresh.addEventListener('click', (e) => { e.preventDefault(); show(i, false); simH.scrollIntoView({ block: 'start' }); focusOnce(title); Lab.announce(`${u.title}, shown in the simulation.`); });
       a.replaceWith(fresh);
     });
   });
@@ -2919,7 +2924,7 @@ Win.registerApp('powershell', WinApps.makeShell('ps'));
     const tasks = (Lab.config && Lab.config.tasks) || [];
     if (allDoneSaid || !tasks.length || !tasks.every(t => Lab.isDone(t.id))) return;
     allDoneSaid = true;
-    const rest = units.slice(cur + 1).filter(u => u.questionsOnly && u.hasQ);
+    const rest = units.slice(cur + 1).filter(u => u.wrap && u.hasQ);
     const unanswered = [...labCol.querySelectorAll('.question textarea')].filter(t => !t.value.trim()).length;
     if (rest.length) Lab.announce(`${rest.map(u => u.title).join(' and ')} ${rest.length === 1 ? 'is' : 'are'} still to do: use the Next button in the Current step panel.`);
     else if (unanswered) Lab.announce(`${unanswered} question${unanswered === 1 ? '' : 's'} still ${unanswered === 1 ? 'needs' : 'need'} an answer. Use Previous step to find ${unanswered === 1 ? 'it' : 'them'}.`);

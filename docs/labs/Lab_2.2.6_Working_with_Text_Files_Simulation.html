@@ -337,7 +337,7 @@ textarea.notepad{font-family:Consolas,"Courier New",monospace;min-height:12em}
 
 <h2>Part 1: Graphical text editors</h2>
 <p>Text editors are among the oldest kinds of applications. Some have a graphical window, and some work only on the command line. The Security Workstation includes one graphical editor, SciTE. It is small and fast, and it is all you need for this course.</p>
-<h3>Step 1: Open SciTE from the Applications menu</h3>
+<h3>Step 1.1: Open SciTE from the Applications menu</h3>
 <ol class="steps">
 <li>Choose <strong>Applications</strong> on the dock, search for <code>SciTE</code>, and open <strong>SciTE text editor</strong>.</li>
 <li>In the editing area, type this sentence on one line, without pressing Enter: <code>Linux treats almost everything as a file, so a text editor is one of the most useful tools a security analyst can learn to use well.</code></li>
@@ -351,7 +351,7 @@ textarea.notepad{font-family:Consolas,"Courier New",monospace;min-height:12em}
 <li>Change <strong>Files of type</strong> to <strong>All Files (*)</strong>. Select space.txt and open it. Linux does not need file extensions, but some applications, like SciTE, use them to decide what to show.</li>
 <li>Close SciTE.</li>
 </ol>
-<h3>Step 2: Open SciTE from the terminal</h3>
+<h3>Step 1.2: Open SciTE from the terminal</h3>
 <ol class="steps">
 <li>Open <strong>Terminal</strong> from Applications. Run <code>ls</code>. space.txt is in your current folder, so you can open it without a path.</li>
 <li>Run <code>scite space.txt</code>. SciTE opens with the file loaded.</li>
@@ -364,6 +364,7 @@ textarea.notepad{font-family:Consolas,"Courier New",monospace;min-height:12em}
 </ol>
 
 <h2>Part 2: Command line text editors</h2>
+<h3>Step 2.1: Command line text editors</h3>
 <p>Command line editors matter because you often manage a Linux server from a remote text-only session, such as SSH, where there is no graphical desktop. This course uses <strong>nano</strong>. Another very popular editor is <strong>vi</strong> (and its improved version, <strong>vim</strong>), which is powerful but harder to learn.</p>
 <p>nano is controlled with the keyboard. Its shortcut list appears at the bottom of the screen: the caret symbol (^) means Ctrl, and M- means the Meta key, which is usually Alt. In this simulation the same shortcuts are also buttons, and nano's function key alternatives work too: F1 Help, F2 Exit, F3 Write Out, and F6 Where Is.</p>
 <div class="note warn"><p>Do not press Ctrl+W in a web browser: it closes the browser tab. Use F6 or the Where Is button instead.</p></div>
@@ -380,7 +381,7 @@ textarea.notepad{font-family:Consolas,"Courier New",monospace;min-height:12em}
 
 <h2>Part 3: Working with configuration files</h2>
 <p>In Linux, the system and its services are configured through files. Configuration files are usually text, and each application or service reads its own files when it starts.</p>
-<h3>Step 1: Locate configuration files</h3>
+<h3>Step 3.1: Locate configuration files</h3>
 <p>By convention, settings for your own applications live in hidden files in your home folder, and settings for system-wide services live in <code>/etc</code>.</p>
 <ol class="steps">
 <li>Run <code>ls -l</code>. None of the files look like configuration files.</li>
@@ -390,7 +391,7 @@ textarea.notepad{font-family:Consolas,"Courier New",monospace;min-height:12em}
 </ol>
 <div class="question" data-q="q4"><p class="qtext">Why are your own application settings stored in your home folder instead of in /etc?</p>
 <div class="sample"><p>Regular users cannot write to /etc. Linux is a multi-user system, so keeping each user's settings in their own home folder lets every user customize their own applications without changing anything for anyone else.</p></div></div>
-<h3>Step 2: Edit and save configuration files</h3>
+<h3>Step 3.2: Edit and save configuration files</h3>
 <ol class="steps">
 <li>Open <strong>SciTE</strong> from Applications. Open the File menu, choose Open, set Files of type to <strong>All Files (*)</strong>, and open <code>.bashrc</code>.</li>
 <li>On the PS1 line, change <code>32</code> to <code>31</code>. 32 is the color code for green and 31 is red. Save with Ctrl+S and close SciTE.</li>
@@ -403,7 +404,7 @@ textarea.notepad{font-family:Consolas,"Courier New",monospace;min-height:12em}
 <li>Change <code>31</code> to <code>33</code> (yellow). Press Ctrl+X, then Y to save, then Enter to keep the name .bashrc.</li>
 <li>Run <code>bash</code> to start a new shell that reads .bashrc again. The prompt is now yellow.</li>
 </ol>
-<h3>Step 3: Edit configuration files for services</h3>
+<h3>Step 3.3: Edit configuration files for services</h3>
 <p>nginx is a lightweight web server installed on this workstation. Its configuration files are in /etc/nginx. You will change two settings in the file custom_server.conf: the port nginx listens on and the folder it serves web pages from.</p>
 <ol class="steps">
 <li>Run <code>sudo nano -l /etc/nginx/custom_server.conf</code>. The <code>-l</code> option turns on line numbers. Enter the password <code>cyberops</code> when asked.</li>
@@ -422,10 +423,10 @@ textarea.notepad{font-family:Consolas,"Courier New",monospace;min-height:12em}
 </ol>
 <div class="question" data-q="q7"><p class="qtext">Does the web page appear now?</p>
 <div class="sample"><p>No. Firefox cannot connect, because no web server is listening on port 8080 anymore.</p></div></div>
-<h3>Challenge</h3>
+<h2>Challenge</h2>
 <div class="question" data-q="q8"><p class="qtext">Can you edit /etc/nginx/custom_server.conf with SciTE? Describe how.</p>
 <div class="sample"><p>Yes, but SciTE must run as root because the file is in /etc. From a terminal, run <code>sudo scite /etc/nginx/custom_server.conf</code>. If you open it from the Applications menu instead, SciTE can open the file but cannot save it.</p></div></div>
-<h3>Reflection</h3>
+<h2>Reflection</h2>
 <ul class="tri">
 <li>Each service has its own configuration options, file locations, and syntax. Always check the documentation.</li>
 <li>Wrong permissions are a very common cause of problems. Make sure you have the right permissions before you edit configuration files.</li>
@@ -3103,11 +3104,15 @@ DESCRIPTION
     const lists = block.filter(x => x.matches('ol.steps'));
     const hasQ = block.some(x => x.matches('.question') || x.querySelector('.question'));
     const isStep = /^step\s*\d/i.test(hd.textContent.trim());
-    if (!lists.length && !hasQ && !isStep) return;
+    const isWrap = /^(Reflection|Challenge|Summary)/i.test(hd.textContent.trim());
+    if (!lists.length && !hasQ && !isStep && !isWrap) return;
     units.push({ head: hd, part: hd.tagName === 'H3' ? part : '', title: hd.textContent.trim(), block, lists, questionsOnly: !lists.length, hasQ });
   });
   if (!units.length) return;
-  units.forEach((u, i) => { u.index = i; u.lists.forEach(l => { l._unit = i; }); });
+  units.forEach(u => { u.isStep = /^Step\s*\d/i.test(u.title); u.wrap = !u.isStep && /^(Reflection|Challenge|Summary)/i.test(u.title); });
+  const stepCount = units.filter(u => u.isStep).length;
+  units.forEach((u, i) => { u.index = i; u.stepNo = u.isStep ? units.slice(0, i + 1).filter(x => x.isStep).length : 0; u.lists.forEach(l => { l._unit = i; }); });
+  const where = u => u.isStep ? `${u.part ? u.part + '. ' : ''}${u.title.match(/^Step\s*[\d.]+/i)[0]}. ${u.stepNo} of ${stepCount} steps in this lab.` : (u.wrap ? `${u.title}. Wrap-up, after the last step.` : (u.part ? u.part + '. ' : ''));
 
   // Panel inside the simulation frame.
   const title = h('h3', { id: 'guide-h', class: 'guide-title' });
@@ -3128,11 +3133,11 @@ DESCRIPTION
     const d = stepsDone(); const i = cur;
     if (doneBox.checked) { if (!d.includes(i)) d.push(i); } else { const k = d.indexOf(i); if (k >= 0) d.splice(k, 1); }
     Lab.store.set(stepsKey(), d);
-    const n = units.filter((u, k) => d.includes(k)).length;
-    Lab.announce(`${units[i].title} marked ${doneBox.checked ? 'done' : 'not done'}. ${n} of ${units.length} steps done. ${progressText()}`);
+    const n = units.filter((u, k) => d.includes(k) && u.isStep).length;
+    Lab.announce(`${units[i].title} marked ${doneBox.checked ? 'done' : 'not done'}. ${n} of ${stepCount} steps done. ${progressText()}`);
   });
   function progressText() { const pt = document.getElementById('progress-text'); return pt ? pt.textContent.trim() + '.' : ''; }
-  function refreshProgress() { const d = stepsDone(); progLine.textContent = `${progressText()} ${d.length} of ${units.length} steps marked done.`; }
+  function refreshProgress() { const d = stepsDone(); const n = units.filter((u, k) => d.includes(k) && u.isStep).length; progLine.textContent = `${progressText()} ${n} of ${stepCount} steps marked done.`; }
   const keysHint = h('p', { class: 'guide-keys' }, h('strong', null, 'Shortcuts, from anywhere in the simulation: '), 'Alt+N reads the next instruction, Alt+P the previous one, Alt+R repeats the current one. Focus stays where you are.');
   const panel = h('section', { class: 'guide', 'aria-labelledby': 'guide-h' }, title, pos, body, doneWrap, progLine, h('div', { class: 'toolbar guide-tools' }, nextItem, repeatItem, prev, next, readFull), keysHint);
   sim.before(panel);
@@ -3192,7 +3197,7 @@ DESCRIPTION
     cur = i;
     const u = units[i];
     title.textContent = u.title;
-    pos.textContent = (u.part ? u.part + '. ' : '') + `Step ${i + 1} of ${units.length}.` + (u.questionsOnly && u.hasQ ? ' Type your answer in the box below.' : '') + (i === units.length - 1 ? ' This is the last step of the lab.' : '');
+    pos.textContent = where(u) + (u.questionsOnly && u.hasQ ? ' Type your answer in the box below.' : '') + (i === units.length - 1 ? ' This is the end of the lab.' : '');
     body.textContent = '';
     body.append(cloneBlock(u));
     if (i === units.length - 1) {
@@ -3203,14 +3208,14 @@ DESCRIPTION
     }
     prev.disabled = i === 0;
     const nx = units[i + 1];
-    next.textContent = nx ? (nx.questionsOnly ? `Next: ${nx.title}` : 'Next step') : 'Next step (this is the last step)';
+    next.textContent = nx ? (nx.isStep ? 'Next step' : `Next: ${nx.title}`) : 'Next step (this is the end of the lab)';
     next.disabled = !nx;
     Lab.store.set(key(), i);
     doneBox.checked = stepsDone().includes(i);
-    doneLbl.textContent = `I finished this step (${u.title})`;
+    doneLbl.textContent = u.isStep ? `I finished this step (${u.title})` : `I finished this section (${u.title})`;
     refreshProgress();
     setItem(0);
-    if (announce) { focusOnce(title); Lab.announce(`${u.part ? u.part + ', ' : ''}${u.title}. Step ${i + 1} of ${units.length}.`); }
+    if (announce) { focusOnce(title); Lab.announce(u.isStep ? `${u.title}. ${u.stepNo} of ${stepCount} steps in this lab.` : where(u)); }
   }
 
   // Instructions inside the current step: numbered items, notes, and questions. The learner
@@ -3236,7 +3241,7 @@ DESCRIPTION
   function stepItem(dir, announce) {
     if (!items.length || curItem + dir >= items.length) {
       if (dir > 0 && cur < units.length - 1) { show(cur + 1, false); Lab.announce(`Moving on. `); sayItem(true); }
-      else if (dir > 0) Lab.announce('That was the last instruction of the last step.');
+      else if (dir > 0) Lab.announce('That was the last instruction of the lab.');
       return;
     }
     if (curItem + dir < 0) {
@@ -3261,7 +3266,7 @@ DESCRIPTION
       if (!a) return;
       const fresh = a.cloneNode(true);
       fresh.textContent = `Do this step in the simulation (${u.title})`;
-      fresh.addEventListener('click', (e) => { e.preventDefault(); show(i, false); simH.scrollIntoView({ block: 'start' }); focusOnce(title); Lab.announce(`${u.title}, shown in the simulation. Step ${i + 1} of ${units.length}.`); });
+      fresh.addEventListener('click', (e) => { e.preventDefault(); show(i, false); simH.scrollIntoView({ block: 'start' }); focusOnce(title); Lab.announce(`${u.title}, shown in the simulation.`); });
       a.replaceWith(fresh);
     });
   });
@@ -3278,7 +3283,7 @@ DESCRIPTION
     const tasks = (Lab.config && Lab.config.tasks) || [];
     if (allDoneSaid || !tasks.length || !tasks.every(t => Lab.isDone(t.id))) return;
     allDoneSaid = true;
-    const rest = units.slice(cur + 1).filter(u => u.questionsOnly && u.hasQ);
+    const rest = units.slice(cur + 1).filter(u => u.wrap && u.hasQ);
     const unanswered = [...labCol.querySelectorAll('.question textarea')].filter(t => !t.value.trim()).length;
     if (rest.length) Lab.announce(`${rest.map(u => u.title).join(' and ')} ${rest.length === 1 ? 'is' : 'are'} still to do: use the Next button in the Current step panel.`);
     else if (unanswered) Lab.announce(`${unanswered} question${unanswered === 1 ? '' : 's'} still ${unanswered === 1 ? 'needs' : 'need'} an answer. Use Previous step to find ${unanswered === 1 ? 'it' : 'them'}.`);

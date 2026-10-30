@@ -337,6 +337,7 @@ textarea.notepad{font-family:Consolas,"Courier New",monospace;min-height:12em}
 </ul>
 
 <h2>Part 1: Access the PowerShell console</h2>
+<h3>Step 1.1: Access the PowerShell console</h3>
 <ol class="steps">
 <li>Open Start, search for <code>powershell</code>, and open <strong>Windows PowerShell</strong>.</li>
 <li>Open Start again, search for <code>command prompt</code>, and open <strong>Command Prompt</strong>.</li>
@@ -344,6 +345,7 @@ textarea.notepad{font-family:Consolas,"Courier New",monospace;min-height:12em}
 <p>Use the taskbar to switch between the two windows. Each command window's prompt tells you which one you are in: PowerShell prompts start with <code>PS</code>.</p>
 
 <h2>Part 2: Explore Command Prompt and PowerShell commands</h2>
+<h3>Step 2.1: Explore Command Prompt and PowerShell commands</h3>
 <ol class="steps">
 <li>Run <code>dir</code> in both windows.</li>
 </ol>
@@ -356,6 +358,7 @@ textarea.notepad{font-family:Consolas,"Courier New",monospace;min-height:12em}
 <div class="sample"><p>The output is the same or very similar in both windows. PowerShell runs these familiar commands so people can move from Command Prompt easily, either by running the same program (ping, ipconfig) or through an alias (cd).</p></div></div>
 
 <h2>Part 3: Explore cmdlets</h2>
+<h3>Step 3.1: Explore cmdlets</h3>
 <p>PowerShell commands, called cmdlets, are named as a verb and a noun joined by a hyphen, such as <code>Get-Process</code>. Many familiar command names are aliases for a cmdlet.</p>
 <ol class="steps">
 <li>In PowerShell, run <code>Get-Alias dir</code>.</li>
@@ -368,6 +371,7 @@ textarea.notepad{font-family:Consolas,"Courier New",monospace;min-height:12em}
 </ol>
 
 <h2>Part 4: Explore the netstat command using PowerShell</h2>
+<h3>Step 4.1: Explore the netstat command using PowerShell</h3>
 <ol class="steps">
 <li>In PowerShell, run <code>netstat /?</code> to see the options for netstat. (The original lab uses <code>netstat -h</code>. That also prints the help, but only because Windows does not recognize -h.)</li>
 <li>Run <code>netstat -r</code> to display the routing table.</li>
@@ -384,6 +388,7 @@ textarea.notepad{font-family:Consolas,"Courier New",monospace;min-height:12em}
 <div class="sample"><p>For PID 756: the process is svchost.exe (Host Process for Windows Services), it runs as the NETWORK SERVICE user, it is using about 4,132 K of memory, and its file is in C:\Windows\System32. netstat showed it is the RpcSs service listening on TCP port 135.</p></div></div>
 
 <h2>Part 5: Empty the Recycle Bin using PowerShell</h2>
+<h3>Step 5.1: Empty the Recycle Bin using PowerShell</h3>
 <p>One PowerShell command can replace several clicks, and the same command can run on many computers at once. That is why administrators use PowerShell to manage large networks.</p>
 <ol class="steps">
 <li>Open the <strong>Recycle Bin</strong> (search for it in Start) and check that it has items in it. In this simulation it already does.</li>
@@ -392,7 +397,7 @@ textarea.notepad{font-family:Consolas,"Courier New",monospace;min-height:12em}
 </ol>
 <div class="question" data-q="q6"><p class="qtext">What happened to the files in the Recycle Bin?</p>
 <div class="sample"><p>They were deleted permanently. The Recycle Bin is now empty.</p></div></div>
-<h3>Reflection</h3>
+<h2>Reflection</h2>
 <div class="question" data-q="q7"><p class="qtext">PowerShell was built for task automation and configuration management. Research commands that could simplify your work as a security analyst, and record what you find.</p>
 <div class="sample"><p>Answers vary. Examples: <code>Get-Process</code> and <code>Get-Service</code> to list what is running, <code>Get-NetTCPConnection</code> to see connections and owning processes, <code>Get-WinEvent</code> to search event logs, <code>Get-FileHash</code> to check whether a file matches a known hash, and <code>Get-LocalUser</code> to review accounts. You can try <code>Get-Process</code>, <code>Get-Service</code>, and <code>Get-Alias</code> in this simulation.</p></div></div>
 
@@ -2489,11 +2494,15 @@ Win.registerApp('powershell', WinApps.makeShell('ps'));
     const lists = block.filter(x => x.matches('ol.steps'));
     const hasQ = block.some(x => x.matches('.question') || x.querySelector('.question'));
     const isStep = /^step\s*\d/i.test(hd.textContent.trim());
-    if (!lists.length && !hasQ && !isStep) return;
+    const isWrap = /^(Reflection|Challenge|Summary)/i.test(hd.textContent.trim());
+    if (!lists.length && !hasQ && !isStep && !isWrap) return;
     units.push({ head: hd, part: hd.tagName === 'H3' ? part : '', title: hd.textContent.trim(), block, lists, questionsOnly: !lists.length, hasQ });
   });
   if (!units.length) return;
-  units.forEach((u, i) => { u.index = i; u.lists.forEach(l => { l._unit = i; }); });
+  units.forEach(u => { u.isStep = /^Step\s*\d/i.test(u.title); u.wrap = !u.isStep && /^(Reflection|Challenge|Summary)/i.test(u.title); });
+  const stepCount = units.filter(u => u.isStep).length;
+  units.forEach((u, i) => { u.index = i; u.stepNo = u.isStep ? units.slice(0, i + 1).filter(x => x.isStep).length : 0; u.lists.forEach(l => { l._unit = i; }); });
+  const where = u => u.isStep ? `${u.part ? u.part + '. ' : ''}${u.title.match(/^Step\s*[\d.]+/i)[0]}. ${u.stepNo} of ${stepCount} steps in this lab.` : (u.wrap ? `${u.title}. Wrap-up, after the last step.` : (u.part ? u.part + '. ' : ''));
 
   // Panel inside the simulation frame.
   const title = h('h3', { id: 'guide-h', class: 'guide-title' });
@@ -2514,11 +2523,11 @@ Win.registerApp('powershell', WinApps.makeShell('ps'));
     const d = stepsDone(); const i = cur;
     if (doneBox.checked) { if (!d.includes(i)) d.push(i); } else { const k = d.indexOf(i); if (k >= 0) d.splice(k, 1); }
     Lab.store.set(stepsKey(), d);
-    const n = units.filter((u, k) => d.includes(k)).length;
-    Lab.announce(`${units[i].title} marked ${doneBox.checked ? 'done' : 'not done'}. ${n} of ${units.length} steps done. ${progressText()}`);
+    const n = units.filter((u, k) => d.includes(k) && u.isStep).length;
+    Lab.announce(`${units[i].title} marked ${doneBox.checked ? 'done' : 'not done'}. ${n} of ${stepCount} steps done. ${progressText()}`);
   });
   function progressText() { const pt = document.getElementById('progress-text'); return pt ? pt.textContent.trim() + '.' : ''; }
-  function refreshProgress() { const d = stepsDone(); progLine.textContent = `${progressText()} ${d.length} of ${units.length} steps marked done.`; }
+  function refreshProgress() { const d = stepsDone(); const n = units.filter((u, k) => d.includes(k) && u.isStep).length; progLine.textContent = `${progressText()} ${n} of ${stepCount} steps marked done.`; }
   const keysHint = h('p', { class: 'guide-keys' }, h('strong', null, 'Shortcuts, from anywhere in the simulation: '), 'Alt+N reads the next instruction, Alt+P the previous one, Alt+R repeats the current one. Focus stays where you are.');
   const panel = h('section', { class: 'guide', 'aria-labelledby': 'guide-h' }, title, pos, body, doneWrap, progLine, h('div', { class: 'toolbar guide-tools' }, nextItem, repeatItem, prev, next, readFull), keysHint);
   sim.before(panel);
@@ -2578,7 +2587,7 @@ Win.registerApp('powershell', WinApps.makeShell('ps'));
     cur = i;
     const u = units[i];
     title.textContent = u.title;
-    pos.textContent = (u.part ? u.part + '. ' : '') + `Step ${i + 1} of ${units.length}.` + (u.questionsOnly && u.hasQ ? ' Type your answer in the box below.' : '') + (i === units.length - 1 ? ' This is the last step of the lab.' : '');
+    pos.textContent = where(u) + (u.questionsOnly && u.hasQ ? ' Type your answer in the box below.' : '') + (i === units.length - 1 ? ' This is the end of the lab.' : '');
     body.textContent = '';
     body.append(cloneBlock(u));
     if (i === units.length - 1) {
@@ -2589,14 +2598,14 @@ Win.registerApp('powershell', WinApps.makeShell('ps'));
     }
     prev.disabled = i === 0;
     const nx = units[i + 1];
-    next.textContent = nx ? (nx.questionsOnly ? `Next: ${nx.title}` : 'Next step') : 'Next step (this is the last step)';
+    next.textContent = nx ? (nx.isStep ? 'Next step' : `Next: ${nx.title}`) : 'Next step (this is the end of the lab)';
     next.disabled = !nx;
     Lab.store.set(key(), i);
     doneBox.checked = stepsDone().includes(i);
-    doneLbl.textContent = `I finished this step (${u.title})`;
+    doneLbl.textContent = u.isStep ? `I finished this step (${u.title})` : `I finished this section (${u.title})`;
     refreshProgress();
     setItem(0);
-    if (announce) { focusOnce(title); Lab.announce(`${u.part ? u.part + ', ' : ''}${u.title}. Step ${i + 1} of ${units.length}.`); }
+    if (announce) { focusOnce(title); Lab.announce(u.isStep ? `${u.title}. ${u.stepNo} of ${stepCount} steps in this lab.` : where(u)); }
   }
 
   // Instructions inside the current step: numbered items, notes, and questions. The learner
@@ -2622,7 +2631,7 @@ Win.registerApp('powershell', WinApps.makeShell('ps'));
   function stepItem(dir, announce) {
     if (!items.length || curItem + dir >= items.length) {
       if (dir > 0 && cur < units.length - 1) { show(cur + 1, false); Lab.announce(`Moving on. `); sayItem(true); }
-      else if (dir > 0) Lab.announce('That was the last instruction of the last step.');
+      else if (dir > 0) Lab.announce('That was the last instruction of the lab.');
       return;
     }
     if (curItem + dir < 0) {
@@ -2647,7 +2656,7 @@ Win.registerApp('powershell', WinApps.makeShell('ps'));
       if (!a) return;
       const fresh = a.cloneNode(true);
       fresh.textContent = `Do this step in the simulation (${u.title})`;
-      fresh.addEventListener('click', (e) => { e.preventDefault(); show(i, false); simH.scrollIntoView({ block: 'start' }); focusOnce(title); Lab.announce(`${u.title}, shown in the simulation. Step ${i + 1} of ${units.length}.`); });
+      fresh.addEventListener('click', (e) => { e.preventDefault(); show(i, false); simH.scrollIntoView({ block: 'start' }); focusOnce(title); Lab.announce(`${u.title}, shown in the simulation.`); });
       a.replaceWith(fresh);
     });
   });
@@ -2664,7 +2673,7 @@ Win.registerApp('powershell', WinApps.makeShell('ps'));
     const tasks = (Lab.config && Lab.config.tasks) || [];
     if (allDoneSaid || !tasks.length || !tasks.every(t => Lab.isDone(t.id))) return;
     allDoneSaid = true;
-    const rest = units.slice(cur + 1).filter(u => u.questionsOnly && u.hasQ);
+    const rest = units.slice(cur + 1).filter(u => u.wrap && u.hasQ);
     const unanswered = [...labCol.querySelectorAll('.question textarea')].filter(t => !t.value.trim()).length;
     if (rest.length) Lab.announce(`${rest.map(u => u.title).join(' and ')} ${rest.length === 1 ? 'is' : 'are'} still to do: use the Next button in the Current step panel.`);
     else if (unanswered) Lab.announce(`${unanswered} question${unanswered === 1 ? '' : 's'} still ${unanswered === 1 ? 'needs' : 'need'} an answer. Use Previous step to find ${unanswered === 1 ? 'it' : 'them'}.`);

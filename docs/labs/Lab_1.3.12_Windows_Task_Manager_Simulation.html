@@ -334,6 +334,7 @@ textarea.notepad{font-family:Consolas,"Courier New",monospace;min-height:12em}
 <div class="note"><p><strong>Graphs as text:</strong> The real Performance tab draws live graphs. This simulation gives you the same readings as text, which is also how a screen reader user reads them in real Task Manager.</p></div>
 
 <h2>Part 1: Work in the Processes tab</h2>
+<h3>Step 1.1: Work in the Processes tab</h3>
 <ol class="steps">
 <li>Open <strong>Command Prompt</strong> and <strong>Microsoft Edge</strong> from Start. Any web browser would work in real life; this lab uses Microsoft Edge. For extra practice, open Microsoft Edge twice.</li>
 <li>Open <strong>Task Manager</strong>: choose <strong>Taskbar options</strong> on the simulated taskbar, then <strong>Task Manager</strong>. On a real PC you can also press Ctrl+Shift+Esc, or press Ctrl+Alt+Delete and choose Task Manager.</li>
@@ -381,11 +382,13 @@ textarea.notepad{font-family:Consolas,"Courier New",monospace;min-height:12em}
 <div class="sample"><p>All Microsoft Edge windows close, because End task on the group ends every Edge process.</p></div></div>
 
 <h2>Part 2: Work in the Services tab</h2>
+<h3>Step 2.1: Work in the Services tab</h3>
 <ol class="steps"><li>In Task Manager, go to the <strong>Services</strong> tab and review the list.</li></ol>
 <div class="question" data-q="q9"><p class="qtext">Which statuses are listed?</p>
 <div class="sample"><p>Running and Stopped.</p></div></div>
 
 <h2>Part 3: Work in the Performance tab</h2>
+<h3>Step 3.1: Work in the Performance tab</h3>
 <ol class="steps"><li>Go to the <strong>Performance</strong> tab. The CPU page is shown first.</li></ol>
 <div class="question" data-q="q10"><p class="qtext">How many threads are running?</p>
 <div class="sample"><p>Answers vary on a real PC. This simulation shows 1,271.</p></div></div>
@@ -404,7 +407,7 @@ textarea.notepad{font-family:Consolas,"Courier New",monospace;min-height:12em}
 <div class="question" data-q="q16"><p class="qtext">What is the IPv4 address of the PC?</p>
 <div class="sample"><p>192.168.1.15 in this simulation.</p></div></div>
 <ol class="steps" start="4"><li>Choose <strong>Open Resource Monitor</strong> to open Resource Monitor from the Performance tab. Explore its tabs.</li></ol>
-<h3>Reflection</h3>
+<h2>Reflection</h2>
 <div class="question" data-q="q17"><p class="qtext">Why is it important for an administrator to know how to work in Task Manager?</p>
 <div class="sample"><p>Task Manager is a quick troubleshooting tool. It shows CPU, memory, disk, and network use, shows which processes and services are running, and lets you end a process that has stopped responding or that looks suspicious.</p></div></div>
 
@@ -2494,11 +2497,15 @@ Win.registerApp('powershell', WinApps.makeShell('ps'));
     const lists = block.filter(x => x.matches('ol.steps'));
     const hasQ = block.some(x => x.matches('.question') || x.querySelector('.question'));
     const isStep = /^step\s*\d/i.test(hd.textContent.trim());
-    if (!lists.length && !hasQ && !isStep) return;
+    const isWrap = /^(Reflection|Challenge|Summary)/i.test(hd.textContent.trim());
+    if (!lists.length && !hasQ && !isStep && !isWrap) return;
     units.push({ head: hd, part: hd.tagName === 'H3' ? part : '', title: hd.textContent.trim(), block, lists, questionsOnly: !lists.length, hasQ });
   });
   if (!units.length) return;
-  units.forEach((u, i) => { u.index = i; u.lists.forEach(l => { l._unit = i; }); });
+  units.forEach(u => { u.isStep = /^Step\s*\d/i.test(u.title); u.wrap = !u.isStep && /^(Reflection|Challenge|Summary)/i.test(u.title); });
+  const stepCount = units.filter(u => u.isStep).length;
+  units.forEach((u, i) => { u.index = i; u.stepNo = u.isStep ? units.slice(0, i + 1).filter(x => x.isStep).length : 0; u.lists.forEach(l => { l._unit = i; }); });
+  const where = u => u.isStep ? `${u.part ? u.part + '. ' : ''}${u.title.match(/^Step\s*[\d.]+/i)[0]}. ${u.stepNo} of ${stepCount} steps in this lab.` : (u.wrap ? `${u.title}. Wrap-up, after the last step.` : (u.part ? u.part + '. ' : ''));
 
   // Panel inside the simulation frame.
   const title = h('h3', { id: 'guide-h', class: 'guide-title' });
@@ -2519,11 +2526,11 @@ Win.registerApp('powershell', WinApps.makeShell('ps'));
     const d = stepsDone(); const i = cur;
     if (doneBox.checked) { if (!d.includes(i)) d.push(i); } else { const k = d.indexOf(i); if (k >= 0) d.splice(k, 1); }
     Lab.store.set(stepsKey(), d);
-    const n = units.filter((u, k) => d.includes(k)).length;
-    Lab.announce(`${units[i].title} marked ${doneBox.checked ? 'done' : 'not done'}. ${n} of ${units.length} steps done. ${progressText()}`);
+    const n = units.filter((u, k) => d.includes(k) && u.isStep).length;
+    Lab.announce(`${units[i].title} marked ${doneBox.checked ? 'done' : 'not done'}. ${n} of ${stepCount} steps done. ${progressText()}`);
   });
   function progressText() { const pt = document.getElementById('progress-text'); return pt ? pt.textContent.trim() + '.' : ''; }
-  function refreshProgress() { const d = stepsDone(); progLine.textContent = `${progressText()} ${d.length} of ${units.length} steps marked done.`; }
+  function refreshProgress() { const d = stepsDone(); const n = units.filter((u, k) => d.includes(k) && u.isStep).length; progLine.textContent = `${progressText()} ${n} of ${stepCount} steps marked done.`; }
   const keysHint = h('p', { class: 'guide-keys' }, h('strong', null, 'Shortcuts, from anywhere in the simulation: '), 'Alt+N reads the next instruction, Alt+P the previous one, Alt+R repeats the current one. Focus stays where you are.');
   const panel = h('section', { class: 'guide', 'aria-labelledby': 'guide-h' }, title, pos, body, doneWrap, progLine, h('div', { class: 'toolbar guide-tools' }, nextItem, repeatItem, prev, next, readFull), keysHint);
   sim.before(panel);
@@ -2583,7 +2590,7 @@ Win.registerApp('powershell', WinApps.makeShell('ps'));
     cur = i;
     const u = units[i];
     title.textContent = u.title;
-    pos.textContent = (u.part ? u.part + '. ' : '') + `Step ${i + 1} of ${units.length}.` + (u.questionsOnly && u.hasQ ? ' Type your answer in the box below.' : '') + (i === units.length - 1 ? ' This is the last step of the lab.' : '');
+    pos.textContent = where(u) + (u.questionsOnly && u.hasQ ? ' Type your answer in the box below.' : '') + (i === units.length - 1 ? ' This is the end of the lab.' : '');
     body.textContent = '';
     body.append(cloneBlock(u));
     if (i === units.length - 1) {
@@ -2594,14 +2601,14 @@ Win.registerApp('powershell', WinApps.makeShell('ps'));
     }
     prev.disabled = i === 0;
     const nx = units[i + 1];
-    next.textContent = nx ? (nx.questionsOnly ? `Next: ${nx.title}` : 'Next step') : 'Next step (this is the last step)';
+    next.textContent = nx ? (nx.isStep ? 'Next step' : `Next: ${nx.title}`) : 'Next step (this is the end of the lab)';
     next.disabled = !nx;
     Lab.store.set(key(), i);
     doneBox.checked = stepsDone().includes(i);
-    doneLbl.textContent = `I finished this step (${u.title})`;
+    doneLbl.textContent = u.isStep ? `I finished this step (${u.title})` : `I finished this section (${u.title})`;
     refreshProgress();
     setItem(0);
-    if (announce) { focusOnce(title); Lab.announce(`${u.part ? u.part + ', ' : ''}${u.title}. Step ${i + 1} of ${units.length}.`); }
+    if (announce) { focusOnce(title); Lab.announce(u.isStep ? `${u.title}. ${u.stepNo} of ${stepCount} steps in this lab.` : where(u)); }
   }
 
   // Instructions inside the current step: numbered items, notes, and questions. The learner
@@ -2627,7 +2634,7 @@ Win.registerApp('powershell', WinApps.makeShell('ps'));
   function stepItem(dir, announce) {
     if (!items.length || curItem + dir >= items.length) {
       if (dir > 0 && cur < units.length - 1) { show(cur + 1, false); Lab.announce(`Moving on. `); sayItem(true); }
-      else if (dir > 0) Lab.announce('That was the last instruction of the last step.');
+      else if (dir > 0) Lab.announce('That was the last instruction of the lab.');
       return;
     }
     if (curItem + dir < 0) {
@@ -2652,7 +2659,7 @@ Win.registerApp('powershell', WinApps.makeShell('ps'));
       if (!a) return;
       const fresh = a.cloneNode(true);
       fresh.textContent = `Do this step in the simulation (${u.title})`;
-      fresh.addEventListener('click', (e) => { e.preventDefault(); show(i, false); simH.scrollIntoView({ block: 'start' }); focusOnce(title); Lab.announce(`${u.title}, shown in the simulation. Step ${i + 1} of ${units.length}.`); });
+      fresh.addEventListener('click', (e) => { e.preventDefault(); show(i, false); simH.scrollIntoView({ block: 'start' }); focusOnce(title); Lab.announce(`${u.title}, shown in the simulation.`); });
       a.replaceWith(fresh);
     });
   });
@@ -2669,7 +2676,7 @@ Win.registerApp('powershell', WinApps.makeShell('ps'));
     const tasks = (Lab.config && Lab.config.tasks) || [];
     if (allDoneSaid || !tasks.length || !tasks.every(t => Lab.isDone(t.id))) return;
     allDoneSaid = true;
-    const rest = units.slice(cur + 1).filter(u => u.questionsOnly && u.hasQ);
+    const rest = units.slice(cur + 1).filter(u => u.wrap && u.hasQ);
     const unanswered = [...labCol.querySelectorAll('.question textarea')].filter(t => !t.value.trim()).length;
     if (rest.length) Lab.announce(`${rest.map(u => u.title).join(' and ')} ${rest.length === 1 ? 'is' : 'are'} still to do: use the Next button in the Current step panel.`);
     else if (unanswered) Lab.announce(`${unanswered} question${unanswered === 1 ? '' : 's'} still ${unanswered === 1 ? 'needs' : 'need'} an answer. Use Previous step to find ${unanswered === 1 ? 'it' : 'them'}.`);
