@@ -269,6 +269,8 @@ textarea.notepad{font-family:Consolas,"Courier New",monospace;min-height:12em}
 .guide-finish{border-top:1px solid var(--border);margin-top:12px;padding-top:8px}
 .layout.split .sim-col{order:2}
 .layout.split .lab-col{order:1}
+.guide-cur{background:var(--surface-2);outline:2px solid var(--sky);outline-offset:2px}
+.guide-keys{margin:8px 0 0;font-size:.92rem;color:var(--muted)}
 
 </style>
 </head>
@@ -3157,7 +3159,10 @@ DESCRIPTION
   const prev = h('button', { type: 'button', class: 'secondary', onclick: () => show(cur - 1, true) }, 'Previous step');
   const next = h('button', { type: 'button', onclick: () => show(cur + 1, true) }, 'Next step');
   const readFull = h('a', { href: '#', class: 'guide-read', onclick: (e) => { e.preventDefault(); const t = units[cur].head; t.scrollIntoView({ block: 'start' }); focusOnce(t); } }, 'Read this step in the full lab text');
-  const panel = h('section', { class: 'guide', 'aria-labelledby': 'guide-h' }, title, pos, body, h('div', { class: 'toolbar guide-tools' }, prev, next, readFull));
+  const nextItem = h('button', { type: 'button', class: 'secondary', onclick: () => stepItem(1, true) }, 'Next instruction');
+  const repeatItem = h('button', { type: 'button', class: 'secondary', onclick: () => sayItem(true) }, 'Repeat instruction');
+  const keysHint = h('p', { class: 'guide-keys' }, h('strong', null, 'Shortcuts, from anywhere in the simulation: '), 'Alt+N reads the next instruction, Alt+P the previous one, Alt+R repeats the current one. Focus stays where you are.');
+  const panel = h('section', { class: 'guide', 'aria-labelledby': 'guide-h' }, title, pos, body, h('div', { class: 'toolbar guide-tools' }, nextItem, repeatItem, prev, next, readFull), keysHint);
   sim.before(panel);
   const back = document.getElementById('back-to-steps');
   if (back) back.parentElement.remove();
@@ -3229,8 +3234,49 @@ DESCRIPTION
     next.textContent = nx ? (nx.questionsOnly ? `Next: ${nx.title}` : 'Next step') : 'Next step (this is the last step)';
     next.disabled = !nx;
     Lab.store.set(key(), i);
+    setItem(0);
     if (announce) { focusOnce(title); Lab.announce(`${u.part ? u.part + ', ' : ''}${u.title}. Step ${i + 1} of ${units.length}.`); }
   }
+
+  // Instructions inside the current step: numbered items, notes, and questions. The learner
+  // moves through them with Alt+N / Alt+P / Alt+R while focus stays in the simulated computer.
+  let items = [], curItem = 0;
+  function itemText(el) {
+    if (el.classList.contains('guide-question')) return 'Question: ' + el.querySelector('label').textContent.replace(/^Question:\s*/, '').trim();
+    return el.textContent.replace(/\s+/g, ' ').trim();
+  }
+  function setItem(k) {
+    items = [...body.querySelectorAll('ol.steps > li, .guide-question, .note')];
+    items.forEach(x => { x.classList.remove('guide-cur'); x.removeAttribute('aria-current'); });
+    curItem = Math.max(0, Math.min(k, items.length - 1));
+    if (items[curItem]) { items[curItem].classList.add('guide-cur'); items[curItem].setAttribute('aria-current', 'step'); }
+    nextItem.disabled = !items.length;
+    repeatItem.disabled = !items.length;
+  }
+  function sayItem(announce) {
+    const it = items[curItem]; if (!it) { Lab.announce(`${units[cur].title}. No numbered instructions in this step.`); return; }
+    const u = units[cur];
+    Lab.announce(`${u.title}, instruction ${curItem + 1} of ${items.length}: ${itemText(it)}`);
+  }
+  function stepItem(dir, announce) {
+    if (!items.length || curItem + dir >= items.length) {
+      if (dir > 0 && cur < units.length - 1) { show(cur + 1, false); Lab.announce(`Moving on. `); sayItem(true); }
+      else if (dir > 0) Lab.announce('That was the last instruction of the last step.');
+      return;
+    }
+    if (curItem + dir < 0) {
+      if (cur > 0) { show(cur - 1, false); setItem(items.length - 1); sayItem(true); } else Lab.announce('This is the first instruction of the lab.');
+      return;
+    }
+    setItem(curItem + dir); sayItem(true);
+  }
+  document.addEventListener('keydown', e => {
+    if (!e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+    const k = e.code;
+    if (k === 'KeyN') { e.preventDefault(); stepItem(1, true); }
+    else if (k === 'KeyP') { e.preventDefault(); stepItem(-1, true); }
+    else if (k === 'KeyR') { e.preventDefault(); sayItem(true); }
+  });
 
   // Lab text: each list's jump link opens that step in the panel.
   units.forEach((u, i) => {
@@ -3245,7 +3291,7 @@ DESCRIPTION
     });
   });
 
-  const note = h('div', { class: 'note guide-note' }, h('p', null, h('strong', null, 'Guided version: '), 'the simulation starts with a "Current step" panel that shows the step you are on, with Previous step and Next step buttons and the answer boxes for that step, so you can stay in the simulation from the first step to the last. Use the "Skip to the simulation" link at the top of the page to get there. The full lab text below is the same as always; each steps list also has a link that opens that step in the simulation.'));
+  const note = h('div', { class: 'note guide-note' }, h('p', null, h('strong', null, 'Guided version: '), 'the simulation starts with a "Current step" panel that shows the step you are on, with Previous step and Next step buttons and the answer boxes for that step, so you can stay in the simulation from the first step to the last. While you work in the simulated computer, press Alt+N to hear the next instruction, Alt+P for the previous one, and Alt+R to repeat it; focus stays where you are. Use the "Skip to the simulation" link at the top of the page to get there. The full lab text below is the same as always; each steps list also has a link that opens that step in the simulation.'));
   const start = document.getElementById('lab-start');
   if (start) start.after(note);
 
