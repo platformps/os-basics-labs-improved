@@ -13,3 +13,5 @@
 .guide-finish{border-top:1px solid var(--border);margin-top:12px;padding-top:8px}
 .layout.split .sim-col{order:2}
 .layout.split .lab-col{order:1}
+.guide-cur{background:var(--surface-2);outline:2px solid var(--sky);outline-offset:2px}
+.guide-keys{margin:8px 0 0;font-size:.92rem;color:var(--muted)}
