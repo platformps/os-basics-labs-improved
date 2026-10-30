@@ -388,52 +388,52 @@ dialog .m-actions button{width:100%;text-align:left}
 
 <h2>Part 1: Apps and widgets</h2>
 <p>Android phones differ by maker and version, so on a real phone check its manual if a step looks different.</p>
-<h3>Step 1: Gain access to the device</h3>
+<h3>Step 1.1: Gain access to the device</h3>
 <ol class="steps"><li>The simulated phone is already unlocked. On a real phone, unlock it with your PIN, password, or pattern.</li></ol>
-<h3>Step 2: Add app shortcuts to the home screen</h3>
+<h3>Step 1.2: Add app shortcuts to the home screen</h3>
 <ol class="steps">
 <li>On the home screen, choose <strong>All apps</strong>. The All apps screen lists every installed app.</li>
 <li>Choose the <strong>Actions</strong> button for <strong>Calculator</strong>, then <strong>Add to Home screen</strong>. On a real phone you touch and hold the icon and drag it to an empty space.</li>
 <li>Choose a screen and a position, or leave First empty space, and choose <strong>Place here</strong>.</li>
 </ol>
-<h3>Step 3: Add widgets to the home screen</h3>
+<h3>Step 1.3: Add widgets to the home screen</h3>
 <p>Widgets are parts of apps that show live information on the home screen, such as the time or today's step count. They usually take more than one space. Widgets come with installed apps; you add them to a screen, you do not install them separately.</p>
 <ol class="steps">
 <li>Go to the home screen and choose <strong>Home screen options</strong>. On a real phone you touch and hold an empty part of the screen.</li>
 <li>Choose <strong>Widgets</strong>. The list groups widgets by app.</li>
 <li>Choose a widget, such as <strong>Fit daily goals</strong>, pick a screen with room for it, and choose <strong>Place here</strong>.</li>
 </ol>
-<h3>Step 4: Move apps between screens</h3>
+<h3>Step 1.4: Move apps between screens</h3>
 <ol class="steps"><li>Choose the Actions button for any app on the home screen, then <strong>Move to another screen or position</strong>, and pick Home screen 2. Widgets move the same way. On a real phone you drag the icon to the edge of the screen and wait for the next screen to slide in.</li></ol>
-<h3>Step 5: Remove apps or widgets from the home screen</h3>
+<h3>Step 1.5: Remove apps or widgets from the home screen</h3>
 <ol class="steps"><li>Choose the Actions button for <strong>Drive</strong>, then <strong>Remove</strong>. On a real phone you drag it to Remove at the top of the screen.</li></ol>
 <p>Remove only takes the shortcut off the home screen. Drive is still installed and still listed in All apps, so you can add it back the way you did in Step 2. Uninstalling comes in Part 3.</p>
 
 <h2>Part 2: Managing folders</h2>
-<h3>Step 1: Create a folder</h3>
+<h3>Step 2.1: Create a folder</h3>
 <ol class="steps">
 <li>Make sure the same home screen has at least two apps, for example Calculator and Photos.</li>
 <li>Choose the Actions button for Calculator, then <strong>Create folder with Photos</strong>. On a real phone you drag one icon on top of the other. The new folder holds both apps.</li>
 </ol>
-<h3>Step 2: Rename a folder</h3>
+<h3>Step 2.2: Rename a folder</h3>
 <ol class="steps">
 <li>Open the folder.</li>
 <li>In <strong>Folder name</strong>, type <code>ITE Apps Folder</code> and choose <strong>Save name</strong>.</li>
 <li>Go Back to close the folder.</li>
 </ol>
-<h3>Step 3: Remove apps from a folder</h3>
+<h3>Step 2.3: Remove apps from a folder</h3>
 <ol class="steps"><li>Open the folder again. Choose the Actions button for <strong>Photos</strong>, then <strong>Move out of folder to the home screen</strong>.</li></ol>
 <div class="question" data-q="q1"><p class="qtext">After Photos is moved out of the folder, what happens to the folder and to Calculator?</p>
 <div class="sample"><p>The folder disappears, because a folder needs at least two apps. Calculator goes back on the home screen where the folder was.</p></div></div>
 
 <h2>Part 3: Managing apps</h2>
-<h3>Step 1: Install apps</h3>
+<h3>Step 3.1: Install apps</h3>
 <ol class="steps">
 <li>Open <strong>Play Store</strong>.</li>
 <li>Search for <code>LastPass</code>, a password manager, and choose <strong>LastPass Password Manager</strong> to see its details.</li>
 <li>Choose <strong>Install</strong>. When it finishes, LastPass is listed in All apps.</li>
 </ol>
-<h3>Step 2: Uninstall apps</h3>
+<h3>Step 3.2: Uninstall apps</h3>
 <ol class="steps">
 <li>Go to the home screen and open <strong>All apps</strong>.</li>
 <li>Choose the Actions button for <strong>LastPass</strong>, then <strong>Uninstall</strong>. On a real phone you touch and hold the icon and choose Uninstall, or drag it to Uninstall.</li>
@@ -1394,11 +1394,15 @@ const Mobile = (() => {
     const lists = block.filter(x => x.matches('ol.steps'));
     const hasQ = block.some(x => x.matches('.question') || x.querySelector('.question'));
     const isStep = /^step\s*\d/i.test(hd.textContent.trim());
-    if (!lists.length && !hasQ && !isStep) return;
+    const isWrap = /^(Reflection|Challenge|Summary)/i.test(hd.textContent.trim());
+    if (!lists.length && !hasQ && !isStep && !isWrap) return;
     units.push({ head: hd, part: hd.tagName === 'H3' ? part : '', title: hd.textContent.trim(), block, lists, questionsOnly: !lists.length, hasQ });
   });
   if (!units.length) return;
-  units.forEach((u, i) => { u.index = i; u.lists.forEach(l => { l._unit = i; }); });
+  units.forEach(u => { u.isStep = /^Step\s*\d/i.test(u.title); u.wrap = !u.isStep && /^(Reflection|Challenge|Summary)/i.test(u.title); });
+  const stepCount = units.filter(u => u.isStep).length;
+  units.forEach((u, i) => { u.index = i; u.stepNo = u.isStep ? units.slice(0, i + 1).filter(x => x.isStep).length : 0; u.lists.forEach(l => { l._unit = i; }); });
+  const where = u => u.isStep ? `${u.part ? u.part + '. ' : ''}${u.title.match(/^Step\s*[\d.]+/i)[0]}. ${u.stepNo} of ${stepCount} steps in this lab.` : (u.wrap ? `${u.title}. Wrap-up, after the last step.` : (u.part ? u.part + '. ' : ''));
 
   // Panel inside the simulation frame.
   const title = h('h3', { id: 'guide-h', class: 'guide-title' });
@@ -1419,11 +1423,11 @@ const Mobile = (() => {
     const d = stepsDone(); const i = cur;
     if (doneBox.checked) { if (!d.includes(i)) d.push(i); } else { const k = d.indexOf(i); if (k >= 0) d.splice(k, 1); }
     Lab.store.set(stepsKey(), d);
-    const n = units.filter((u, k) => d.includes(k)).length;
-    Lab.announce(`${units[i].title} marked ${doneBox.checked ? 'done' : 'not done'}. ${n} of ${units.length} steps done. ${progressText()}`);
+    const n = units.filter((u, k) => d.includes(k) && u.isStep).length;
+    Lab.announce(`${units[i].title} marked ${doneBox.checked ? 'done' : 'not done'}. ${n} of ${stepCount} steps done. ${progressText()}`);
   });
   function progressText() { const pt = document.getElementById('progress-text'); return pt ? pt.textContent.trim() + '.' : ''; }
-  function refreshProgress() { const d = stepsDone(); progLine.textContent = `${progressText()} ${d.length} of ${units.length} steps marked done.`; }
+  function refreshProgress() { const d = stepsDone(); const n = units.filter((u, k) => d.includes(k) && u.isStep).length; progLine.textContent = `${progressText()} ${n} of ${stepCount} steps marked done.`; }
   const keysHint = h('p', { class: 'guide-keys' }, h('strong', null, 'Shortcuts, from anywhere in the simulation: '), 'Alt+N reads the next instruction, Alt+P the previous one, Alt+R repeats the current one. Focus stays where you are.');
   const panel = h('section', { class: 'guide', 'aria-labelledby': 'guide-h' }, title, pos, body, doneWrap, progLine, h('div', { class: 'toolbar guide-tools' }, nextItem, repeatItem, prev, next, readFull), keysHint);
   sim.before(panel);
@@ -1483,7 +1487,7 @@ const Mobile = (() => {
     cur = i;
     const u = units[i];
     title.textContent = u.title;
-    pos.textContent = (u.part ? u.part + '. ' : '') + `Step ${i + 1} of ${units.length}.` + (u.questionsOnly && u.hasQ ? ' Type your answer in the box below.' : '') + (i === units.length - 1 ? ' This is the last step of the lab.' : '');
+    pos.textContent = where(u) + (u.questionsOnly && u.hasQ ? ' Type your answer in the box below.' : '') + (i === units.length - 1 ? ' This is the end of the lab.' : '');
     body.textContent = '';
     body.append(cloneBlock(u));
     if (i === units.length - 1) {
@@ -1494,14 +1498,14 @@ const Mobile = (() => {
     }
     prev.disabled = i === 0;
     const nx = units[i + 1];
-    next.textContent = nx ? (nx.questionsOnly ? `Next: ${nx.title}` : 'Next step') : 'Next step (this is the last step)';
+    next.textContent = nx ? (nx.isStep ? 'Next step' : `Next: ${nx.title}`) : 'Next step (this is the end of the lab)';
     next.disabled = !nx;
     Lab.store.set(key(), i);
     doneBox.checked = stepsDone().includes(i);
-    doneLbl.textContent = `I finished this step (${u.title})`;
+    doneLbl.textContent = u.isStep ? `I finished this step (${u.title})` : `I finished this section (${u.title})`;
     refreshProgress();
     setItem(0);
-    if (announce) { focusOnce(title); Lab.announce(`${u.part ? u.part + ', ' : ''}${u.title}. Step ${i + 1} of ${units.length}.`); }
+    if (announce) { focusOnce(title); Lab.announce(u.isStep ? `${u.title}. ${u.stepNo} of ${stepCount} steps in this lab.` : where(u)); }
   }
 
   // Instructions inside the current step: numbered items, notes, and questions. The learner
@@ -1527,7 +1531,7 @@ const Mobile = (() => {
   function stepItem(dir, announce) {
     if (!items.length || curItem + dir >= items.length) {
       if (dir > 0 && cur < units.length - 1) { show(cur + 1, false); Lab.announce(`Moving on. `); sayItem(true); }
-      else if (dir > 0) Lab.announce('That was the last instruction of the last step.');
+      else if (dir > 0) Lab.announce('That was the last instruction of the lab.');
       return;
     }
     if (curItem + dir < 0) {
@@ -1552,7 +1556,7 @@ const Mobile = (() => {
       if (!a) return;
       const fresh = a.cloneNode(true);
       fresh.textContent = `Do this step in the simulation (${u.title})`;
-      fresh.addEventListener('click', (e) => { e.preventDefault(); show(i, false); simH.scrollIntoView({ block: 'start' }); focusOnce(title); Lab.announce(`${u.title}, shown in the simulation. Step ${i + 1} of ${units.length}.`); });
+      fresh.addEventListener('click', (e) => { e.preventDefault(); show(i, false); simH.scrollIntoView({ block: 'start' }); focusOnce(title); Lab.announce(`${u.title}, shown in the simulation.`); });
       a.replaceWith(fresh);
     });
   });
@@ -1569,7 +1573,7 @@ const Mobile = (() => {
     const tasks = (Lab.config && Lab.config.tasks) || [];
     if (allDoneSaid || !tasks.length || !tasks.every(t => Lab.isDone(t.id))) return;
     allDoneSaid = true;
-    const rest = units.slice(cur + 1).filter(u => u.questionsOnly && u.hasQ);
+    const rest = units.slice(cur + 1).filter(u => u.wrap && u.hasQ);
     const unanswered = [...labCol.querySelectorAll('.question textarea')].filter(t => !t.value.trim()).length;
     if (rest.length) Lab.announce(`${rest.map(u => u.title).join(' and ')} ${rest.length === 1 ? 'is' : 'are'} still to do: use the Next button in the Current step panel.`);
     else if (unanswered) Lab.announce(`${unanswered} question${unanswered === 1 ? '' : 's'} still ${unanswered === 1 ? 'needs' : 'need'} an answer. Use Previous step to find ${unanswered === 1 ? 'it' : 'them'}.`);

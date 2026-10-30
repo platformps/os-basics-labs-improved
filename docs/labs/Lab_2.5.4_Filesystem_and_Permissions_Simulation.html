@@ -337,9 +337,9 @@ textarea.notepad{font-family:Consolas,"Courier New",monospace;min-height:12em}
 
 <h2>Part 1: Exploring filesystems in Linux</h2>
 <p>Linux supports many filesystem types. This lab focuses on the <strong>ext</strong> family, one of the most common on Linux.</p>
-<h3>Step 1: Access the command line</h3>
+<h3>Step 1.1: Access the command line</h3>
 <ol class="steps"><li>Open <strong>Terminal</strong> from the Applications button.</li></ol>
-<h3>Step 2: Display the filesystems currently mounted</h3>
+<h3>Step 1.2: Display the filesystems currently mounted</h3>
 <p>A filesystem must be <strong>mounted</strong> before you can use it. Mounting links a partition on a drive to a folder, called the <strong>mount point</strong>. Everything on that partition then appears inside that folder.</p>
 <ol class="steps"><li>Run <code>lsblk</code> to list all block devices (drives and partitions). The Table view lists each device on its own row.</li></ol>
 <p>The workstation has three block devices: sda, sdb, and sr0 (a CD or DVD drive). Linux names hard drives /dev/sda, /dev/sdb, and so on, and adds a number for each partition, so sda1 is the first partition on sda. sda is a 10 GB disk and sdb is a 1 GB disk, each with one partition. USB flash drives often show up as /dev/sdX too.</p>
@@ -354,7 +354,7 @@ textarea.notepad{font-family:Consolas,"Courier New",monospace;min-height:12em}
 <div class="sample"><p>It shows the contents of the root directory, the top of the whole folder tree. Because /dev/sda1 is mounted on /, these files are physically stored on the /dev/sda1 partition.</p></div></div>
 <div class="question" data-q="q3"><p class="qtext">Why does /dev/sdb1 not appear in the mount | grep sda1 output, or in the mount output at all?</p>
 <div class="sample"><p>/dev/sdb1 is not mounted yet. (It would not match "sda1" either, but it is missing from the full mount list because it is not mounted.)</p></div></div>
-<h3>Step 3: Mount and unmount a filesystem manually</h3>
+<h3>Step 1.3: Mount and unmount a filesystem manually</h3>
 <ol class="steps">
 <li>Run <code>cd ~</code> and <code>ls -l</code>. Check that the folder <code>second_drive</code> exists. (If it does not, create it with <code>mkdir second_drive</code>.)</li>
 <li>Run <code>ls -l second_drive/</code>. The folder is empty.</li>
@@ -370,7 +370,7 @@ textarea.notepad{font-family:Consolas,"Courier New",monospace;min-height:12em}
 
 <h2>Part 2: File permissions</h2>
 <p>Every file and folder has an owner, a group, and three sets of permissions: for the owner (user), for members of the group, and for everyone else (others). Each set can allow read (r), write (w), and execute (x).</p>
-<h3>Step 1: View and change file permissions</h3>
+<h3>Step 2.1: View and change file permissions</h3>
 <ol class="steps">
 <li>Run <code>cd lab.support.files/scripts/</code> and then <code>ls -l</code>.</li>
 </ol>
@@ -404,7 +404,7 @@ textarea.notepad{font-family:Consolas,"Courier New",monospace;min-height:12em}
 </ol>
 <div class="question" data-q="q12"><p class="qtext">Did that work? Explain.</p>
 <div class="sample"><p>Yes. analyst now owns the file, and the owner's permissions (rw-) allow writing. The group (root) can also write, because the permissions are still 665.</p></div></div>
-<h3>Step 2: Directories and permissions</h3>
+<h3>Step 2.2: Directories and permissions</h3>
 <p>Folders have the same nine permission bits. There are also three special bits (setuid, setgid, and sticky), which are beyond this lab.</p>
 <ol class="steps"><li>Run <code>cd ~/lab.support.files/</code> and <code>ls -l</code>.</li></ol>
 <div class="question" data-q="q13"><p class="qtext">Compare the lines for the malware folder and the mininet_services file. What is different at the start of each line?</p>
@@ -422,12 +422,12 @@ textarea.notepad{font-family:Consolas,"Courier New",monospace;min-height:12em}
 <li><strong>l</strong> symbolic link: points to another file or folder by its name</li>
 <li><strong>s</strong> socket: lets programs on the same computer communicate</li>
 </ul>
-<h3>Step 1: Examine file types</h3>
+<h3>Step 3.1: Examine file types</h3>
 <ol class="steps">
 <li>Run <code>cd ~</code> and <code>ls -l</code>. Each line starts with - for a file or d for a folder.</li>
 <li>Run <code>ls -l /dev/</code>. Find the block devices (b), character devices (c), and symbolic links (l).</li>
 </ol>
-<h3>Step 2: Symbolic and hard links</h3>
+<h3>Step 3.2: Symbolic and hard links</h3>
 <p>A <strong>symbolic link</strong> is like a shortcut: it points to another file's name. A <strong>hard link</strong> is a second name for the same file data (the same inode on the disk).</p>
 <ol class="steps">
 <li>Create two files: run <code>echo "symbolic" &gt; file1.txt</code> and <code>echo "hard" &gt; file2.txt</code>.</li>
@@ -444,7 +444,7 @@ textarea.notepad{font-family:Consolas,"Courier New",monospace;min-height:12em}
 <div class="sample"><p>file1symbolic points to the name file1.txt, which no longer exists, so it is a broken link. file2hard points to the file's data (its inode), not its name, so it still works after the rename.</p></div></div>
 <div class="question" data-q="q16"><p class="qtext">What would happen to file2hard if you changed the text in file2new.txt?</p>
 <div class="sample"><p>file2hard would show the same change, because both names point to the same data on the disk.</p></div></div>
-<h3>Reflection</h3>
+<h2>Reflection</h2>
 <p>File permissions and ownership are two of the most important parts of Linux, and a very common cause of problems: a program that cannot read or write a file it needs will fail with errors.</p>
 
 
@@ -3111,11 +3111,15 @@ DESCRIPTION
     const lists = block.filter(x => x.matches('ol.steps'));
     const hasQ = block.some(x => x.matches('.question') || x.querySelector('.question'));
     const isStep = /^step\s*\d/i.test(hd.textContent.trim());
-    if (!lists.length && !hasQ && !isStep) return;
+    const isWrap = /^(Reflection|Challenge|Summary)/i.test(hd.textContent.trim());
+    if (!lists.length && !hasQ && !isStep && !isWrap) return;
     units.push({ head: hd, part: hd.tagName === 'H3' ? part : '', title: hd.textContent.trim(), block, lists, questionsOnly: !lists.length, hasQ });
   });
   if (!units.length) return;
-  units.forEach((u, i) => { u.index = i; u.lists.forEach(l => { l._unit = i; }); });
+  units.forEach(u => { u.isStep = /^Step\s*\d/i.test(u.title); u.wrap = !u.isStep && /^(Reflection|Challenge|Summary)/i.test(u.title); });
+  const stepCount = units.filter(u => u.isStep).length;
+  units.forEach((u, i) => { u.index = i; u.stepNo = u.isStep ? units.slice(0, i + 1).filter(x => x.isStep).length : 0; u.lists.forEach(l => { l._unit = i; }); });
+  const where = u => u.isStep ? `${u.part ? u.part + '. ' : ''}${u.title.match(/^Step\s*[\d.]+/i)[0]}. ${u.stepNo} of ${stepCount} steps in this lab.` : (u.wrap ? `${u.title}. Wrap-up, after the last step.` : (u.part ? u.part + '. ' : ''));
 
   // Panel inside the simulation frame.
   const title = h('h3', { id: 'guide-h', class: 'guide-title' });
@@ -3136,11 +3140,11 @@ DESCRIPTION
     const d = stepsDone(); const i = cur;
     if (doneBox.checked) { if (!d.includes(i)) d.push(i); } else { const k = d.indexOf(i); if (k >= 0) d.splice(k, 1); }
     Lab.store.set(stepsKey(), d);
-    const n = units.filter((u, k) => d.includes(k)).length;
-    Lab.announce(`${units[i].title} marked ${doneBox.checked ? 'done' : 'not done'}. ${n} of ${units.length} steps done. ${progressText()}`);
+    const n = units.filter((u, k) => d.includes(k) && u.isStep).length;
+    Lab.announce(`${units[i].title} marked ${doneBox.checked ? 'done' : 'not done'}. ${n} of ${stepCount} steps done. ${progressText()}`);
   });
   function progressText() { const pt = document.getElementById('progress-text'); return pt ? pt.textContent.trim() + '.' : ''; }
-  function refreshProgress() { const d = stepsDone(); progLine.textContent = `${progressText()} ${d.length} of ${units.length} steps marked done.`; }
+  function refreshProgress() { const d = stepsDone(); const n = units.filter((u, k) => d.includes(k) && u.isStep).length; progLine.textContent = `${progressText()} ${n} of ${stepCount} steps marked done.`; }
   const keysHint = h('p', { class: 'guide-keys' }, h('strong', null, 'Shortcuts, from anywhere in the simulation: '), 'Alt+N reads the next instruction, Alt+P the previous one, Alt+R repeats the current one. Focus stays where you are.');
   const panel = h('section', { class: 'guide', 'aria-labelledby': 'guide-h' }, title, pos, body, doneWrap, progLine, h('div', { class: 'toolbar guide-tools' }, nextItem, repeatItem, prev, next, readFull), keysHint);
   sim.before(panel);
@@ -3200,7 +3204,7 @@ DESCRIPTION
     cur = i;
     const u = units[i];
     title.textContent = u.title;
-    pos.textContent = (u.part ? u.part + '. ' : '') + `Step ${i + 1} of ${units.length}.` + (u.questionsOnly && u.hasQ ? ' Type your answer in the box below.' : '') + (i === units.length - 1 ? ' This is the last step of the lab.' : '');
+    pos.textContent = where(u) + (u.questionsOnly && u.hasQ ? ' Type your answer in the box below.' : '') + (i === units.length - 1 ? ' This is the end of the lab.' : '');
     body.textContent = '';
     body.append(cloneBlock(u));
     if (i === units.length - 1) {
@@ -3211,14 +3215,14 @@ DESCRIPTION
     }
     prev.disabled = i === 0;
     const nx = units[i + 1];
-    next.textContent = nx ? (nx.questionsOnly ? `Next: ${nx.title}` : 'Next step') : 'Next step (this is the last step)';
+    next.textContent = nx ? (nx.isStep ? 'Next step' : `Next: ${nx.title}`) : 'Next step (this is the end of the lab)';
     next.disabled = !nx;
     Lab.store.set(key(), i);
     doneBox.checked = stepsDone().includes(i);
-    doneLbl.textContent = `I finished this step (${u.title})`;
+    doneLbl.textContent = u.isStep ? `I finished this step (${u.title})` : `I finished this section (${u.title})`;
     refreshProgress();
     setItem(0);
-    if (announce) { focusOnce(title); Lab.announce(`${u.part ? u.part + ', ' : ''}${u.title}. Step ${i + 1} of ${units.length}.`); }
+    if (announce) { focusOnce(title); Lab.announce(u.isStep ? `${u.title}. ${u.stepNo} of ${stepCount} steps in this lab.` : where(u)); }
   }
 
   // Instructions inside the current step: numbered items, notes, and questions. The learner
@@ -3244,7 +3248,7 @@ DESCRIPTION
   function stepItem(dir, announce) {
     if (!items.length || curItem + dir >= items.length) {
       if (dir > 0 && cur < units.length - 1) { show(cur + 1, false); Lab.announce(`Moving on. `); sayItem(true); }
-      else if (dir > 0) Lab.announce('That was the last instruction of the last step.');
+      else if (dir > 0) Lab.announce('That was the last instruction of the lab.');
       return;
     }
     if (curItem + dir < 0) {
@@ -3269,7 +3273,7 @@ DESCRIPTION
       if (!a) return;
       const fresh = a.cloneNode(true);
       fresh.textContent = `Do this step in the simulation (${u.title})`;
-      fresh.addEventListener('click', (e) => { e.preventDefault(); show(i, false); simH.scrollIntoView({ block: 'start' }); focusOnce(title); Lab.announce(`${u.title}, shown in the simulation. Step ${i + 1} of ${units.length}.`); });
+      fresh.addEventListener('click', (e) => { e.preventDefault(); show(i, false); simH.scrollIntoView({ block: 'start' }); focusOnce(title); Lab.announce(`${u.title}, shown in the simulation.`); });
       a.replaceWith(fresh);
     });
   });
@@ -3286,7 +3290,7 @@ DESCRIPTION
     const tasks = (Lab.config && Lab.config.tasks) || [];
     if (allDoneSaid || !tasks.length || !tasks.every(t => Lab.isDone(t.id))) return;
     allDoneSaid = true;
-    const rest = units.slice(cur + 1).filter(u => u.questionsOnly && u.hasQ);
+    const rest = units.slice(cur + 1).filter(u => u.wrap && u.hasQ);
     const unanswered = [...labCol.querySelectorAll('.question textarea')].filter(t => !t.value.trim()).length;
     if (rest.length) Lab.announce(`${rest.map(u => u.title).join(' and ')} ${rest.length === 1 ? 'is' : 'are'} still to do: use the Next button in the Current step panel.`);
     else if (unanswered) Lab.announce(`${unanswered} question${unanswered === 1 ? '' : 's'} still ${unanswered === 1 ? 'needs' : 'need'} an answer. Use Previous step to find ${unanswered === 1 ? 'it' : 'them'}.`);

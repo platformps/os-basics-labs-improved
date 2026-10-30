@@ -388,7 +388,7 @@ dialog .m-actions button{width:100%;text-align:left}
 
 <h2>Part 1: Auto-rotation</h2>
 <p>Auto-rotation switches the screen between portrait (upright) and landscape (sideways) to match how you hold the device.</p>
-<h3>Step 1: Auto-rotation on Android</h3>
+<h3>Step 1.1: Auto-rotation on Android</h3>
 <ol class="steps">
 <li>Choose the Android phone. Open the quick settings panel with <strong>Swipe down from the top</strong>. Check that <strong>Auto rotate</strong> is off. (You can also find it in Settings, Display, Auto rotate screen.)</li>
 <li>With auto rotate off, use <strong>Rotate the phone 90 degrees clockwise</strong>.</li>
@@ -401,7 +401,7 @@ dialog .m-actions button{width:100%;text-align:left}
 </ol>
 <div class="question" data-q="q2"><p class="qtext">What happens to the screen?</p>
 <div class="sample"><p>It rotates to landscape to match the phone.</p></div></div>
-<h3>Step 2: Auto-rotation on iOS</h3>
+<h3>Step 1.2: Auto-rotation on iOS</h3>
 <ol class="steps">
 <li>Choose the iPhone. Open Control Center with <strong>Swipe down from the top right corner</strong>. (On iPhones with a Home button, you swipe up from the bottom edge instead.)</li>
 <li>Turn <strong>Portrait Orientation Lock</strong> on. Its icon is a lock inside a circular arrow.</li>
@@ -417,7 +417,7 @@ dialog .m-actions button{width:100%;text-align:left}
 <div class="sample"><p>It rotates to landscape, and Calculator switches to the scientific calculator.</p></div></div>
 
 <h2>Part 2: Brightness</h2>
-<h3>Step 1: Brightness on Android</h3>
+<h3>Step 2.1: Brightness on Android</h3>
 <ol class="steps">
 <li>Open quick settings, or Settings, then <strong>Display</strong>. Move the <strong>Brightness</strong> slider all the way up (right). With a keyboard, use the arrow keys or End.</li>
 </ol>
@@ -431,7 +431,7 @@ dialog .m-actions button{width:100%;text-align:left}
 <ol class="steps" start="3"><li>Turn adaptive brightness off and move the slider all the way down (left). Go Home.</li></ol>
 <div class="question" data-q="q7"><p class="qtext">What happens?</p>
 <div class="sample"><p>The screen gets darker (0 percent, the dimmest setting; it does not turn off).</p></div></div>
-<h3>Step 2: Brightness on iOS</h3>
+<h3>Step 2.2: Brightness on iOS</h3>
 <ol class="steps">
 <li>Open Control Center and change <strong>Display Brightness</strong>.</li>
 <li>Open Settings, <strong>Display and Brightness</strong>. Explore: Light and Dark appearance, Automatic and its Options (a custom schedule), Text Size, Bold Text, True Tone, Night Shift, Auto-Lock, Raise to Wake, and Display Zoom.</li>
@@ -441,7 +441,7 @@ dialog .m-actions button{width:100%;text-align:left}
 
 <h2>Part 3: GPS and location services</h2>
 <p>Phones find their location with GPS satellites, and also with nearby Wi-Fi networks and cell towers. Apps ask for permission to use it.</p>
-<h3>Step 1: Location on Android</h3>
+<h3>Step 3.1: Location on Android</h3>
 <ol class="steps">
 <li>In quick settings (or Settings, Location), turn <strong>Location</strong> off.</li>
 <li>Go Home and open <strong>Maps</strong>.</li>
@@ -451,7 +451,7 @@ dialog .m-actions button{width:100%;text-align:left}
 <ol class="steps" start="3"><li>Choose <strong>Show my location</strong> (the crosshair).</li></ol>
 <div class="question" data-q="q10"><p class="qtext">What happens?</p>
 <div class="sample"><p>Because location is off, Android asks to turn it on. Choose Turn on, and Maps shows your location accurately.</p></div></div>
-<h3>Step 2: Location on iOS</h3>
+<h3>Step 3.2: Location on iOS</h3>
 <ol class="steps">
 <li>Open Settings, <strong>Privacy and Security</strong>, <strong>Location Services</strong>.</li>
 </ol>
@@ -1492,11 +1492,15 @@ const Mobile = (() => {
     const lists = block.filter(x => x.matches('ol.steps'));
     const hasQ = block.some(x => x.matches('.question') || x.querySelector('.question'));
     const isStep = /^step\s*\d/i.test(hd.textContent.trim());
-    if (!lists.length && !hasQ && !isStep) return;
+    const isWrap = /^(Reflection|Challenge|Summary)/i.test(hd.textContent.trim());
+    if (!lists.length && !hasQ && !isStep && !isWrap) return;
     units.push({ head: hd, part: hd.tagName === 'H3' ? part : '', title: hd.textContent.trim(), block, lists, questionsOnly: !lists.length, hasQ });
   });
   if (!units.length) return;
-  units.forEach((u, i) => { u.index = i; u.lists.forEach(l => { l._unit = i; }); });
+  units.forEach(u => { u.isStep = /^Step\s*\d/i.test(u.title); u.wrap = !u.isStep && /^(Reflection|Challenge|Summary)/i.test(u.title); });
+  const stepCount = units.filter(u => u.isStep).length;
+  units.forEach((u, i) => { u.index = i; u.stepNo = u.isStep ? units.slice(0, i + 1).filter(x => x.isStep).length : 0; u.lists.forEach(l => { l._unit = i; }); });
+  const where = u => u.isStep ? `${u.part ? u.part + '. ' : ''}${u.title.match(/^Step\s*[\d.]+/i)[0]}. ${u.stepNo} of ${stepCount} steps in this lab.` : (u.wrap ? `${u.title}. Wrap-up, after the last step.` : (u.part ? u.part + '. ' : ''));
 
   // Panel inside the simulation frame.
   const title = h('h3', { id: 'guide-h', class: 'guide-title' });
@@ -1517,11 +1521,11 @@ const Mobile = (() => {
     const d = stepsDone(); const i = cur;
     if (doneBox.checked) { if (!d.includes(i)) d.push(i); } else { const k = d.indexOf(i); if (k >= 0) d.splice(k, 1); }
     Lab.store.set(stepsKey(), d);
-    const n = units.filter((u, k) => d.includes(k)).length;
-    Lab.announce(`${units[i].title} marked ${doneBox.checked ? 'done' : 'not done'}. ${n} of ${units.length} steps done. ${progressText()}`);
+    const n = units.filter((u, k) => d.includes(k) && u.isStep).length;
+    Lab.announce(`${units[i].title} marked ${doneBox.checked ? 'done' : 'not done'}. ${n} of ${stepCount} steps done. ${progressText()}`);
   });
   function progressText() { const pt = document.getElementById('progress-text'); return pt ? pt.textContent.trim() + '.' : ''; }
-  function refreshProgress() { const d = stepsDone(); progLine.textContent = `${progressText()} ${d.length} of ${units.length} steps marked done.`; }
+  function refreshProgress() { const d = stepsDone(); const n = units.filter((u, k) => d.includes(k) && u.isStep).length; progLine.textContent = `${progressText()} ${n} of ${stepCount} steps marked done.`; }
   const keysHint = h('p', { class: 'guide-keys' }, h('strong', null, 'Shortcuts, from anywhere in the simulation: '), 'Alt+N reads the next instruction, Alt+P the previous one, Alt+R repeats the current one. Focus stays where you are.');
   const panel = h('section', { class: 'guide', 'aria-labelledby': 'guide-h' }, title, pos, body, doneWrap, progLine, h('div', { class: 'toolbar guide-tools' }, nextItem, repeatItem, prev, next, readFull), keysHint);
   sim.before(panel);
@@ -1581,7 +1585,7 @@ const Mobile = (() => {
     cur = i;
     const u = units[i];
     title.textContent = u.title;
-    pos.textContent = (u.part ? u.part + '. ' : '') + `Step ${i + 1} of ${units.length}.` + (u.questionsOnly && u.hasQ ? ' Type your answer in the box below.' : '') + (i === units.length - 1 ? ' This is the last step of the lab.' : '');
+    pos.textContent = where(u) + (u.questionsOnly && u.hasQ ? ' Type your answer in the box below.' : '') + (i === units.length - 1 ? ' This is the end of the lab.' : '');
     body.textContent = '';
     body.append(cloneBlock(u));
     if (i === units.length - 1) {
@@ -1592,14 +1596,14 @@ const Mobile = (() => {
     }
     prev.disabled = i === 0;
     const nx = units[i + 1];
-    next.textContent = nx ? (nx.questionsOnly ? `Next: ${nx.title}` : 'Next step') : 'Next step (this is the last step)';
+    next.textContent = nx ? (nx.isStep ? 'Next step' : `Next: ${nx.title}`) : 'Next step (this is the end of the lab)';
     next.disabled = !nx;
     Lab.store.set(key(), i);
     doneBox.checked = stepsDone().includes(i);
-    doneLbl.textContent = `I finished this step (${u.title})`;
+    doneLbl.textContent = u.isStep ? `I finished this step (${u.title})` : `I finished this section (${u.title})`;
     refreshProgress();
     setItem(0);
-    if (announce) { focusOnce(title); Lab.announce(`${u.part ? u.part + ', ' : ''}${u.title}. Step ${i + 1} of ${units.length}.`); }
+    if (announce) { focusOnce(title); Lab.announce(u.isStep ? `${u.title}. ${u.stepNo} of ${stepCount} steps in this lab.` : where(u)); }
   }
 
   // Instructions inside the current step: numbered items, notes, and questions. The learner
@@ -1625,7 +1629,7 @@ const Mobile = (() => {
   function stepItem(dir, announce) {
     if (!items.length || curItem + dir >= items.length) {
       if (dir > 0 && cur < units.length - 1) { show(cur + 1, false); Lab.announce(`Moving on. `); sayItem(true); }
-      else if (dir > 0) Lab.announce('That was the last instruction of the last step.');
+      else if (dir > 0) Lab.announce('That was the last instruction of the lab.');
       return;
     }
     if (curItem + dir < 0) {
@@ -1650,7 +1654,7 @@ const Mobile = (() => {
       if (!a) return;
       const fresh = a.cloneNode(true);
       fresh.textContent = `Do this step in the simulation (${u.title})`;
-      fresh.addEventListener('click', (e) => { e.preventDefault(); show(i, false); simH.scrollIntoView({ block: 'start' }); focusOnce(title); Lab.announce(`${u.title}, shown in the simulation. Step ${i + 1} of ${units.length}.`); });
+      fresh.addEventListener('click', (e) => { e.preventDefault(); show(i, false); simH.scrollIntoView({ block: 'start' }); focusOnce(title); Lab.announce(`${u.title}, shown in the simulation.`); });
       a.replaceWith(fresh);
     });
   });
@@ -1667,7 +1671,7 @@ const Mobile = (() => {
     const tasks = (Lab.config && Lab.config.tasks) || [];
     if (allDoneSaid || !tasks.length || !tasks.every(t => Lab.isDone(t.id))) return;
     allDoneSaid = true;
-    const rest = units.slice(cur + 1).filter(u => u.questionsOnly && u.hasQ);
+    const rest = units.slice(cur + 1).filter(u => u.wrap && u.hasQ);
     const unanswered = [...labCol.querySelectorAll('.question textarea')].filter(t => !t.value.trim()).length;
     if (rest.length) Lab.announce(`${rest.map(u => u.title).join(' and ')} ${rest.length === 1 ? 'is' : 'are'} still to do: use the Next button in the Current step panel.`);
     else if (unanswered) Lab.announce(`${unanswered} question${unanswered === 1 ? '' : 's'} still ${unanswered === 1 ? 'needs' : 'need'} an answer. Use Previous step to find ${unanswered === 1 ? 'it' : 'them'}.`);

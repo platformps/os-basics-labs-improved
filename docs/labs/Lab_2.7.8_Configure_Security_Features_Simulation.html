@@ -338,7 +338,7 @@ textarea.notepad{font-family:Consolas,"Courier New",monospace;min-height:12em}
 
 <h2>Part 1: Update Windows and Linux</h2>
 <p>New flaws are found all the time. Keeping systems up to date closes known holes before attackers can use them.</p>
-<h3>Step 1: Verify connectivity between the CSE-LABVM and Windows</h3>
+<h3>Step 1.1: Verify connectivity between the CSE-LABVM and Windows</h3>
 <p>You need internet access to download updates, and the two computers must reach each other for Part 3.</p>
 <ol class="steps">
 <li>Open <strong>Oracle VirtualBox</strong> from Start. Before starting the CSE-LABVM, select it and choose <strong>Settings</strong>. In the Network section, set Adapter 1 <strong>Attached to</strong> to <strong>Bridged Adapter</strong>, then choose the host adapter that connects Windows to the network. Many computers have two: one wireless and one wired. (Tip: <code>ipconfig /all</code> in a Windows Command Prompt shows which adapter has an address.)</li>
@@ -353,7 +353,7 @@ textarea.notepad{font-family:Consolas,"Courier New",monospace;min-height:12em}
 <li>From Windows, ping the CSE-LABVM's address.</li>
 <li>From the CSE-LABVM, ping the Windows address. This usually fails because the Windows firewall blocks incoming ping by default. You will add a rule for it in Part 3. Stop the ping with Ctrl+C.</li>
 </ol>
-<h3>Step 2: Check for Windows updates</h3>
+<h3>Step 1.2: Check for Windows updates</h3>
 <ol class="steps">
 <li>From Start, search for <strong>check for updates</strong> and open Windows Update.</li>
 <li>Choose <strong>Check for updates</strong>, then explore the other options: pause updates, update history, and advanced options.</li>
@@ -362,7 +362,7 @@ textarea.notepad{font-family:Consolas,"Courier New",monospace;min-height:12em}
 <div class="sample"><p>Answers vary. On a real PC it is usually within the last few days; in the simulation it is the time shown under "Last checked."</p></div></div>
 <div class="question" data-q="q3"><p class="qtext">What are the current active hours? What will Windows do outside them?</p>
 <div class="sample"><p>Answers vary; in the simulation they are 8:00 AM to 5:00 PM. Windows will not restart the device to finish updates during active hours. Outside active hours it can restart automatically.</p></div></div>
-<h3>Step 3: Update and upgrade Linux</h3>
+<h3>Step 1.3: Update and upgrade Linux</h3>
 <ol class="steps">
 <li>In the CSE-LABVM terminal, run <code>apt-get</code> by itself to see its commands. Always run update before upgrade.</li>
 <li>Run <code>sudo apt-get update</code> to refresh the list of available packages. Enter <code>password</code> when asked.</li>
@@ -372,7 +372,7 @@ textarea.notepad{font-family:Consolas,"Courier New",monospace;min-height:12em}
 <h2>Part 2: Windows Local Security Policy</h2>
 <p>Local Security Policy holds the security rules for one computer. You will set the password policy, the account lockout policy, and look at the audit policy.</p>
 <div class="note"><p>On a real PC, Local Security Policy comes only with Windows Pro, Enterprise, and Education. On Windows Home, or on a PC you are not allowed to change, read this part and move on to Part 3. The simulation includes it so every learner can practice.</p></div>
-<h3>Step 1: Configure the password policy</h3>
+<h3>Step 2.1: Configure the password policy</h3>
 <p>Your organization's password rules are:</p>
 <ul class="tri">
 <li>A user must use at least 2 different passwords before reusing an old one.</li>
@@ -394,7 +394,7 @@ textarea.notepad{font-family:Consolas,"Courier New",monospace;min-height:12em}
 <div class="question" data-q="q5"><p class="qtext">What values did you set for Enforce password history, Maximum password age, Minimum password age, Minimum password length, Password must meet complexity requirements, and Store passwords using reversible encryption?</p>
 <div class="sample"><p>Enforce password history: 2 passwords remembered. Maximum password age: 90 days. Minimum password age: 1 day. Minimum password length: 8 characters. Password must meet complexity requirements: Enabled. Store passwords using reversible encryption: Disabled.</p></div></div>
 <p>Keep <strong>Store passwords using reversible encryption</strong> disabled. Reversible encryption is close to storing passwords in plain text, so turn it on only when an application truly requires it.</p>
-<h3>Step 2: Test the password policy</h3>
+<h3>Step 2.2: Test the password policy</h3>
 <ol class="steps">
 <li>From Start, search for <strong>change your password</strong>.</li>
 <li>Under Password, choose <strong>Change</strong>, enter the current password, and choose Next.</li>
@@ -402,7 +402,7 @@ textarea.notepad{font-family:Consolas,"Courier New",monospace;min-height:12em}
 </ol>
 <div class="question" data-q="q6"><p class="qtext">What does Windows say when the new password breaks the policy?</p>
 <div class="sample"><p>The password you entered doesn't meet the password policy requirements. Try one that's longer or more complex.</p></div></div>
-<h3>Step 3: Configure the account lockout policy</h3>
+<h3>Step 2.3: Configure the account lockout policy</h3>
 <ol class="steps">
 <li>Back in Local Security Policy, choose <strong>Account Lockout Policy</strong> under Account Policies.</li>
 <li>Set <strong>Account lockout threshold</strong> to 5 invalid sign-in attempts.</li>
@@ -412,7 +412,7 @@ textarea.notepad{font-family:Consolas,"Courier New",monospace;min-height:12em}
 <div class="sample"><p>10 minutes, the account lockout duration.</p></div></div>
 <div class="question" data-q="q8"><p class="qtext">How many attempts does a user get before the account is locked?</p>
 <div class="sample"><p>5 attempts.</p></div></div>
-<h3>Step 4: Review the audit policy</h3>
+<h3>Step 2.4: Review the audit policy</h3>
 <ol class="steps">
 <li>Expand <strong>Local Policies</strong> and choose <strong>Audit Policy</strong>.</li>
 <li>Open <strong>Audit account logon events</strong>. On the Local Security Setting tab, notice the Success and Failure check boxes.</li>
@@ -422,7 +422,7 @@ textarea.notepad{font-family:Consolas,"Courier New",monospace;min-height:12em}
 
 <h2>Part 3: Configure firewall rules</h2>
 <p>Traffic enters and leaves a computer through ports. A firewall works like a security guard that checks traffic against its rules.</p>
-<h3>Step 1: Investigate Windows Defender Firewall</h3>
+<h3>Step 3.1: Investigate Windows Defender Firewall</h3>
 <ol class="steps"><li>From Start, search for and open <strong>Windows Defender Firewall</strong>. It is on by default.</li></ol>
 <p>On a PC managed by an organization, you may see "For your security, some settings are managed by your system administrator."</p>
 <div class="question" data-q="q9"><p class="qtext">What are the benefits of Windows Defender Firewall?</p>
@@ -430,7 +430,7 @@ textarea.notepad{font-family:Consolas,"Courier New",monospace;min-height:12em}
 <ol class="steps" start="2"><li>Choose <strong>Allow an app or feature through Windows Defender Firewall</strong>. Apps and features with Yes for a network type are allowed through. Choose Cancel when done.</li></ol>
 <div class="question" data-q="q10"><p class="qtext">Describe a negative consequence of having too many exceptions.</p>
 <div class="sample"><p>Each exception is a hole in the firewall. Attackers scan for computers with many open ports and allowed programs, and every extra exception gives them another way in.</p></div></div>
-<h3>Step 2: Allow echo requests with an inbound rule</h3>
+<h3>Step 3.2: Allow echo requests with an inbound rule</h3>
 <p>On a work computer, your organization may not allow this step. In the simulation it is safe.</p>
 <ol class="steps">
 <li>In Windows Defender Firewall, choose <strong>Advanced settings</strong> and choose Yes in User Account Control.</li>
@@ -444,7 +444,7 @@ textarea.notepad{font-family:Consolas,"Courier New",monospace;min-height:12em}
 
 <h2>Part 4: Install and run applications</h2>
 <p>You will install two tools on the CSE-LABVM: chkrootkit, from Ubuntu's own software repository, and Lynis, from a repository run by its maker, CISOfy.</p>
-<h3>Step 1: Install and run chkrootkit</h3>
+<h3>Step 4.1: Install and run chkrootkit</h3>
 <p>chkrootkit looks for signs of a rootkit: malware that hides itself on a system while giving an attacker control.</p>
 <ol class="steps">
 <li>Run <code>sudo apt install chkrootkit</code>.</li>
@@ -453,7 +453,7 @@ textarea.notepad{font-family:Consolas,"Courier New",monospace;min-height:12em}
 </ol>
 <div class="question" data-q="q11"><p class="qtext">Did chkrootkit find any worms? What is the last line that starts with an exclamation point?</p>
 <div class="sample"><p>No; every worm check says "nothing found." The last line lists the grep command itself. chkrootkit's chkutmp check reports processes that have a terminal but no sign-in record, and grep, running in a pipe, is one of them. It is not a sign of infection.</p></div></div>
-<h3>Step 2: Install Lynis</h3>
+<h3>Step 4.2: Install Lynis</h3>
 <p>Lynis is a security auditing tool for Linux and macOS, made by CISOfy. You will use it to harden a system in a later activity. To get the newest version, add CISOfy's repository, and its signing key so apt can verify downloads.</p>
 <ol class="steps">
 <li>Import CISOfy's signing key. Type it as one line:
@@ -4274,7 +4274,7 @@ DESCRIPTION
       if (r.present && r.signed) pk.lynisIdx = true;
       T('aptupd');
       L.emit('apt:update', {});
-      return { code: fail ? 100 : 0, notes: fail ? ['apt refused the Lynis repository because it cannot check its signature. Import the CISOfy key first (Part 4, Step 2), then run sudo apt-get update again.'] : [] };
+      return { code: fail ? 100 : 0, notes: fail ? ['apt refused the Lynis repository because it cannot check its signature. Import the CISOfy key first (Step 4.2), then run sudo apt-get update again.'] : [] };
     });
   }
   function aptUpgrade(ctx, io, yes) {
@@ -4767,11 +4767,15 @@ DESCRIPTION
     const lists = block.filter(x => x.matches('ol.steps'));
     const hasQ = block.some(x => x.matches('.question') || x.querySelector('.question'));
     const isStep = /^step\s*\d/i.test(hd.textContent.trim());
-    if (!lists.length && !hasQ && !isStep) return;
+    const isWrap = /^(Reflection|Challenge|Summary)/i.test(hd.textContent.trim());
+    if (!lists.length && !hasQ && !isStep && !isWrap) return;
     units.push({ head: hd, part: hd.tagName === 'H3' ? part : '', title: hd.textContent.trim(), block, lists, questionsOnly: !lists.length, hasQ });
   });
   if (!units.length) return;
-  units.forEach((u, i) => { u.index = i; u.lists.forEach(l => { l._unit = i; }); });
+  units.forEach(u => { u.isStep = /^Step\s*\d/i.test(u.title); u.wrap = !u.isStep && /^(Reflection|Challenge|Summary)/i.test(u.title); });
+  const stepCount = units.filter(u => u.isStep).length;
+  units.forEach((u, i) => { u.index = i; u.stepNo = u.isStep ? units.slice(0, i + 1).filter(x => x.isStep).length : 0; u.lists.forEach(l => { l._unit = i; }); });
+  const where = u => u.isStep ? `${u.part ? u.part + '. ' : ''}${u.title.match(/^Step\s*[\d.]+/i)[0]}. ${u.stepNo} of ${stepCount} steps in this lab.` : (u.wrap ? `${u.title}. Wrap-up, after the last step.` : (u.part ? u.part + '. ' : ''));
 
   // Panel inside the simulation frame.
   const title = h('h3', { id: 'guide-h', class: 'guide-title' });
@@ -4792,11 +4796,11 @@ DESCRIPTION
     const d = stepsDone(); const i = cur;
     if (doneBox.checked) { if (!d.includes(i)) d.push(i); } else { const k = d.indexOf(i); if (k >= 0) d.splice(k, 1); }
     Lab.store.set(stepsKey(), d);
-    const n = units.filter((u, k) => d.includes(k)).length;
-    Lab.announce(`${units[i].title} marked ${doneBox.checked ? 'done' : 'not done'}. ${n} of ${units.length} steps done. ${progressText()}`);
+    const n = units.filter((u, k) => d.includes(k) && u.isStep).length;
+    Lab.announce(`${units[i].title} marked ${doneBox.checked ? 'done' : 'not done'}. ${n} of ${stepCount} steps done. ${progressText()}`);
   });
   function progressText() { const pt = document.getElementById('progress-text'); return pt ? pt.textContent.trim() + '.' : ''; }
-  function refreshProgress() { const d = stepsDone(); progLine.textContent = `${progressText()} ${d.length} of ${units.length} steps marked done.`; }
+  function refreshProgress() { const d = stepsDone(); const n = units.filter((u, k) => d.includes(k) && u.isStep).length; progLine.textContent = `${progressText()} ${n} of ${stepCount} steps marked done.`; }
   const keysHint = h('p', { class: 'guide-keys' }, h('strong', null, 'Shortcuts, from anywhere in the simulation: '), 'Alt+N reads the next instruction, Alt+P the previous one, Alt+R repeats the current one. Focus stays where you are.');
   const panel = h('section', { class: 'guide', 'aria-labelledby': 'guide-h' }, title, pos, body, doneWrap, progLine, h('div', { class: 'toolbar guide-tools' }, nextItem, repeatItem, prev, next, readFull), keysHint);
   sim.before(panel);
@@ -4856,7 +4860,7 @@ DESCRIPTION
     cur = i;
     const u = units[i];
     title.textContent = u.title;
-    pos.textContent = (u.part ? u.part + '. ' : '') + `Step ${i + 1} of ${units.length}.` + (u.questionsOnly && u.hasQ ? ' Type your answer in the box below.' : '') + (i === units.length - 1 ? ' This is the last step of the lab.' : '');
+    pos.textContent = where(u) + (u.questionsOnly && u.hasQ ? ' Type your answer in the box below.' : '') + (i === units.length - 1 ? ' This is the end of the lab.' : '');
     body.textContent = '';
     body.append(cloneBlock(u));
     if (i === units.length - 1) {
@@ -4867,14 +4871,14 @@ DESCRIPTION
     }
     prev.disabled = i === 0;
     const nx = units[i + 1];
-    next.textContent = nx ? (nx.questionsOnly ? `Next: ${nx.title}` : 'Next step') : 'Next step (this is the last step)';
+    next.textContent = nx ? (nx.isStep ? 'Next step' : `Next: ${nx.title}`) : 'Next step (this is the end of the lab)';
     next.disabled = !nx;
     Lab.store.set(key(), i);
     doneBox.checked = stepsDone().includes(i);
-    doneLbl.textContent = `I finished this step (${u.title})`;
+    doneLbl.textContent = u.isStep ? `I finished this step (${u.title})` : `I finished this section (${u.title})`;
     refreshProgress();
     setItem(0);
-    if (announce) { focusOnce(title); Lab.announce(`${u.part ? u.part + ', ' : ''}${u.title}. Step ${i + 1} of ${units.length}.`); }
+    if (announce) { focusOnce(title); Lab.announce(u.isStep ? `${u.title}. ${u.stepNo} of ${stepCount} steps in this lab.` : where(u)); }
   }
 
   // Instructions inside the current step: numbered items, notes, and questions. The learner
@@ -4900,7 +4904,7 @@ DESCRIPTION
   function stepItem(dir, announce) {
     if (!items.length || curItem + dir >= items.length) {
       if (dir > 0 && cur < units.length - 1) { show(cur + 1, false); Lab.announce(`Moving on. `); sayItem(true); }
-      else if (dir > 0) Lab.announce('That was the last instruction of the last step.');
+      else if (dir > 0) Lab.announce('That was the last instruction of the lab.');
       return;
     }
     if (curItem + dir < 0) {
@@ -4925,7 +4929,7 @@ DESCRIPTION
       if (!a) return;
       const fresh = a.cloneNode(true);
       fresh.textContent = `Do this step in the simulation (${u.title})`;
-      fresh.addEventListener('click', (e) => { e.preventDefault(); show(i, false); simH.scrollIntoView({ block: 'start' }); focusOnce(title); Lab.announce(`${u.title}, shown in the simulation. Step ${i + 1} of ${units.length}.`); });
+      fresh.addEventListener('click', (e) => { e.preventDefault(); show(i, false); simH.scrollIntoView({ block: 'start' }); focusOnce(title); Lab.announce(`${u.title}, shown in the simulation.`); });
       a.replaceWith(fresh);
     });
   });
@@ -4942,7 +4946,7 @@ DESCRIPTION
     const tasks = (Lab.config && Lab.config.tasks) || [];
     if (allDoneSaid || !tasks.length || !tasks.every(t => Lab.isDone(t.id))) return;
     allDoneSaid = true;
-    const rest = units.slice(cur + 1).filter(u => u.questionsOnly && u.hasQ);
+    const rest = units.slice(cur + 1).filter(u => u.wrap && u.hasQ);
     const unanswered = [...labCol.querySelectorAll('.question textarea')].filter(t => !t.value.trim()).length;
     if (rest.length) Lab.announce(`${rest.map(u => u.title).join(' and ')} ${rest.length === 1 ? 'is' : 'are'} still to do: use the Next button in the Current step panel.`);
     else if (unanswered) Lab.announce(`${unanswered} question${unanswered === 1 ? '' : 's'} still ${unanswered === 1 ? 'needs' : 'need'} an answer. Use Previous step to find ${unanswered === 1 ? 'it' : 'them'}.`);
