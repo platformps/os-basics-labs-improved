@@ -56,8 +56,20 @@
     c.querySelectorAll('.sr-only').forEach(x => x.remove());
     return c.textContent.replace(/\s+/g, ' ').trim();
   }
-  function answerLink(el) {
-    return h('a', { href: '#', onclick: (e) => { e.preventDefault(); const ta = el.querySelector('textarea, input'); if (ta) { ta.scrollIntoView({ block: 'center' }); ta.focus(); } } }, 'Answer it in the lab text');
+  // An answer box inside the panel, kept in sync with the real one in the lab text, so the
+  // learner can answer without leaving the simulation.
+  function answerBox(el) {
+    const orig = el.querySelector('textarea');
+    const id = el.dataset.q || Math.random().toString(36).slice(2, 7);
+    const taId = 'guide-ans-' + id;
+    const lbl = h('label', { for: taId, class: 'qlabel' }, h('span', { class: 'sr-only' }, 'Question: '), qText(el));
+    const ta = h('textarea', { id: taId, rows: 3 });
+    ta.value = orig ? orig.value : '';
+    ta.addEventListener('input', () => { if (orig) { orig.value = ta.value; orig.dispatchEvent(new Event('input', { bubbles: true })); } });
+    const wrap = h('div', { class: 'question guide-question' }, lbl, ta);
+    const det = el.querySelector('details');
+    if (det) wrap.append(h('details', null, h('summary', null, 'Show sample answer'), det.querySelector('.sample-body').cloneNode(true)));
+    return wrap;
   }
 
   function cloneBlock(u) {
@@ -68,15 +80,9 @@
       [c, ...c.querySelectorAll('[id]')].forEach(x => x.removeAttribute && x.removeAttribute('id'));
       c.querySelectorAll('[tabindex]').forEach(x => x.removeAttribute('tabindex'));
       // Questions keep their answer boxes in the lab text; here they become a short pointer.
-      if (c.classList.contains('question')) {
-        frag.append(h('p', { class: 'guide-q' }, h('strong', null, 'Question: '), qText(el) + ' ', answerLink(el)));
-        return;
-      }
+      if (c.classList.contains('question')) { frag.append(answerBox(el)); return; }
       const origQs = el.querySelectorAll('.question');
-      c.querySelectorAll('.question').forEach((qel, k) => {
-        const orig = origQs[k];
-        qel.replaceWith(h('p', { class: 'guide-q' }, h('strong', null, 'Question: '), qText(orig) + ' ', answerLink(orig)));
-      });
+      c.querySelectorAll('.question').forEach((qel, k) => qel.replaceWith(answerBox(origQs[k])));
       frag.append(c);
     });
     return frag;
@@ -88,9 +94,15 @@
     cur = i;
     const u = units[i];
     title.textContent = u.title;
-    pos.textContent = (u.part ? u.part + '. ' : '') + `Step ${i + 1} of ${units.length}.` + (u.questionsOnly ? ' Answer the question below in the lab text.' : '') + (i === units.length - 1 ? ' This is the last step of the lab.' : '');
+    pos.textContent = (u.part ? u.part + '. ' : '') + `Step ${i + 1} of ${units.length}.` + (u.questionsOnly && u.hasQ ? ' Type your answer in the box below.' : '') + (i === units.length - 1 ? ' This is the last step of the lab.' : '');
     body.textContent = '';
     body.append(cloneBlock(u));
+    if (i === units.length - 1) {
+      const ex = document.getElementById('btn-export');
+      body.append(h('div', { class: 'guide-finish' },
+        h('p', null, 'When you are done, download your answers to hand in. Your checklist and answers are also saved in this browser.'),
+        h('div', { class: 'toolbar' }, h('button', { type: 'button', onclick: () => { if (ex) ex.click(); } }, 'Download my answers'), h('a', { href: '../index.html', class: 'btn secondary' }, 'All labs'))));
+    }
     prev.disabled = i === 0;
     const nx = units[i + 1];
     next.textContent = nx ? (nx.questionsOnly ? `Next: ${nx.title}` : 'Next step') : 'Next step (this is the last step)';
@@ -112,7 +124,7 @@
     });
   });
 
-  const note = h('div', { class: 'note guide-note' }, h('p', null, h('strong', null, 'Guided version: '), 'the simulation starts with a "Current step" panel that shows the step you are on, with Previous step and Next step buttons, so you can stay in the simulation from the first step to the last. The full lab text below is the same as always; each steps list also has a link that opens that step in the simulation.'));
+  const note = h('div', { class: 'note guide-note' }, h('p', null, h('strong', null, 'Guided version: '), 'the simulation starts with a "Current step" panel that shows the step you are on, with Previous step and Next step buttons and the answer boxes for that step, so you can stay in the simulation from the first step to the last. Use the "Skip to the simulation" link at the top of the page to get there. The full lab text below is the same as always; each steps list also has a link that opens that step in the simulation.'));
   const start = document.getElementById('lab-start');
   if (start) start.after(note);
 
@@ -127,8 +139,8 @@
     const rest = units.slice(cur + 1).filter(u => u.questionsOnly && u.hasQ);
     const unanswered = [...labCol.querySelectorAll('.question textarea')].filter(t => !t.value.trim()).length;
     if (rest.length) Lab.announce(`${rest.map(u => u.title).join(' and ')} ${rest.length === 1 ? 'is' : 'are'} still to do: use the Next button in the Current step panel.`);
-    else if (unanswered) Lab.announce(`${unanswered} question${unanswered === 1 ? '' : 's'} in the lab text still ${unanswered === 1 ? 'needs' : 'need'} an answer.`);
-    else Lab.announce('Every question has an answer. You can download your answers from the Your progress section.');
+    else if (unanswered) Lab.announce(`${unanswered} question${unanswered === 1 ? '' : 's'} still ${unanswered === 1 ? 'needs' : 'need'} an answer. Use Previous step to find ${unanswered === 1 ? 'it' : 'them'}.`);
+    else Lab.announce('Every question has an answer. The Download my answers button is at the end of the last step.');
   }
   if (progress) {
     const tasks = (Lab.config && Lab.config.tasks) || [];
