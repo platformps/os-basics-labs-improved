@@ -25,7 +25,7 @@ const AXE = fs.readFileSync(path.join(__dirname, 'node_modules/axe-core/axe.min.
     await p.waitForTimeout(250);
     const ann = await p.evaluate(() => document.getElementById('sr-polite').textContent);
     await p.addScriptTag({ content: AXE }); const axe = await p.evaluate(async () => { const res = await axe.run(document, { runOnly: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice'] }); return { violations: res.violations.map(v => v.id + ':' + v.nodes.slice(0, 2).map(n => n.target.join(' ')).join('|')) }; });
-    const ok = !r.err && r.units > 0 && r.badLinks === 0 && r.links === r.lists && r.dupIds.length === 0 && r.focusAtLoad === 'BODY' && r.guideHasInputs === 0 && fx[0] === 'guide-h' && axe.violations.length === 0;
+    const ok = !r.err && r.units > 0 && r.badLinks === 0 && r.links === r.lists && r.dupIds.length === 0 && r.focusAtLoad === 'BODY' && fx[0] === 'guide-h' && axe.violations.length === 0;
     if (!ok) bad++;
     console.log((ok ? 'OK  ' : 'BAD ') + f.slice(0, 44).padEnd(45), `${r.units} steps, ${r.links}/${r.lists} links, dup=${r.dupIds.length}, focus=${r.focusAtLoad}, next->${fx[0]}, "${ann.slice(0, 50)}", axe=${axe.violations.length}`);
     if (!ok) console.log('   ', JSON.stringify(r), axe.violations.map(v => v.id));

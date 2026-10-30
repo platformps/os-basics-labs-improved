@@ -17,6 +17,15 @@ async function open(file, opts = {}) {
     const scan = () => document.querySelectorAll('[aria-live],[role=log],[role=status],[role=alert]').forEach(watch);
     document.addEventListener('DOMContentLoaded', () => { scan(); new MutationObserver(scan).observe(document.body, { childList: true, subtree: true }); });
   });
+  if (process.env.FOCUS) await page.addInitScript(() => {
+    window.__focus = []; let lastMouse = 0, lastTarget = null;
+    document.addEventListener('mousedown', e => { lastMouse = performance.now(); lastTarget = e.target.closest('button,a,input,select,textarea,summary,[tabindex]') || e.target; }, true);
+    document.addEventListener('focusin', e => {
+      const el = e.target; const where = el === document.body ? 'body' : el.closest('dialog') ? 'dialog' : el.closest('.guide') ? 'panel' : el.closest('#sim') ? 'sim' : el.closest('.sim-col') ? 'simcol' : el.closest('.lab-col') ? 'labtext' : el.closest('header') ? 'header' : 'other';
+      const name = (el.getAttribute('aria-label') || el.textContent || el.value || el.id || el.tagName).trim().replace(/\s+/g, ' ').slice(0, 60);
+      window.__focus.push({ t: Math.round(performance.now()), where, tag: el.tagName, role: el.getAttribute('role') || '', cls: el.className && el.className.baseVal === undefined ? String(el.className).slice(0, 40) : '', name, user: performance.now() - lastMouse < 40 && el === lastTarget });
+    }, true);
+  });
   const errors = [];
   page.on('pageerror', e => errors.push('pageerror: ' + e.message));
   page.on('console', m => { if (m.type() === 'error') errors.push('console: ' + m.text()); });
@@ -57,6 +66,7 @@ async function open(file, opts = {}) {
       const missing = t.filter(x => !x[1]).map(x => x[0]);
       console.log(`${name}: ${t.length - missing.length}/${t.length} tasks`, missing.length ? 'MISSING: ' + missing.join(', ') : 'ALL DONE');
       if (errors.length) console.log('ERRORS:', errors.join('\n'));
+      if (process.env.FOCUS) { const f = await page.evaluate(() => window.__focus); require('fs').writeFileSync(`focus-${name}.json`, JSON.stringify(f, null, 1)); console.log('focus events:', f.length); }
       if (process.env.AUDIT) { const a = await page.evaluate(() => window.__ann); require('fs').writeFileSync(`ann-${name}.json`, JSON.stringify(a, null, 1)); console.log('announcements:', a.length); }
       return missing;
     }

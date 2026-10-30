@@ -1,10 +1,10 @@
 // Finds non-interactive containers that stay focusable and hold other content.
 const { chromium } = require('playwright'); const fs = require('fs');
 (async () => {
-  const b = await chromium.launch(); const files = fs.readdirSync('../dist/labs').filter(f => f.endsWith('.html'));
+  const b = await chromium.launch(); const files = fs.readdirSync('../' + (process.env.DIST || 'dist') + '/labs').filter(f => f.endsWith('.html'));
   let bad = 0;
   for (const f of files.concat(['../index.html'])) {
-    const p = await b.newPage(); await p.goto('file://' + require('path').resolve('../dist/labs', f)); await p.waitForTimeout(400);
+    const p = await b.newPage(); await p.goto('file://' + require('path').resolve('../' + (process.env.DIST || 'dist') + '/labs', f)); await p.waitForTimeout(400);
     const r = await p.evaluate(() => [...document.querySelectorAll('[tabindex]')].filter(e => {
       const interactive = /^(A|BUTTON|INPUT|SELECT|TEXTAREA|SUMMARY|DIALOG)$/.test(e.tagName) || /^(button|tab|switch|menuitem|option|row|gridcell|slider|link|checkbox|radio|treeitem)$/.test(e.getAttribute('role') || '');
       const heading = /^H[1-6]$/.test(e.tagName);
